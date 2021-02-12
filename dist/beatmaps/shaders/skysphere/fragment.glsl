@@ -1,3 +1,4 @@
+// adapted from https://github.com/mrdoob/three.js/blob/master/examples/webgl_lights_hemisphere.html
 varying vec3 vWorldPosition;
 
 void main() {

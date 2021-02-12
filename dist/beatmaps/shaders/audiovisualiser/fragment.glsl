@@ -1,3 +1,4 @@
+// Adapted from https://noisehack.com/build-music-visualizer-web-audio-api/. Original shader - https://www.shadertoy.com/view/XsXXDn
 uniform float time;
 uniform sampler2D audioData;
 varying vec3 vWorldPosition;
