@@ -1,0 +1,36 @@
+{
+  "name": "cadenza",
+  "version": "0.1.0",
+  "description": "A WebXR rhythm game",
+  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "start:dev": "webpack-dev-server --inline --host 0.0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CadenzaVR/cadenza.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CadenzaVR/cadenza/issues"
+  },
+  "homepage": "https://cadenzavr.com",
+  "dependencies": {
+    "aframe-haptics-component": "^1.6.1",
+    "axios": "^0.21.1",
+    "dexie": "^3.0.3",
+    "howler": "^2.2.1",
+    "jsmediatags": "^3.9.3",
+    "jszip": "^3.5.0",
+    "micromodal": "^0.4.6",
+    "osu-parser-web": "git+https://github.com/oliverfei/osu-parser-web.git",
+    "three": "^0.125.2"
+  },
+  "devDependencies": {
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}

@@ -1,0 +1,27 @@
+.a-enter-vr-button {
+  position: relative;
+  float: right;
+  margin-left: 10px;
+  background-color: rgba(100, 100, 100, 0.5);
+}
+
+.a-enter-vr-button:active,
+.a-enter-vr-button:hover {
+  background-color: rgba(117, 117, 117, 0.85);
+}
+
+.help-button:hover::after {
+  content: "How To Play";
+  position: absolute;
+  display: block;
+  top: -40px;
+  left: 0;
+}
+
+.load-file-button:hover::after {
+  content: "Load Beatmap";
+  position: absolute;
+  display: block;
+  top: -40px;
+  left: 0;
+}

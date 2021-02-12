@@ -1,0 +1,49 @@
+#header {
+  position: absolute;
+  top: 0;
+  z-index: 1000;
+  min-width: 100%;
+  padding: 10px;
+  color: white;
+  font-family: "Space Mono", monospace;
+  text-align: center;
+  background-color: black;
+}
+
+#title-banner > h1 {
+  color: white;
+}
+
+.header-link {
+  margin-left: 20px;
+  display: inline-block;
+}
+
+.header-link a.selected {
+  text-decoration: underline solid;
+}
+
+.header-link a {
+  color: white;
+  text-decoration: none;
+  padding-left: 15px;
+}
+
+.header-link a:hover {
+  color: white;
+}
+
+.header-link:hover::before {
+  content: ">";
+  position: absolute;
+}
+
+#file-import-container {
+  position: absolute;
+  top: 150px;
+  left: 50px;
+  z-index: 100;
+  color: #fff;
+  background-color: rgba(50, 50, 50, 0.9);
+  padding: 10px;
+}
