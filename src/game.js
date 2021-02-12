@@ -120,6 +120,7 @@ AFRAME.registerSystem("game-controller", {
     this.notes = [];
     this.animationMixers = [];
     this.loadedModels = [];
+    this.audioMaterials = [];
     this.customSkysphereMaterial = null;
     this.defaultSkysphereMaterial = null;
 
@@ -583,6 +584,7 @@ AFRAME.registerSystem("game-controller", {
 
     const playButton = document.getElementById("play-button");
     playButton.addEventListener("click", async () => {
+      this.audio.init();
       const menu = this.menu.components["menu"];
       this.setState(GameState.LOADINGMAP);
       this.audio.menuAudio.pause();
@@ -690,7 +692,6 @@ AFRAME.registerSystem("game-controller", {
 
     for (let model of this.loadedModels) {
       this.scene.object3D.remove(model);
-      console.log(model);
     }
 
     this.menu.object3D.visible = true;
@@ -745,7 +746,43 @@ AFRAME.registerSystem("game-controller", {
   loadModels: async function (models) {
     for (let model of models) {
       await new Promise((resolve, reject) => {
-        this.gltfLoader.load(model.file, (gltf) => {
+        this.gltfLoader.load(model.file, async (gltf) => {
+          if (model.vertexShader && model.fragmentShader) {
+            const fragmentShader = await fetch(
+              model.fragmentShader
+            ).then((res) => res.text());
+            const vertexShader = await fetch(model.vertexShader).then((res) =>
+              res.text()
+            );
+
+            const uniforms = {
+              time: { value: 0 },
+            };
+
+            if (this.audio.analyser) {
+              const format = this.scene.renderer.capabilities.isWebGL2
+                ? THREE.RedFormat
+                : THREE.LuminanceFormat;
+
+              uniforms.audioData = {
+                value: new THREE.DataTexture(
+                  this.audio.audioData,
+                  1024,
+                  1,
+                  format
+                ),
+              };
+            }
+
+            const material = new THREE.ShaderMaterial({
+              uniforms: uniforms,
+              fragmentShader: fragmentShader,
+              vertexShader: vertexShader,
+              side: THREE.FrontSide,
+            });
+            this.audioMaterials.push(material);
+            gltf.scene.children[0].material = material;
+          }
           this.scene.object3D.add(gltf.scene);
           this.loadedModels.push(gltf.scene);
           const positionVector = model.position;
@@ -757,7 +794,6 @@ AFRAME.registerSystem("game-controller", {
             );
           }
           if (gltf.animations.length > 0) {
-            console.log(gltf);
             const mixer = new THREE.AnimationMixer(gltf.scene);
             mixer.clipAction(gltf.animations[0]).play();
             this.animationMixers.push(mixer);
@@ -1538,6 +1574,15 @@ AFRAME.registerSystem("game-controller", {
     // Update animation mixers
     for (let animationMixer of this.animationMixers) {
       animationMixer.update(deltaSeconds);
+    }
+
+    if (this.audio.analyser) {
+      this.audio.getFrequencyData();
+      for (let audioMaterial of this.audioMaterials) {
+        audioMaterial.uniforms.audioData.value.needsUpdate = true;
+        audioMaterial.uniforms.time.value =
+          audioMaterial.uniforms.time.value + deltaSeconds;
+      }
     }
   },
 });

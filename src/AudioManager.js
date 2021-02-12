@@ -14,6 +14,25 @@ export default class AudioManager {
     });
   }
 
+  init() {
+    if (!this.audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        this.audioCtx = new AudioContext();
+        this.analyser = this.audioCtx.createAnalyser();
+        this.audioCtx
+          .createMediaElementSource(this.song)
+          .connect(this.analyser);
+        this.analyser.connect(this.audioCtx.destination);
+        this.audioData = new Uint8Array(this.analyser.frequencyBinCount);
+      }
+    }
+  }
+
+  getFrequencyData() {
+    this.analyser.getByteFrequencyData(this.audioData);
+  }
+
   loadSong(src) {
     this.song.src = src;
     this.song.load();
