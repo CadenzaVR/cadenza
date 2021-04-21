@@ -1,26 +1,51 @@
 export const createRippleSurface = () => {
-  const surface = new THREE.Geometry();
-  surface.vertices.push(
-    new THREE.Vector3(-0.6, 0, -0.2),
-    new THREE.Vector3(0.6, 0, -0.2),
-    new THREE.Vector3(0.6, 0, 0.2),
-    new THREE.Vector3(-0.6, 0, 0.2),
-    new THREE.Vector3(-0.6, 0.25, -1.41782),
-    new THREE.Vector3(0.6, 0.25, -1.41782)
-  );
-  surface.faces.push(
-    new THREE.Face3(0, 2, 1),
-    new THREE.Face3(0, 3, 2),
-    new THREE.Face3(0, 1, 5),
-    new THREE.Face3(0, 5, 4)
-  );
+  const vertices = new Float32Array([
+    -0.6,
+    0,
+    -0.2,
+    0.6,
+    0,
+    0.2,
+    0.6,
+    0,
+    -0.2,
 
-  const geometry = new THREE.BufferGeometry().fromGeometry(surface);
+    -0.6,
+    0,
+    -0.2,
+    -0.6,
+    0,
+    0.2,
+    0.6,
+    0,
+    0.2,
+
+    -0.6,
+    0,
+    -0.2,
+    0.6,
+    0,
+    -0.2,
+    0.6,
+    0.25,
+    -1.41782 - 0.6,
+    0,
+    -0.2,
+    0.6,
+    0.25,
+    -1.41782,
+    -0.6,
+    0.25,
+    -1.41782,
+  ]);
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
   const material = new THREE.ShaderMaterial({
     uniforms: {
       time: { value: 0.5 },
       hitPosition: { value: new THREE.Vector2() },
-      speed: { value: 1.0 }
+      speed: { value: 1.0 },
     },
     //wireframe: true,
     vertexShader: `
@@ -47,7 +72,7 @@ export const createRippleSurface = () => {
       }
       `,
     transparent: true,
-    opacity: 0.1
+    opacity: 0.1,
   });
   return new THREE.Mesh(geometry, material);
 };

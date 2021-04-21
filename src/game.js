@@ -559,24 +559,20 @@ AFRAME.registerSystem("game-controller", {
 
     // Add a starfield to the background of a scene
     // TODO replace with skysphere
-    var starsGeometry = new THREE.Geometry();
-    const sunDirection = new THREE.Vector3(1, 1, -1);
-    for (var i = 0; i < 500; i++) {
-      var star = new THREE.Vector3();
-      do {
-        star.x = THREE.Math.randFloatSpread(1000);
-        star.y = THREE.Math.randFloat(0, 500);
-        star.z = THREE.Math.randFloatSpread(1000);
-      } while (star.length() < 300 || star.angleTo(sunDirection) < 0.2);
-
-      const starMirror = new THREE.Vector3();
-      starMirror.x = star.x;
-      starMirror.z = star.z;
-      starMirror.y = -1 * star.y;
-      starsGeometry.vertices.push(star);
-      starsGeometry.vertices.push(starMirror);
+    const vertices = [];
+    for (let i = 0; i < 500; i++) {
+      const x = THREE.MathUtils.randFloatSpread(1000);
+      const y = THREE.MathUtils.randFloat(0, 500);
+      const z = THREE.MathUtils.randFloatSpread(1000);
+      vertices.push(x, y, z);
+      vertices.push(x, -y, z);
     }
-    var starsMaterial = new THREE.PointsMaterial({ color: 0xffffff });
+    const starsGeometry = new THREE.BufferGeometry();
+    starsGeometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(vertices, 3)
+    );
+    const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff });
     this.starField = new THREE.Points(starsGeometry, starsMaterial);
     this.scene.object3D.add(this.starField);
 

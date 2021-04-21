@@ -1,19 +1,35 @@
-export const createNote = (width, height, isInstanced=false, numInstances=1) => {
-  const surface = new THREE.Geometry();
-  const halfWidth = width/2;
-  const halfHeight = height/2;
-  surface.vertices.push(
-    new THREE.Vector3(-halfWidth, 0, halfHeight),
-    new THREE.Vector3(-halfWidth, 0, -halfHeight),
-    new THREE.Vector3(halfWidth, 0, -halfHeight),
-    new THREE.Vector3(halfWidth, 0, halfHeight)
-  );
-  surface.faces.push(
-    new THREE.Face3(0, 2, 1),
-    new THREE.Face3(0, 3, 2),
-  );
-  const geometry = new THREE.BufferGeometry().fromGeometry(surface);
+export const createNote = (
+  width,
+  height,
+  isInstanced = false,
+  numInstances = 1
+) => {
+  const geometry = new THREE.BufferGeometry();
+  const halfWidth = width / 2;
+  const halfHeight = height / 2;
 
+  const vertices = new Float32Array([
+    -halfWidth,
+    0,
+    halfHeight,
+    halfWidth,
+    0,
+    -halfHeight,
+    -halfWidth,
+    0,
+    -halfHeight,
+
+    -halfWidth,
+    0,
+    halfHeight,
+    halfWidth,
+    0,
+    halfHeight,
+    halfWidth,
+    0,
+    -halfHeight,
+  ]);
+  geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
   let mesh;
   let object3D;
   if (isInstanced) {
@@ -24,7 +40,7 @@ export const createNote = (width, height, isInstanced=false, numInstances=1) => 
         minY: { value: 0.9 },
         maxZ: { value: -0.326 },
         minZ: { value: -8.23 },
-        color: { value: new THREE.Vector4(1, 1, 1, 1) }
+        color: { value: new THREE.Vector4(1, 1, 1, 1) },
       },
       //wireframe: true,
       vertexShader: `
@@ -45,7 +61,7 @@ export const createNote = (width, height, isInstanced=false, numInstances=1) => 
       void main() {
         gl_FragColor = color;
       }
-      `
+      `,
     });
     mesh = new THREE.InstancedMesh(geometry, material, numInstances);
     for (let i = 0; i < numInstances; i++) {
@@ -61,7 +77,7 @@ export const createNote = (width, height, isInstanced=false, numInstances=1) => 
         minY: { value: 0.9 },
         maxZ: { value: -0.326 },
         minZ: { value: -8.23 },
-        color: { value: new THREE.Vector4(1, 1, 1, 1) }
+        color: { value: new THREE.Vector4(1, 1, 1, 1) },
       },
       //wireframe: true,
       vertexShader: `
@@ -81,9 +97,9 @@ export const createNote = (width, height, isInstanced=false, numInstances=1) => 
       void main() {
         gl_FragColor = color;
       }
-      `
+      `,
     });
-    mesh = new THREE.Mesh(geometry,material);
+    mesh = new THREE.Mesh(geometry, material);
     mesh.position.y = 0.0001;
     object3D = new THREE.Group();
     object3D.add(mesh);
@@ -91,6 +107,6 @@ export const createNote = (width, height, isInstanced=false, numInstances=1) => 
 
   return {
     object3D: object3D,
-    mesh: mesh
+    mesh: mesh,
   };
 };
