@@ -22,7 +22,7 @@
     "axios": "^0.21.1",
     "dexie": "^3.0.3",
     "howler": "^2.2.1",
-    "jsmediatags": "^3.9.7",
+    "jsmediatags": "3.9.3",
     "jszip": "^3.6.0",
     "micromodal": "^0.4.6",
     "osu-parser-web": "git+https://github.com/oliverfei/osu-parser-web.git",
