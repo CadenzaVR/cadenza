@@ -166,13 +166,24 @@ AFRAME.registerComponent("menu", {
     this.beatmapLoader = BeatmapLoader();
     this.customMapUrls = new Set([]);
 
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
+        this.onDocumentLoaded();
+      });
+    } else {
+      this.onDocumentLoaded();
+    }
+  },
+
+  onDocumentLoaded: function () {
     this.songSelect = document.getElementById("song-select");
 
     this.difficultySelect = document.getElementById("difficulty-select");
     this.difficultySelect.addEventListener("change", (event) => {
-      const currentSong = this.songs[
-        this.songSelect.components["windowed-selector"].currentIndex
-      ];
+      const currentSong =
+        this.songs[
+          this.songSelect.components["windowed-selector"].currentIndex
+        ];
       const currentDifficulty = event.detail.value;
       if (
         currentSong.beatmaps[currentDifficulty] &&
@@ -210,7 +221,7 @@ AFRAME.registerComponent("menu", {
     this.selectedSongMapper = document.getElementById("mapper-text");
 
     // Handle custom beatmap loading
-    document.getElementById("beatmap-input").onchange = () => {
+    document.getElementById("beatmap-input").addEventListener("change", () => {
       const file = document.getElementById("beatmap-input").files[0];
       const reader = new FileReader();
       reader.onload = () => {
@@ -219,17 +230,19 @@ AFRAME.registerComponent("menu", {
           .then((song) => this.addNewSong(song));
       };
       reader.readAsArrayBuffer(file);
-    };
+    });
 
-    document.getElementById("url-input-button").onclick = () => {
-      const url = document.getElementById("url-input").value;
-      this.beatmapLoader
-        .loadBeatmapFromUrl(url, this.dispatchProgressEvent)
-        .then((song) => {
-          this.el.dispatchEvent(new Event("downloadComplete"));
-          this.addSongFromUrl(song, url);
-        });
-    };
+    document
+      .getElementById("url-input-button")
+      .addEventListener("click", () => {
+        const url = document.getElementById("url-input").value;
+        this.beatmapLoader
+          .loadBeatmapFromUrl(url, this.dispatchProgressEvent)
+          .then((song) => {
+            this.el.dispatchEvent(new Event("downloadComplete"));
+            this.addSongFromUrl(song, url);
+          });
+      });
 
     this.songSelect.components["windowed-selector"].setSources(
       this.songs.map((song) => song.beatmapInfo.imageSrc)
@@ -298,9 +311,8 @@ AFRAME.registerComponent("menu", {
   },
 
   selectCurrentSong: function () {
-    const currentSong = this.songs[
-      this.songSelect.components["windowed-selector"].currentIndex
-    ];
+    const currentSong =
+      this.songs[this.songSelect.components["windowed-selector"].currentIndex];
 
     this.saveButton.object3D.visible =
       !currentSong.isDefault && !currentSong.isSaved;
@@ -331,9 +343,8 @@ AFRAME.registerComponent("menu", {
   },
 
   updateDifficulty: function () {
-    const currentSong = this.songs[
-      this.songSelect.components["windowed-selector"].currentIndex
-    ];
+    const currentSong =
+      this.songs[this.songSelect.components["windowed-selector"].currentIndex];
 
     this.difficultySelect.setAttribute(
       "spinner",
