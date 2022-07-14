@@ -2,10 +2,10 @@ export const createProgressRing = (maxRadius) => {
   const geometry = new THREE.PlaneBufferGeometry(maxRadius * 2, maxRadius * 2);
   const material = new THREE.ShaderMaterial({
     uniforms: {
-      outerRadius: {value: maxRadius},
-      innerRadius: {value: maxRadius - 0.02},
+      outerRadius: { value: maxRadius },
+      innerRadius: { value: maxRadius - 0.02 },
       percent: { value: 0 },
-      color: { value: new THREE.Vector2() }
+      color: { value: new THREE.Vector2() },
     },
     vertexShader: `
       varying vec2 vPosition;
@@ -30,13 +30,13 @@ export const createProgressRing = (maxRadius) => {
         gl_FragColor = vec4(vec3(pct), 1.0);
       }
       `,
-    transparent: true
+    transparent: true,
   });
   const ringMesh = new THREE.Mesh(geometry, material);
   const wrapper = new THREE.Group().add(ringMesh);
-  ringMesh.rotation.z = -Math.PI/2;
+  ringMesh.rotation.z = -Math.PI / 2;
   return {
     object3D: wrapper,
-    material: material
+    material: material,
   };
 };

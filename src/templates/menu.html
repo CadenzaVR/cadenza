@@ -1,0 +1,135 @@
+<a-entity id="menu" menu position="0 1.5 -0.5">
+  <a-entity
+    id="center-panel"
+    position="0 0 -0.01"
+    geometry="primitive: roundedRect; width:1.3; height: 0.8"
+    material="shader: flat; color: #888888"
+  >
+    <a-text id="title-text" width="1.3" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center" value="Title" position="0 0.32 0.01"></a-text>
+    <a-text id="artist-text" width="1.15" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center" value="Artist" position="0 0.25 0.01"></a-text>
+    <a-text id="mapper-text" width="0.7" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center" value="Mapped by:" position="0 0.19 0.01"></a-text>
+    <a-entity
+      id="song-select"
+      position="0 0 0.01"
+      windowed-selector="maxVisibleItems: 5; imageWidth: 0.18; imageHeight:0.18; spacing: 0.05">
+      <a-entity 
+        id="shift-left-button" 
+        position="-0.6 0 0" 
+        rotation="0 0 180" 
+        geometry="primitive: triangle; vertexB: -0.025 0.05 0; vertexA: 0.025 0 0; vertexC: -0.025 -0.05 0" 
+        material="shader: flat; color: #aaa" 
+        button 
+        clickable="activationTime: 1; showProgressRing: false; repeatOnHold: true"
+        collider="group: menu; static: true"
+        shape="type: rect">
+      </a-entity>
+      <a-entity 
+        id="shift-right-button"
+        position="0.6 0 0"
+        geometry="primitive: triangle; vertexB: -0.025 0.05 0; vertexA: 0.025 0 0; vertexC: -0.025 -0.05 0"
+        material="shader: flat; color: #aaa"
+        button
+        clickable="activationTime: 1; showProgressRing: false; repeatOnHold: true"
+        collider="group: menu; static: true"
+        shape="type: rect">
+      </a-entity>
+    </a-entity>
+    <a-entity
+      id="difficulty-select"
+      position="0 -0.15 0.01"
+      spinner="width: 0.2; wrapCount: 15; min: 0; max: 2; showOutline: false; displayedValues: Easy|Medium|Hard">
+    </a-entity>
+    <a-entity
+      id="play-button"
+      material="shader: flat; color: #aaa"
+      geometry="primitive: roundedRect; width: 0.15; height: 0.06"
+      position="0 -0.24 0.01"
+      button
+      clickable
+      collider="group: menu; static: true"
+      shape="type: rect">
+      <a-text position="0 0.015 0" width="0.12" wrap-count="4" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center" value="Play"></a-text>
+    </a-entity>
+    <a-entity
+      id="save-button"
+      material="shader: flat; color: #aaa"
+      geometry="primitive: roundedRect; width: 0.15; height: 0.06"
+      position="0 -0.32 0.01"
+      button
+      clickable
+      collider="group: menu; static: true"
+      shape="type: rect">
+      <a-text position="0 0.015 0" width="0.12" wrap-count="4" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center" value="Save"></a-text>
+    </a-entity>
+  </a-entity>
+  <a-entity
+    id="right-panel"
+    position="0.8 0 0.21"
+    rotation="0 -57.2957795 0"
+    geometry="primitive: roundedRect; width:0.5; height:0.8"
+    material="shader: flat; color: #888888"
+  >
+    <a-text
+      width="1"
+      font="/fonts/SpaceMono-Regular-msdf.json"
+      negate="false"
+      align="left"
+      value="Settings"
+      position="-0.21 0.35 0.01">
+    </a-text>
+    <a-text
+      id="hitSoundSettingLabel"
+      width="0.8"
+      font="/fonts/SpaceMono-Regular-msdf.json"
+      negate="false" 
+      align="left"
+      value="Hit Sounds"
+      position="-0.19 0.21 0.01">
+    </a-text>
+    <a-entity
+      id="hitSoundSetting"
+      position="0.17, 0.19, 0.01"
+      rotation="0 0 0"
+      geometry="primitive: plane; width:0.05; height: 0.05;"
+      material="visible:false"
+      checkbox="value:true"
+      setting="name: hitSoundsEnabled; component: checkbox"
+      clickable="activationTime: 1; showProgressRing: false"
+      collider="group: menu; static: true"
+      shape="type: rect"
+    >
+    </a-entity>
+    <a-text
+      id="timingOffsetSettingLabel"
+      width="0.8"
+      font="/fonts/SpaceMono-Regular-msdf.json"
+      negate="false" 
+      align="left"
+      value="Timing offset\n(ms)"
+      position="-0.19 0.1 0.01">
+    </a-text>
+    <a-entity
+      id="timingOffsetSetting"
+      position="0.17, 0.09, 0.01"
+      rotation="0 0 0"
+      spinner="width: 0.06; wrapCount: 4; increment: 10; min: 0;"
+      setting="name: timingOffset; component: spinner"
+    ></a-entity>
+    <a-text
+      id="keyboardHeightSettingLabel"
+      width="0.8"
+      font="/fonts/SpaceMono-Regular-msdf.json"
+      negate="false" 
+      align="left"
+      value="Keyboard height\noffset"
+      position="-0.19 0 0.01">
+    </a-text>
+    <a-entity
+      id="keyboardHeightSetting"
+      position="0.17, -0.01, 0.01"
+      rotation="0 0 0"
+      spinner="width: 0.06; wrapCount: 4; increment: 0.1"
+      setting="name: keyboardHeightOffset; component: spinner"
+    ></a-entity>
+  </a-entity>
+</a-entity>

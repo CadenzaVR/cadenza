@@ -56,7 +56,11 @@ AFRAME.registerComponent("windowed-selector", {
     const indexOffset = Math.floor(this.maxVisibleItems / 2);
     for (let i = 0; i < this.maxVisibleItems; i++) {
       const sourceIndex = this.currentIndex + i - indexOffset;
-      if (this.activeItems[i] && sourceIndex >= 0 && sourceIndex < this.sources.length) {
+      if (
+        this.activeItems[i] &&
+        sourceIndex >= 0 &&
+        sourceIndex < this.sources.length
+      ) {
         this.activeItems[i].setAttribute("src", this.sources[sourceIndex]);
       }
     }

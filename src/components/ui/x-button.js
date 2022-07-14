@@ -1,9 +1,12 @@
-import {createXShape} from "../../objects/x-shape"
+import { createXShape } from "../../objects/x-shape";
 
 AFRAME.registerComponent("x-button", {
-  init: function() {
+  init: function () {
     const xShape = createXShape(0.015);
-    const mesh = new THREE.Mesh(new THREE.ShapeBufferGeometry(xShape), new THREE.MeshBasicMaterial());
+    const mesh = new THREE.Mesh(
+      new THREE.ShapeBufferGeometry(xShape),
+      new THREE.MeshBasicMaterial()
+    );
     this.el.object3D.add(mesh);
     this.el.addEventListener("click", () => {
       mesh.geometry.dispose();
@@ -12,5 +15,5 @@ AFRAME.registerComponent("x-button", {
       const parent = this.el.parentElement;
       parent.parentElement.removeChild(parent);
     });
-  }
+  },
 });

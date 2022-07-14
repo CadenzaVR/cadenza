@@ -1,9 +1,7 @@
 import { BeatmapLoader } from "../utils/BeatmapLoader";
-
-const MenuState = Object.freeze({
-  SONG_SELECT: 0,
-  DIFFICULTY_SELECT: 1,
-});
+import BeatmapInfo from "../models/BeatmapInfo";
+import Beatmap from "../models/Beatmap";
+import BeatmapSet from "../models/BeatmapSet";
 
 const SongDifficulty = Object.freeze({
   EASY: 0,
@@ -160,8 +158,9 @@ const songs = [
 
 AFRAME.registerComponent("menu", {
   init: function () {
+    this.db = this.el.sceneEl.systems["db"].db;
     this.songs = songs;
-    this.currentState = MenuState.SONG_SELECT;
+    this.audio = new Audio();
 
     this.beatmapLoader = BeatmapLoader();
     this.customMapUrls = new Set([]);
@@ -175,7 +174,7 @@ AFRAME.registerComponent("menu", {
     }
   },
 
-  onDocumentLoaded: function () {
+  onDocumentLoaded: async function () {
     this.songSelect = document.getElementById("song-select");
 
     this.difficultySelect = document.getElementById("difficulty-select");
@@ -203,6 +202,19 @@ AFRAME.registerComponent("menu", {
     });
 
     this.saveButton = document.getElementById("save-button");
+    this.saveButton.addEventListener("click", () => {
+      const selectedBeatmapSet = this.getSelectedBeatmapSet();
+      if (!selectedBeatmapSet.isDefaultMap) {
+        if (!selectedBeatmapSet.isSaved) {
+          this.saveButton.object3D.visible = false;
+          this.db.saveBeatmapSet(selectedBeatmapSet).then(() => {
+            selectedBeatmapSet.isSaved = true;
+          });
+        } else {
+          //todo
+        }
+      }
+    });
 
     // Song shift buttons
     const shiftLeftButton = document.getElementById("shift-left-button");
@@ -247,6 +259,48 @@ AFRAME.registerComponent("menu", {
     this.songSelect.components["windowed-selector"].setSources(
       this.songs.map((song) => song.beatmapInfo.imageSrc)
     );
+
+    await this.db.getBeatmapInfos().then((beatmapInfos) => {
+      for (let item of beatmapInfos) {
+        const image = new Image();
+        image.id = "image-saved-" + item.id;
+        image.src = URL.createObjectURL(item.image);
+        document.querySelector("a-assets").appendChild(image);
+
+        const beatmapInfo = new BeatmapInfo({
+          name: item.name,
+          artist: item.artist,
+          creator: item.creator,
+          imageSrc: "#" + image.id,
+          audioSrc: item.songId,
+          mode: item.mode,
+          language: item.language,
+          genre: item.genre,
+          tags: item.tags,
+        });
+
+        const beatmaps = [];
+
+        for (let i = 0; i < item.difficulties.length; i++) {
+          beatmaps.push(
+            new Beatmap({
+              beatmapInfo: {},
+              difficulty: item.difficulties[i],
+              difficultyName: item.difficultyNames[i],
+              mapSrc: item.beatmapIds[i],
+            })
+          );
+        }
+
+        this.addNewSong(
+          new BeatmapSet({
+            beatmapInfo: beatmapInfo,
+            beatmaps: beatmaps,
+          }),
+          true
+        );
+      }
+    });
 
     const mapUrls = new URLSearchParams(window.location.search).getAll(
       "beatmap"
@@ -310,7 +364,7 @@ AFRAME.registerComponent("menu", {
     this.selectCurrentSong();
   },
 
-  selectCurrentSong: function () {
+  selectCurrentSong: async function () {
     const currentSong =
       this.songs[this.songSelect.components["windowed-selector"].currentIndex];
 
@@ -328,7 +382,28 @@ AFRAME.registerComponent("menu", {
     );
     this.updateDifficulty();
     if (this.el.object3D.visible) {
-      this.el.dispatchEvent(new Event("songSelected"));
+      let audioSrc = currentSong.beatmapInfo.audioSrc;
+      if (!isNaN(audioSrc)) {
+        if (this.currentAudioObjectUrl) {
+          URL.revokeObjectURL(this.currentAudioObjectUrl);
+        }
+        const song = await this.db.getSong(audioSrc);
+        this.currentAudioObjectUrl = URL.createObjectURL(song.data);
+        audioSrc = this.currentAudioObjectUrl;
+      }
+      this.currentAudioSrc = audioSrc;
+      this.audio.src = audioSrc;
+      this.audio.currentTime = 3;
+      if (this.playTimeout) {
+        clearTimeout(this.playTimeout);
+      }
+      this.playTimeout = setTimeout(() => {
+        try {
+          this.audio.play();
+        } catch (e) {
+          console.error(e);
+        }
+      }, 200);
     }
   },
 

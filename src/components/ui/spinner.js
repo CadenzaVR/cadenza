@@ -44,7 +44,7 @@ AFRAME.registerComponent("spinner", {
     });
 
     this.text = createTextElement(this.data.width, "center", "roboto", true);
-    this.text.setAttribute("text","wrapCount", this.data.wrapCount);
+    this.text.setAttribute("text", "wrapCount", this.data.wrapCount);
     this.el.appendChild(this.text);
 
     const buttonPadding = 0.015;
@@ -85,11 +85,14 @@ AFRAME.registerComponent("spinner", {
     this.displayedValues = this.data.displayedValues
       .split("|")
       .map((str) => str.trim())
-      .filter(str => str != "");
+      .filter((str) => str != "");
 
     this.applyBounds();
     this.data.value = parseFloat(this.data.value.toFixed(2));
-    if (this.displayedValues.length > 0 && this.data.value < this.displayedValues.length) {
+    if (
+      this.displayedValues.length > 0 &&
+      this.data.value < this.displayedValues.length
+    ) {
       this.text.setAttribute("value", this.displayedValues[this.data.value]);
     } else {
       this.text.setAttribute("value", this.data.value);

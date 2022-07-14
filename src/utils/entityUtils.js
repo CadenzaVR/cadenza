@@ -57,6 +57,13 @@ function createTriangleButton(width, height) {
     showProgressRing: false,
     repeatOnHold: true,
   });
+  buttonElem.setAttribute("collider", {
+    group: "menu",
+    static: true,
+  });
+  buttonElem.setAttribute("shape", {
+    type: "rect",
+  });
   return buttonElem;
 }
 

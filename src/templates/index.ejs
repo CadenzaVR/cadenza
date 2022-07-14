@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="A WebVR rhythm game that involves striking keys to the beat of the music."
+    />
+    <script src="/scripts/aframe-v1.3.0.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css?family=Space+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link href="/styles/aframe_override.css" rel="stylesheet" />
+    <link href="/styles/micromodal.css" rel="stylesheet" />
+    <link href="/styles/main.css" rel="stylesheet" />
+    <title>Cadenza!!</title>
+  </head>
+  <body>
+    <a-scene
+      keyboard-shortcuts="enterVR: false"
+    >
+      <%= require('html-loader!./assets.html').default %>
+      <a-entity id="skysphere" starfield material="shader: flat; color: #000; side: back;" geometry="primitive: sphere; radius: 500;"></a-entity>
+      <a-entity light="type: ambient; color: #666"></a-entity>
+      <a-entity id="game" game></a-entity>
+
+      <%= require('html-loader!./player-rig.html').default %>
+      <%= require('html-loader!./input-devices.html').default %>
+      <%= require('html-loader!./menu.html').default %>
+    </a-scene>
+    <%= require('html-loader!./modals.html').default %>
+  </body>
+</html>

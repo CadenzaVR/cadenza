@@ -1,0 +1,145 @@
+<div class="modal micromodal-slide" id="load-file-modal" aria-hidden="true">
+  <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+    <div
+      class="modal__container"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-2-title"
+    >
+      <header class="modal__header">
+        <h2 class="modal__title" id="modal-2-title">
+          Load Beatmap
+        </h2>
+        <button
+          class="modal__close"
+          aria-label="Close modal"
+          data-micromodal-close
+        ></button>
+      </header>
+      <main class="modal__content" id="modal-2-content">
+        <p>
+          Supports .osz osu! taiko or mania beatmaps in addition to regular Cadenza beatmaps that can be created via the editor.
+          <br>
+          A beatmap listing has been made available here: <a href="https://cadenzavr.com/beatmaps">https://cadenzavr.com/beatmaps</a>
+          <br>
+          More osu! beatmaps can be downloaded from the official website (account required): <a href="https://osu.ppy.sh/beatmapsets">https://osu.ppy.sh/beatmapsets</a>
+        </p>
+        <div>
+          <label for="beatmap-input">Load beatmap from local file:</label>
+          <input
+            type="file"
+            accept="application/zip, .osz"
+            id="beatmap-input"
+            name="beatmap-input"
+          />
+        </div>
+        <div>
+          <label for="url-input">Load beatmap from external url:</label>
+          <input type="text" id="url-input" name="url-input" />
+          <button id="url-input-button">Load</button>
+        </div>
+      </main>
+      <footer class="modal__footer"></footer>
+    </div>
+  </div>
+</div>
+<div class="modal micromodal-slide" id="help-modal" aria-hidden="true">
+  <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+    <div
+      class="modal__container"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-1-title"
+    >
+      <header class="modal__header">
+        <h2 class="modal__title" id="modal-1-title">
+          How To Play
+        </h2>
+        <button
+          class="modal__close"
+          aria-label="Close modal"
+          data-micromodal-close
+        ></button>
+      </header>
+      <main class="modal__content" id="modal-1-content">
+        <h3>Introduction</h3>
+        <p>
+          Use the mallets to strike the keyboard keys to the beat of the music.
+          The bottom half of the keyboard is bouncy; the top half is not.
+        </p>
+
+        <h3>Hit Notes</h3>
+        <div class="modal-content-section">
+          <video autoplay loop><source type="video/webm" src="images/hit_note.webm"></video>
+          <div>
+            Wait for the note to overlap with the white line and then strike any key covered by the
+            note to gain points. The more accurately you hit the notes, the more points you gain.
+          </div>
+        </div>
+
+        <h3>Slide Notes</h3>
+        <div class="modal-content-section">
+          <video autoplay loop><source type="video/webm" src="images/slide_note.webm"></video>
+          <div>
+            Slide notes do not need to be hit accurately. 
+            As long as the key is active when the slide note is near the white line, you will receive full points.
+          </div>
+        </div>
+
+        <h3>Hold Notes</h3>
+        <div class="modal-content-section">
+          <video autoplay loop><source type="video/webm" src="images/hold_note.webm"></video>
+          <div>
+            Hit the top half of the key when the front edge overlaps with the white line.
+            Hold the key down and release it when the back edge overlaps with the white line.
+          </div>
+        </div>
+
+        <h3>Drumroll Notes</h3>
+        <div class="modal-content-section">
+          <video autoplay loop><source type="video/webm" src="images/drumroll_note.webm"></video>
+          <div>
+            Hit the keys as fast as possible.
+          </div>
+        </div>
+
+        <h3>Controls</h3>
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Oculus Rift</th>
+              <th>HTC Vive</th>
+              <th>Windows Mixed Reality</th>
+              <th>Keyboard</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Adjust Mallet</td>
+              <td>L/R Trigger</td>
+              <td>L/R Trigger</td>
+              <td>L/R Trigger</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>Pause</td>
+              <td>A/X</td>
+              <td>L/R Trackpad Button</td>
+              <td>L/R Trackpad Button</td>
+              <td>P</td>
+            </tr>
+            <tr>
+              <td>Keys</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>ASDFGHJK</td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
+      <footer class="modal__footer"></footer>
+    </div>
+  </div>
+</div>

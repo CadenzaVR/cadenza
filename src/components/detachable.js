@@ -12,7 +12,7 @@ AFRAME.registerComponent("detachable", {
     }
 
     this.scene = this.el.sceneEl.object3D;
-    this.gameController = this.el.sceneEl.systems["game-controller"];
+    this.locked = false;
     let hand = this.parentObject.el.parentElement;
 
     hand.addEventListener("triggerdown", () => {
@@ -25,15 +25,13 @@ AFRAME.registerComponent("detachable", {
   },
 
   detachFromParent: function () {
-    if (this.gameController.getState() != 0) {
+    if (!this.locked) {
       this.detach(this.el.object3D, this.parentObject, this.scene);
     }
   },
 
   attachToParent: function () {
-    if (this.gameController.getState() != 0) {
-      this.attach(this.el.object3D, this.parentObject, this.scene);
-    }
+    this.attach(this.el.object3D, this.parentObject, this.scene);
   },
 
   detach: function (child, parent, scene) {

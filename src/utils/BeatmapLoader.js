@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import Beatmap from "../models/Beatmap";
 import BeatmapInfo from "../models/BeatmapInfo";
 import BeatmapSet from "../models/BeatmapSet";
@@ -6,6 +7,35 @@ const axios = require("axios").default;
 const jsmediatags = require("jsmediatags");
 const JSZip = require("jszip");
 const OsuParser = require("osu-parser-web");
+
+function convertBeatmapSetV1(beatmapSet) {
+  const newBeatmapSet = {
+    info: {},
+    beatmaps: [],
+  };
+  newBeatmapSet.info.song = beatmapSet.name;
+  newBeatmapSet.info.artist = beatmapSet.artist;
+  newBeatmapSet.info.creator = beatmapSet.creator;
+  newBeatmapSet.info.imageSrc = beatmapSet.imageSrc;
+  newBeatmapSet.info.audioSrc = beatmapSet.audioSrc;
+  newBeatmapSet.info.type = beatmapSet.mode;
+  newBeatmapSet.info.language = beatmapSet.language;
+  newBeatmapSet.info.genre = beatmapSet.genre;
+  newBeatmapSet.info.tags = beatmapSet.tags;
+  for (const beatmap of beatmapSet.beatmaps) {
+    newBeatmapSet.beatmaps.push({
+      id: beatmap.mapSrc,
+      info: {
+        name: beatmap.beatmapInfo.name,
+        creator: beatmap.beatmapInfo.creator,
+        type: beatmap.beatmapInfo.mode,
+      },
+      notes: [],
+      set: newBeatmapSet,
+    });
+  }
+  return newBeatmapSet;
+}
 
 function convertOsuBeatmap(osuBeatmap) {
   const beatmap = {
