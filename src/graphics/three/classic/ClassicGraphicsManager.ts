@@ -12,23 +12,16 @@ import {
   ShaderMaterial,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import AudioDataSource from "../audio/AudioDataSource";
-import Beatmap from "../beatmap/models/Beatmap";
-import CadenzaBeatmap from "../beatmap/models/CadenzaBeatmap";
-import ClassicNote from "../beatmap/models/ClassicNote";
-import Note from "../beatmap/models/Note";
-import GameState, { GameStatus } from "../game/GameState";
-import SettingsManager from "../settings/SettingsManager";
-import ClassicNoteManager from "./ClassicNoteManager";
-import GraphicsManager from "./GraphicsManager";
+import AudioDataSource from "../../../audio/AudioDataSource";
+import Beatmap from "../../../beatmap/models/Beatmap";
+import CadenzaBeatmap from "../../../beatmap/models/CadenzaBeatmap";
+import Note from "../../../beatmap/models/Note";
+import GameState, { GameStatus } from "../../../game/GameState";
+import SettingsManager from "../../../settings/SettingsManager";
+import ClassicNotesManager from "./ClassicNotesManager";
+import BaseGraphicsManager from "../../BaseGraphicsManager";
 
-const NOTE_OFFSET = 3000; //milliseconds
-const MOVE_AMOUNT = 8 / NOTE_OFFSET; //units per millisecond
-
-export default class ClassicGraphicsManager implements GraphicsManager {
-  noteManager: ClassicNoteManager;
-  currentNote: number;
-  previousTime: number;
+export default class ClassicGraphicsManager extends BaseGraphicsManager {
   noteIDs: Map<Note, number>;
   scene: Scene;
   skysphere: Entity;
@@ -41,13 +34,10 @@ export default class ClassicGraphicsManager implements GraphicsManager {
   loadedModels: Group[];
 
   constructor(
-    noteManager: ClassicNoteManager,
+    noteManager: ClassicNotesManager,
     audioDataSource: AudioDataSource
   ) {
-    this.noteManager = noteManager;
-    this.currentNote = 0;
-    this.previousTime = 0;
-    this.noteIDs = new Map();
+    super(noteManager, 3000);
     this.audioDataSource = audioDataSource;
     this.animationMixers = [];
     this.audioMaterials = [];
@@ -58,25 +48,14 @@ export default class ClassicGraphicsManager implements GraphicsManager {
     this.scene = scene;
     this.skysphere = skysphere;
     this.gltfLoader = new GLTFLoader();
-    this.noteManager.init(scene, 0);
+    (this.notesManager as ClassicNotesManager).init(scene, 0);
     settingsManager.addObserver("keyboardHeightOffset", (value) => {
-      this.noteManager.updateKeyboardHeight(value);
+      (this.notesManager as ClassicNotesManager).updateKeyboardHeight(value);
     });
   }
 
-  onGameStart() {
-    this.currentNote = 0;
-    this.previousTime = 0;
-  }
-
-  onGameRestart() {
-    this.currentNote = 0;
-    this.previousTime = 0;
-    this.noteManager.reset();
-  }
-
   onReturnToMenu() {
-    this.noteManager.reset();
+    super.onReturnToMenu();
     for (const mixer of this.animationMixers) {
       mixer.stopAllAction();
     }
@@ -95,7 +74,7 @@ export default class ClassicGraphicsManager implements GraphicsManager {
   }
 
   async loadBeatmap(beatmap: Beatmap) {
-    this.noteManager.load(beatmap);
+    super.loadBeatmap(beatmap);
     if ((<CadenzaBeatmap>beatmap).skysphere) {
       await this.loadSkysphere((<CadenzaBeatmap>beatmap).skysphere);
     }
@@ -196,38 +175,9 @@ export default class ClassicGraphicsManager implements GraphicsManager {
   }
 
   update(gamestate: GameState, deltaTime: number): void {
+    super.update(gamestate, deltaTime);
     if (gamestate.status === GameStatus.PLAYING) {
-      //const deltaTime = gamestate.currentSongTime - this.previousTime;
       const deltaSeconds = deltaTime / 1000;
-      for (const hitEvent of gamestate.events) {
-        const note = <ClassicNote>hitEvent.note;
-        if (!note.isActive) {
-          this.noteManager.deactivateNote(
-            note.type,
-            this.noteIDs.get(note),
-            note.width
-          );
-        }
-      }
-
-      //shift the valid notes
-      this.noteManager.moveActiveNotesForwards(deltaTime * MOVE_AMOUNT);
-
-      // add new notes
-      const offsetTime = gamestate.currentSongTime + NOTE_OFFSET;
-      const notes = <Array<ClassicNote>>gamestate.beatmap.notes;
-      let note = notes[this.currentNote];
-      while (note != null && note.startTime < offsetTime) {
-        const noteID = this.noteManager.spawnNewNote(
-          note.type,
-          note.width,
-          note.key,
-          note,
-          MOVE_AMOUNT * (offsetTime - note.startTime)
-        );
-        this.noteIDs.set(note, noteID);
-        note = notes[++this.currentNote];
-      }
 
       // Update animation mixers
       for (const animationMixer of this.animationMixers) {
@@ -240,6 +190,5 @@ export default class ClassicGraphicsManager implements GraphicsManager {
           audioMaterial.uniforms.time.value + deltaSeconds;
       }
     }
-    this.previousTime = gamestate.currentSongTime;
   }
 }

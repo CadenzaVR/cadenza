@@ -2,8 +2,8 @@ import Beatmap from "../beatmap/models/Beatmap";
 import ClassicGameState from "../game/ClassicGameState";
 import GameController from "../game/GameController";
 import { GameStatus } from "../game/GameState";
-import ClassicGraphicsManager from "../graphics/ClassicGraphicsManager";
-import ClassicNoteManager from "../graphics/ClassicNoteManager";
+import ClassicGraphicsManager from "../graphics/three/classic/ClassicGraphicsManager";
+import ClassicNotesManager from "../graphics/three/classic/ClassicNotesManager";
 import LocalStorageScoreRepository from "../scoring/repositories/LocalStorageScoreRepository";
 import ScoreManager from "../scoring/ScoreManager";
 import Timer from "../timing/Timer";
@@ -14,7 +14,7 @@ AFRAME.registerComponent("game", {
     const audioManager = this.el.sceneEl.systems["audio"].audioManager;
     audioManager.init(settingsManager);
     const graphicsManager = new ClassicGraphicsManager(
-      new ClassicNoteManager(),
+      new ClassicNotesManager(),
       audioManager
     );
     graphicsManager.init(

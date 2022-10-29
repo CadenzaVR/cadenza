@@ -115,7 +115,11 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
 
   update(gamestate: GameState): void {
     for (const hitEvent of gamestate.events) {
-      if (hitEvent.note.sound && !hitEvent.note.isActive) {
+      if (
+        hitEvent.note.sound &&
+        !hitEvent.note.isActive &&
+        hitEvent.judgement
+      ) {
         this.playHitSound(hitEvent.note.sound);
       }
     }

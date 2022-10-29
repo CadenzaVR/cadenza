@@ -235,6 +235,7 @@ AFRAME.registerSystem("scene-controller", {
             startTime: note[2],
             width: note[3],
             endTime: note[4] ? note[4] : null,
+            duration: note[4] ? note[4] - note[2] : 0,
             sound: note[0] === 2 ? 0 : null,
           });
         }
