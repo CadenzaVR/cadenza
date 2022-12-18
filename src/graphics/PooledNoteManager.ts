@@ -52,5 +52,6 @@ export default abstract class PooledNoteManager<T> implements NoteManager {
       this.releaseInstanceToPool(instance);
     }
     this.activeNotes.clear();
+    this.noteInstanceMap.clear();
   }
 }

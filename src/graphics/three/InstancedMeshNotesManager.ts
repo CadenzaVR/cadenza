@@ -1,5 +1,5 @@
 import { Vector3 } from "three";
-import InstancedMeshObjectPool from "./InstancedObjectPool";
+import InstancedMeshObjectPool from "./InstancedMeshObjectPool";
 import NoteManager from "../NoteManager";
 import PooledNoteManager from "../PooledNoteManager";
 import Note from "../../beatmap/models/Note";
@@ -23,6 +23,11 @@ export default abstract class InstancedMeshNoteManager
 
   releaseInstanceToPool(instance: number): void {
     this.pool.releaseInstance(instance);
+  }
+
+  reset(): void {
+    super.reset();
+    this.pool.requireUpdate();
   }
 
   spawnInstance(note: Note, instance: number, spawnOffsetTime: number): void {

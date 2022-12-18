@@ -125,6 +125,11 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
     }
   }
 
+  async registerSoundFromUrl(url: string): Promise<number> {
+    const audioData = await fetch(url).then((res) => res.arrayBuffer());
+    return this.registerSound(audioData);
+  }
+
   async registerSound(audioData: ArrayBuffer): Promise<number> {
     await this.audioContext.decodeAudioData(audioData, (buffer) => {
       this.audioBuffers.push(buffer);

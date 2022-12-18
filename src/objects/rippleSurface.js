@@ -1,43 +1,45 @@
-export const createRippleSurface = () => {
-  const vertices = new Float32Array([
-    -0.6, 0, -0.2,
+export const createRippleSurface = (geometry = null, plane = "xz") => {
+  if (!geometry) {
+    const vertices = new Float32Array([
+      -0.6, 0, -0.2,
 
-    0.6, 0, 0.2,
+      0.6, 0, 0.2,
 
-    0.6, 0, -0.2,
+      0.6, 0, -0.2,
 
-    -0.6, 0, -0.2,
+      -0.6, 0, -0.2,
 
-    -0.6, 0, 0.2,
+      -0.6, 0, 0.2,
 
-    0.6, 0, 0.2,
+      0.6, 0, 0.2,
 
-    -0.6, 0, -0.2,
+      -0.6, 0, -0.2,
 
-    0.6, 0, -0.2,
+      0.6, 0, -0.2,
 
-    0.6, 0.25, -1.41782,
+      0.6, 0.25, -1.41782,
 
-    -0.6, 0, -0.2,
+      -0.6, 0, -0.2,
 
-    0.6, 0.25, -1.41782,
+      0.6, 0.25, -1.41782,
 
-    -0.6, 0.25, -1.41782,
-  ]);
+      -0.6, 0.25, -1.41782,
+    ]);
 
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+    geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+  }
   const material = new THREE.ShaderMaterial({
     uniforms: {
       time: { value: 0.5 },
       hitPosition: { value: new THREE.Vector2() },
       speed: { value: 1.0 },
+      color: { value: new THREE.Vector3(1, 1, 1) },
     },
-    //wireframe: true,
     vertexShader: `
       varying vec2 vPosition;
       void main() {
-        vPosition = position.xz;
+        vPosition = position.${plane};
         gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
       }
       `,
@@ -46,6 +48,7 @@ export const createRippleSurface = () => {
       uniform float time;
       uniform vec2 hitPosition;
       uniform float speed;
+      uniform vec3 color;
       void main() {
         float radius = speed * distance(vPosition, hitPosition);
         float pct = step(time, radius) - step(time + 0.02, radius);
@@ -53,8 +56,7 @@ export const createRippleSurface = () => {
         if (alpha <= 0.0) {
           discard;
         }
-        vec3 color = vec3(pct);
-        gl_FragColor = vec4( color, alpha);
+        gl_FragColor = vec4( pct * color, alpha);
       }
       `,
     transparent: true,

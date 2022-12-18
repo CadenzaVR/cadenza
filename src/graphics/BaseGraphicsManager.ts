@@ -42,6 +42,7 @@ export default class BaseGraphicsManager implements GraphicsManager {
     this.notesManager.reset();
   }
   onReturnToMenu(): void {
+    this.currentNote = 0;
     this.notesManager.reset();
   }
 }

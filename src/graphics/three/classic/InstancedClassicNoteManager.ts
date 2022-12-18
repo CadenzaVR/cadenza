@@ -1,19 +1,10 @@
-import {
-  Object3D,
-  Event,
-  ShaderMaterial,
-  Vector3,
-  Vector4,
-  Matrix4,
-  MathUtils,
-} from "three";
+import { ShaderMaterial, Vector3, Vector4, Matrix4, MathUtils } from "three";
 import ClassicNote from "../../../beatmap/models/ClassicNote";
 import Note from "../../../beatmap/models/Note";
 import { createClampedVisibiltyMaterial } from "../../../objects/note";
 import { flatRectGeometry } from "../../../utils/geometryUtils";
-import InstancedMeshObjectPool from "../InstancedObjectPool";
+import InstancedMeshObjectPool from "../InstancedMeshObjectPool";
 import InstancedSimpleNoteManager from "../InstancedSimpleNoteManager";
-import ClassicParams from "./ClassicParams";
 
 const enum NoteTypes {
   HIT_NOTE = 0,
@@ -24,7 +15,7 @@ const enum NoteTypes {
 
 const COLOR_CYAN = new Vector4(0, 1, 1, 1);
 const COLOR_YELLOW = new Vector4(1, 1, 0, 1);
-const BASE_POSITION = new Vector3(0, 0.0001, 0);
+const BASE_POSITION = new Vector3(0, 0.0001, 10);
 
 const BASE_NOTE_WIDTH = 0.12;
 const BASE_NOTE_HEIGHT = 0.05;
@@ -34,7 +25,7 @@ const RAIL_ANGLE = MathUtils.degToRad(10);
 
 const dummyMatrix = new Matrix4();
 const dummyVector = new Vector3();
-export default class InstancedClassicNoteManager extends InstancedSimpleNoteManager<ClassicParams> {
+export default class InstancedClassicNoteManager extends InstancedSimpleNoteManager {
   baseNoteWidth: number;
   baseNoteHeight: number;
   railWidth: number;
@@ -50,7 +41,7 @@ export default class InstancedClassicNoteManager extends InstancedSimpleNoteMana
     super(
       new InstancedMeshObjectPool(
         flatRectGeometry(BASE_NOTE_WIDTH, BASE_NOTE_HEIGHT),
-        createClampedVisibiltyMaterial(),
+        createClampedVisibiltyMaterial({ isInstanced: true }),
         numInstances,
         BASE_POSITION
       ),
@@ -88,18 +79,9 @@ export default class InstancedClassicNoteManager extends InstancedSimpleNoteMana
       );
     }
   }
-  init(parent: Object3D<Event>, params: ClassicParams): void {
-    super.init(parent, params);
-    this.updateKeyboardHeight(params.keyboardHeight);
-  }
 
-  updateKeyboardHeight(keyboardHeight: number) {
-    const offset = keyboardHeight / 100;
-    (<ShaderMaterial>this.pool.mesh.material).uniforms.maxY.value =
-      2.29 + offset;
-    (<ShaderMaterial>this.pool.mesh.material).uniforms.minY.value =
-      0.9 + offset;
-
+  updateHeight(height: number) {
+    const offset = height / 100;
     for (let i = 0; i < this.spawnPoints.length; i++) {
       this.spawnPoints[i].y =
         1.595 + offset + (RAIL_LENGTH / 2) * Math.sin(RAIL_ANGLE);

@@ -1,7 +1,7 @@
-import DBManager from "../DBManager";
+import IndexedDBBeatmapRepository from "../beatmap/repositories/IndexedDBBeatmapRepository";
 
 AFRAME.registerSystem("db", {
   init: function () {
-    this.db = new DBManager();
+    this.beatmapSetRepository = new IndexedDBBeatmapRepository();
   },
 });

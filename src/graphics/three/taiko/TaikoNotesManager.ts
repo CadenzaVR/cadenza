@@ -1,4 +1,4 @@
-import { MathUtils, Object3D, Vector3 } from "three";
+import { Euler, MathUtils, Object3D, Vector3 } from "three";
 import BaseNotesManager from "../../BaseNotesManager";
 import NoteManager from "../../NoteManager";
 import Initializable from "../Initializable";
@@ -6,7 +6,6 @@ import InstancedSimpleNoteManager from "../InstancedSimpleNoteManager";
 import SimpleNoteManager from "../SimpleNoteManager";
 import DonKatNotesManager from "./DonKatNotesManager";
 import DrumrollNoteManager from "./DrumrollNotesManager";
-import TaikoParams from "./TaikoParams";
 
 const enum NoteTypes {
   SMALLDON = 0b0000,
@@ -19,21 +18,23 @@ const enum NoteTypes {
 }
 
 const timeWindow = 3000; // milliseconds
-const moveDirection = new Vector3(0, 0, 1);
 const railLength = 8;
 const moveSpeed = railLength / timeWindow;
 const railAngle = MathUtils.degToRad(10);
-const basePositionY = 1.595;
+const moveDirection = new Vector3(0, 0, 1).applyEuler(
+  new Euler(railAngle, 0, 0)
+);
+const basePositionY = 1.57;
 const basePositionZ = -4.29;
 const baseSpawnPoint = new Vector3(
   0,
   basePositionY + (railLength / 2) * Math.sin(railAngle),
   basePositionZ - (railLength / 2) * Math.cos(railAngle)
-);
+).applyAxisAngle(new Vector3(-1, 0, 0), railAngle);
 
 export default class TaikoNotesManager
   extends BaseNotesManager
-  implements Initializable<TaikoParams>
+  implements Initializable
 {
   constructor(
     numSmallDon = 50,
@@ -113,11 +114,19 @@ export default class TaikoNotesManager
     );
   }
 
-  public init(parent: Object3D, params: TaikoParams) {
+  public init(parent: Object3D) {
     for (const noteManager of this.noteManagerArr) {
-      (<
-        SimpleNoteManager<TaikoParams> | InstancedSimpleNoteManager<TaikoParams>
-      >noteManager).init(parent, params);
+      (<SimpleNoteManager | InstancedSimpleNoteManager>noteManager).init(
+        parent
+      );
+    }
+  }
+
+  public updateHeight(height: number) {
+    for (const noteManager of this.noteManagerArr) {
+      (noteManager as DonKatNotesManager | DrumrollNoteManager).updateHeight(
+        height
+      );
     }
   }
 }

@@ -1,5 +1,5 @@
-import Beatmap from "../models/Beatmap";
+import BeatmapSet from "../models/BeatmapSet";
 
 export default interface BeatmapRepository {
-  getBeatmap(beatmapId: string): Promise<Beatmap>;
+  getBeatmapSets(): Promise<BeatmapSet[]>;
 }

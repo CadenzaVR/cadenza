@@ -66,6 +66,7 @@ export default class GameController {
     this.audioManager.onGamePause();
     this.timer.pause();
     this.state.setStatus(GameStatus.PAUSED);
+    this.state.score.computeAccuracyStats();
   }
 
   async start() {
@@ -97,6 +98,7 @@ export default class GameController {
   }
 
   endMap() {
+    this.state.score.computeAccuracyStats();
     this.scoreManager.processScore(this.state.score);
     this.state.setStatus(GameStatus.GAME_OVER);
   }

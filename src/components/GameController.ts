@@ -1,9 +1,10 @@
 import Beatmap from "../beatmap/models/Beatmap";
 import ClassicGameState from "../game/ClassicGameState";
 import GameController from "../game/GameController";
-import { GameStatus } from "../game/GameState";
-import ClassicGraphicsManager from "../graphics/three/classic/ClassicGraphicsManager";
+import TaikoGameState from "../game/TaikoGameState";
+import CadenzaGraphicsManager from "../graphics/three/CadenzaGraphicsManager";
 import ClassicNotesManager from "../graphics/three/classic/ClassicNotesManager";
+import TaikoNotesManager from "../graphics/three/taiko/TaikoNotesManager";
 import LocalStorageScoreRepository from "../scoring/repositories/LocalStorageScoreRepository";
 import ScoreManager from "../scoring/ScoreManager";
 import Timer from "../timing/Timer";
@@ -13,8 +14,15 @@ AFRAME.registerComponent("game", {
     const settingsManager = this.el.sceneEl.systems["setting"].settingsManager;
     const audioManager = this.el.sceneEl.systems["audio"].audioManager;
     audioManager.init(settingsManager);
-    const graphicsManager = new ClassicGraphicsManager(
-      new ClassicNotesManager(),
+
+    this.classicNotesManager = new ClassicNotesManager();
+    this.taikoNotesManager = new TaikoNotesManager();
+
+    this.classicGameState = new ClassicGameState();
+    this.taikoGameState = new TaikoGameState();
+
+    const graphicsManager = new CadenzaGraphicsManager(
+      [this.classicNotesManager, this.taikoNotesManager],
       audioManager
     );
     graphicsManager.init(
@@ -23,7 +31,7 @@ AFRAME.registerComponent("game", {
       settingsManager
     );
     this.controller = new GameController(
-      new ClassicGameState(),
+      this.classicGameState,
       audioManager,
       new Timer(audioManager.audioContext),
       graphicsManager,
@@ -31,7 +39,26 @@ AFRAME.registerComponent("game", {
       new ScoreManager(new LocalStorageScoreRepository()),
       settingsManager
     );
-    this.controller.state.status = GameStatus.MENU;
+  },
+
+  setTaikoGameMode: function () {
+    const prevStateListeners = this.controller.state.listeners;
+    this.controller.state = this.taikoGameState;
+    this.taikoGameState.listeners = prevStateListeners;
+    this.controller.graphicsManager.notesManager = this.taikoNotesManager;
+    this.classicNotesManager.reset();
+  },
+
+  setClassicGameMode: function () {
+    const prevStateListeners = this.controller.state.listeners;
+    this.controller.state = this.classicGameState;
+    this.classicGameState.listeners = prevStateListeners;
+    this.controller.graphicsManager.notesManager = this.classicNotesManager;
+    this.taikoNotesManager.reset();
+  },
+
+  getScore: function () {
+    return this.controller.state.score;
   },
 
   loadBeatmap: function (beatmap: Beatmap) {

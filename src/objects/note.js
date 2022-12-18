@@ -1,31 +1,43 @@
 export function createClampedVisibiltyMaterial(params = {}) {
+  const uniforms = {
+    maxZ: { value: params.maxZ ? params.maxZ : -0.5 },
+    minZ: { value: params.minZ ? params.minZ : -8.5 },
+    color: {
+      value: params.color ? params.color : new THREE.Vector4(1, 1, 1, 1),
+    },
+  };
+  if (params.minY || params.maxY) {
+    uniforms.minY = { value: params.minY ? params.minY : -1 };
+    uniforms.maxY = { value: params.maxY ? params.maxY : 10 };
+  }
   const material = new THREE.ShaderMaterial({
     transparent: false,
-    uniforms: {
-      maxY: { value: 2.29 },
-      minY: { value: 0.9 },
-      maxZ: { value: -0.326 },
-      minZ: { value: -8.23 },
-      color: {
-        value: params.color ? params.color : new THREE.Vector4(1, 1, 1, 1),
-      },
-    },
+    uniforms: uniforms,
     //wireframe: true,
     vertexShader: `
-      uniform float maxY;
-      uniform float minY;
-      uniform float maxZ;
-      uniform float minZ;
+      varying vec4 localPosition;
       void main() {
-        vec4 worldPosition = modelMatrix * instanceMatrix * vec4(position, 1.0);
-        worldPosition.y = clamp(worldPosition.y, minY, maxY);
-        worldPosition.z = clamp(worldPosition.z, minZ, maxZ);
-        gl_Position = projectionMatrix * viewMatrix * worldPosition;
+        localPosition = ${
+          params.isInstanced ? "instanceMatrix * " : "modelViewMatrix * "
+        }vec4(position, 1.0);
+        
+        
+        gl_Position = projectionMatrix ${
+          params.isInstanced ? "* modelViewMatrix" : ""
+        } * localPosition;
       }
       `,
     fragmentShader: `
+      uniform float maxZ;
+      uniform float minZ;
+      ${params.minY ? "uniform float minY;" : ""}
+      ${params.maxY ? "uniform float maxY;" : ""}
       uniform vec4 color;
+      varying vec4 localPosition;
       void main() {
+        if (localPosition.z > maxZ || localPosition.z < minZ) {
+          discard;
+        }
         gl_FragColor = color;
       }
       `,

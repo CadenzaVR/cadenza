@@ -1,5 +1,4 @@
-import { Entity } from "aframe";
-import { Euler, MathUtils, Vector3 } from "three";
+import { Euler, MathUtils, Object3D, Vector3 } from "three";
 import BaseNotesManager from "../../BaseNotesManager";
 import InstancedClassicNoteManager from "./InstancedClassicNoteManager";
 
@@ -62,19 +61,15 @@ export default class ClassicNotesManager extends BaseNotesManager {
     );
   }
 
-  public init(parentEntity: Entity, keyboardHeight: number) {
+  public init(parent: Object3D) {
     for (const noteManager of this.noteManagerArr) {
-      (noteManager as InstancedClassicNoteManager).init(parentEntity.object3D, {
-        keyboardHeight: keyboardHeight,
-      });
+      (noteManager as InstancedClassicNoteManager).init(parent);
     }
   }
 
-  public updateKeyboardHeight(keyboardHeight: number) {
+  public updateHeight(height: number) {
     for (const noteManager of this.noteManagerArr) {
-      (noteManager as InstancedClassicNoteManager).updateKeyboardHeight(
-        keyboardHeight
-      );
+      (noteManager as InstancedClassicNoteManager).updateHeight(height);
     }
   }
 }

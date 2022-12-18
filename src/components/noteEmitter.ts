@@ -1,10 +1,5 @@
-const enum Judgement {
-  MISS = 0b00000000,
-  PASS = 0b00000010,
-  BAD = 0b00000001,
-  GOOD = 0b00000011,
-  EXCELLENT = 0b00000111,
-}
+import { Mesh, PlaneBufferGeometry, ShaderMaterial, Vector3 } from "three";
+import { getColor } from "../graphics/JudgementColors";
 
 AFRAME.registerComponent("note-emitter", {
   /**
@@ -14,11 +9,11 @@ AFRAME.registerComponent("note-emitter", {
   init: function () {
     this.active = false;
     this.animationTime = 0;
-    this.geometry = new THREE.PlaneBufferGeometry(0.15, 0.05, 1, 1);
-    this.material = new THREE.ShaderMaterial({
+    this.geometry = new PlaneBufferGeometry(0.15, 0.05, 1, 1);
+    this.material = new ShaderMaterial({
       uniforms: {
         time: { value: 0 },
-        color: { value: new THREE.Vector3(1, 1, 1) },
+        color: { value: new Vector3(1, 1, 1) },
       },
       //wireframe: true,
       vertexShader: `
@@ -46,24 +41,14 @@ AFRAME.registerComponent("note-emitter", {
    * Apply the material to the current entity.
    */
   update: function () {
-    const newMesh = new THREE.Mesh(this.geometry, this.material);
+    const newMesh = new Mesh(this.geometry, this.material);
     this.el.setObject3D("mesh", newMesh);
   },
 
   activate: function (judgement: number) {
-    if (judgement !== Judgement.PASS) {
-      switch (judgement) {
-        case Judgement.MISS:
-        case Judgement.BAD:
-          this.material.uniforms.color.value.set(1, 0, 0);
-          break;
-        case Judgement.GOOD:
-          this.material.uniforms.color.value.set(1, 0.8, 0);
-          break;
-        case Judgement.EXCELLENT:
-          this.material.uniforms.color.value.set(0, 1, 0);
-          break;
-      }
+    const judgementColor = getColor(judgement);
+    if (judgementColor) {
+      this.material.uniforms.color.value.copy(judgementColor);
       this.animationTime = 0;
       this.el.object3D.visible = true;
       this.active = true;

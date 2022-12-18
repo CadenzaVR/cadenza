@@ -1,17 +1,17 @@
-import { Event, Object3D, Vector3 } from "three";
+import { Event, Matrix4, Object3D, Vector3 } from "three";
 import Beatmap from "../../beatmap/models/Beatmap";
 import Note from "../../beatmap/models/Note";
 import Initializable from "./Initializable";
 import InstancedMeshNoteManager from "./InstancedMeshNotesManager";
-import InstancedMeshObjectPool from "./InstancedObjectPool";
+import InstancedMeshObjectPool from "./InstancedMeshObjectPool";
 
 const dummyVector = new Vector3();
 /**
  * Simple note manager that just spawns notes and moves them forwards
  */
-export default class InstancedSimpleNoteManager<T>
+export default class InstancedSimpleNoteManager
   extends InstancedMeshNoteManager
-  implements Initializable<T>
+  implements Initializable
 {
   protected moveSpeed: number;
   protected moveDirection: Vector3;
@@ -29,9 +29,13 @@ export default class InstancedSimpleNoteManager<T>
     this.spawnPoint = spawnPoint;
   }
 
-  init(parent: Object3D<Event>, params: T): void {
+  init(parent: Object3D<Event>): void {
     parent.add(this.pool.mesh);
     this.pool.mesh.lookAt(this.moveDirection);
+    const identityMatrix = new Matrix4().identity();
+    for (let i = 0; i < this.pool.mesh.count; i++) {
+      this.pool.mesh.setMatrixAt(i, identityMatrix);
+    }
   }
 
   getOffsetSpawnPosition(note: Note, spawnOffsetTime: number): Vector3 {

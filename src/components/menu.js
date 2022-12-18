@@ -1,7 +1,4 @@
 import { BeatmapLoader } from "../utils/BeatmapLoader";
-import BeatmapInfo from "../models/BeatmapInfo";
-import Beatmap from "../models/Beatmap";
-import BeatmapSet from "../models/BeatmapSet";
 
 const SongDifficulty = Object.freeze({
   EASY: 0,
@@ -20,19 +17,16 @@ const songs = [
     },
     beatmaps: [
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.EASY,
         difficultyName: "Easy",
         mapSrc: "beatmaps/elise_easy.json",
       },
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.MEDIUM,
         difficultyName: "Medium",
         mapSrc: "beatmaps/elise.json",
       },
     ],
-    isDefault: true,
   },
   {
     beatmapInfo: {
@@ -44,13 +38,11 @@ const songs = [
     },
     beatmaps: [
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.EASY,
         difficultyName: "Easy",
         mapSrc: "beatmaps/moonlight_sonata.json",
       },
     ],
-    isDefault: true,
   },
   {
     beatmapInfo: {
@@ -62,19 +54,16 @@ const songs = [
     },
     beatmaps: [
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.EASY,
         difficultyName: "Easy",
         mapSrc: "beatmaps/clair_de_lune_easy.json",
       },
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.MEDIUM,
         difficultyName: "Medium",
         mapSrc: "beatmaps/clair_de_lune.json",
       },
     ],
-    isDefault: true,
   },
   {
     beatmapInfo: {
@@ -86,19 +75,16 @@ const songs = [
     },
     beatmaps: [
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.EASY,
         difficultyName: "Easy",
         mapSrc: "beatmaps/gymnopedie_1_easy.json",
       },
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.MEDIUM,
         difficultyName: "Medium",
         mapSrc: "beatmaps/gymnopedie_1.json",
       },
     ],
-    isDefault: true,
   },
   {
     beatmapInfo: {
@@ -110,25 +96,21 @@ const songs = [
     },
     beatmaps: [
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.EASY,
         difficultyName: "Easy",
         mapSrc: "beatmaps/rondo_alla_turca_easy.json",
       },
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.MEDIUM,
         difficultyName: "Medium",
         mapSrc: "beatmaps/rondo_alla_turca.json",
       },
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.HARD,
         difficultyName: "Hard",
         mapSrc: "beatmaps/rondo_alla_turca_hard.json",
       },
     ],
-    isDefault: true,
   },
   {
     beatmapInfo: {
@@ -140,27 +122,62 @@ const songs = [
     },
     beatmaps: [
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.EASY,
         difficultyName: "Easy",
         mapSrc: "beatmaps/the_entertainer_easy.json",
       },
       {
-        beatmapInfo: {},
         difficulty: SongDifficulty.MEDIUM,
         difficultyName: "Medium",
         mapSrc: "beatmaps/the_entertainer.json",
       },
     ],
-    isDefault: true,
   },
-].sort((a, b) => a.beatmapInfo.name.localeCompare(b.beatmapInfo.name));
+]
+  .sort((a, b) => a.beatmapInfo.name.localeCompare(b.beatmapInfo.name))
+  .map((data) => {
+    const beatmapSet = {
+      info: {
+        song: data.beatmapInfo.name,
+        artist: data.beatmapInfo.artist,
+        creator: data.beatmapInfo.creator,
+        imageSrc: data.beatmapInfo.imageSrc,
+        audioSrc: data.beatmapInfo.audioSrc,
+        type: "7",
+        language: "",
+        genre: "",
+        tags: [],
+        srcFormat: "json",
+      },
+      beatmaps: [],
+      isDefault: true,
+    };
+    for (const map of data.beatmaps) {
+      beatmapSet.beatmaps.push({
+        id: map.mapSrc,
+        info: {
+          name: map.difficultyName,
+          difficulty: map.difficulty,
+          src: map.mapSrc,
+        },
+        notes: null,
+        set: beatmapSet,
+      });
+    }
+    return beatmapSet;
+  });
+
+const SUPPORTED_BEATMAP_TYPES = Object.freeze({
+  0: [3, 7], //Classic supports osu!taiko, osu!mania, Cadenza
+  1: [1], //Taiko currently only supports osu!taiko
+});
 
 AFRAME.registerComponent("menu", {
   init: function () {
-    this.db = this.el.sceneEl.systems["db"].db;
+    this.beatmapRepo = this.el.sceneEl.systems["db"].beatmapSetRepository;
     this.songs = songs;
     this.audio = new Audio();
+    this.selectedGameMode = 0;
 
     this.beatmapLoader = BeatmapLoader();
     this.customMapUrls = new Set([]);
@@ -175,6 +192,16 @@ AFRAME.registerComponent("menu", {
   },
 
   onDocumentLoaded: async function () {
+    this.gameModeSelect = document.getElementById("game-mode-select");
+    this.gameModeSelect.addEventListener("change", (event) => {
+      const gameMode = event.detail.value;
+      this.selectedGameMode = gameMode;
+      this.updateSongs();
+      this.el.dispatchEvent(
+        new CustomEvent("game-mode-change", { detail: gameMode })
+      );
+    });
+
     this.songSelect = document.getElementById("song-select");
 
     this.difficultySelect = document.getElementById("difficulty-select");
@@ -186,17 +213,16 @@ AFRAME.registerComponent("menu", {
       const currentDifficulty = event.detail.value;
       if (
         currentSong.beatmaps[currentDifficulty] &&
-        currentSong.beatmaps[currentDifficulty].beatmapInfo.creator
+        currentSong.beatmaps[currentDifficulty].info.creator
       ) {
         this.selectedSongMapper.setAttribute(
           "value",
-          "Mapped by: " +
-            currentSong.beatmaps[currentDifficulty].beatmapInfo.creator
+          "Mapped by: " + currentSong.beatmaps[currentDifficulty].info.creator
         );
       } else {
         this.selectedSongMapper.setAttribute(
           "value",
-          "Mapped by: " + currentSong.beatmapInfo.creator
+          "Mapped by: " + currentSong.info.creator
         );
       }
     });
@@ -207,7 +233,7 @@ AFRAME.registerComponent("menu", {
       if (!selectedBeatmapSet.isDefaultMap) {
         if (!selectedBeatmapSet.isSaved) {
           this.saveButton.object3D.visible = false;
-          this.db.saveBeatmapSet(selectedBeatmapSet).then(() => {
+          this.beatmapRepo.saveBeatmapSet(selectedBeatmapSet).then(() => {
             selectedBeatmapSet.isSaved = true;
           });
         } else {
@@ -257,48 +283,18 @@ AFRAME.registerComponent("menu", {
       });
 
     this.songSelect.components["windowed-selector"].setSources(
-      this.songs.map((song) => song.beatmapInfo.imageSrc)
+      this.songs.map((song) => song.info.imageSrc)
     );
 
-    await this.db.getBeatmapInfos().then((beatmapInfos) => {
-      for (let item of beatmapInfos) {
+    await this.beatmapRepo.getBeatmapSets().then((beatmapSets) => {
+      for (let item of beatmapSets) {
         const image = new Image();
         image.id = "image-saved-" + item.id;
-        image.src = URL.createObjectURL(item.image);
+        image.src = item.info.imageSrc;
         document.querySelector("a-assets").appendChild(image);
+        item.info.imageSrc = "#" + image.id;
 
-        const beatmapInfo = new BeatmapInfo({
-          name: item.name,
-          artist: item.artist,
-          creator: item.creator,
-          imageSrc: "#" + image.id,
-          audioSrc: item.songId,
-          mode: item.mode,
-          language: item.language,
-          genre: item.genre,
-          tags: item.tags,
-        });
-
-        const beatmaps = [];
-
-        for (let i = 0; i < item.difficulties.length; i++) {
-          beatmaps.push(
-            new Beatmap({
-              beatmapInfo: {},
-              difficulty: item.difficulties[i],
-              difficultyName: item.difficultyNames[i],
-              mapSrc: item.beatmapIds[i],
-            })
-          );
-        }
-
-        this.addNewSong(
-          new BeatmapSet({
-            beatmapInfo: beatmapInfo,
-            beatmaps: beatmaps,
-          }),
-          true
-        );
+        this.addNewSong(item, true);
       }
     });
 
@@ -343,24 +339,47 @@ AFRAME.registerComponent("menu", {
 
   addNewSong: function (song, isSaved = false) {
     song.isSaved = isSaved;
-    this.songs.push(song);
-    this.songs.sort((a, b) =>
-      a.beatmapInfo.name.localeCompare(b.beatmapInfo.name)
-    );
-    const targetIndex = this.songs.indexOf(song);
+    if (!isSaved) {
+      const currentGameMode =
+        this.gameModeSelect.components["spinner"].data.value;
+      if (song.info.type == 1 && currentGameMode != 1) {
+        // taiko
+        this.gameModeSelect.setAttribute("spinner", "value", 1);
+        this.el.dispatchEvent(
+          new CustomEvent("game-mode-change", { detail: 1 })
+        );
+      } else if (song.info.type == 0 && currentGameMode != 0) {
+        this.gameModeSelect.setAttribute("spinner", "value", 0);
+        this.el.dispatchEvent(
+          new CustomEvent("game-mode-change", { detail: 0 })
+        );
+      }
+    }
+    songs.push(song);
+    this.updateSongs(song.info.imageSrc);
+  },
+
+  updateSongs: function (targetSource = null) {
+    if (!targetSource) {
+      targetSource =
+        this.songSelect.components["windowed-selector"].sources[
+          this.songSelect.components["windowed-selector"].currentIndex
+        ];
+    }
+
+    this.songs = songs
+      .filter((song) => {
+        return (
+          SUPPORTED_BEATMAP_TYPES[this.selectedGameMode].indexOf(
+            parseInt(song.info.type)
+          ) !== -1
+        );
+      })
+      .sort((a, b) => a.info.song.localeCompare(b.info.song));
     this.songSelect.components["windowed-selector"].setSources(
-      this.songs.map((song) => song.beatmapInfo.imageSrc)
+      this.songs.map((song) => song.info.imageSrc)
     );
-    while (
-      this.songSelect.components["windowed-selector"].currentIndex < targetIndex
-    ) {
-      this.songSelect.components["windowed-selector"].shiftRight();
-    }
-    while (
-      this.songSelect.components["windowed-selector"].currentIndex > targetIndex
-    ) {
-      this.songSelect.components["windowed-selector"].shiftLeft();
-    }
+    this.songSelect.components["windowed-selector"].jumpToSource(targetSource);
     this.selectCurrentSong();
   },
 
@@ -371,27 +390,23 @@ AFRAME.registerComponent("menu", {
     this.saveButton.object3D.visible =
       !currentSong.isDefault && !currentSong.isSaved;
 
-    this.selectedSongTitle.setAttribute("value", currentSong.beatmapInfo.name);
-    this.selectedSongArtist.setAttribute(
-      "value",
-      currentSong.beatmapInfo.artist
-    );
+    this.selectedSongTitle.setAttribute("value", currentSong.info.song);
+    this.selectedSongArtist.setAttribute("value", currentSong.info.artist);
     this.selectedSongMapper.setAttribute(
       "value",
-      "Mapped by: " + currentSong.beatmapInfo.creator
+      "Mapped by: " + currentSong.info.creator
     );
     this.updateDifficulty();
     if (this.el.object3D.visible) {
-      let audioSrc = currentSong.beatmapInfo.audioSrc;
+      let audioSrc = currentSong.info.audioSrc;
       if (!isNaN(audioSrc)) {
         if (this.currentAudioObjectUrl) {
           URL.revokeObjectURL(this.currentAudioObjectUrl);
         }
-        const song = await this.db.getSong(audioSrc);
+        const song = await this.beatmapRepo.getSong(audioSrc);
         this.currentAudioObjectUrl = URL.createObjectURL(song.data);
         audioSrc = this.currentAudioObjectUrl;
       }
-      this.currentAudioSrc = audioSrc;
       this.audio.src = audioSrc;
       this.audio.currentTime = 3;
       if (this.playTimeout) {
@@ -425,8 +440,8 @@ AFRAME.registerComponent("menu", {
       "spinner",
       "displayedValues",
       currentSong.beatmaps
-        .map((song) =>
-          song.difficultyName ? song.difficultyName : song.difficulty
+        .map((beatmap) =>
+          beatmap.info.name ? beatmap.info.name : beatmap.info.difficulty
         )
         .join("|")
     );

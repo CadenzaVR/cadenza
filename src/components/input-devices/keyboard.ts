@@ -1,7 +1,7 @@
-import SimpleInputProvider from "../input/SimpleInputProvider";
-import { createRippleSurface } from "../objects/rippleSurface";
+import SimpleInputProvider from "../../input/SimpleInputProvider";
+import { createRippleSurface } from "../../objects/rippleSurface";
 import { MathUtils, Vector3 } from "three";
-import Input from "../input/Input";
+import Input from "../../input/Input";
 
 AFRAME.registerComponent("keyboard", {
   init: function () {
@@ -92,52 +92,46 @@ AFRAME.registerComponent("keyboard", {
 
     // horizontalSeparator.object3D.position.set(0, 0.9, -0.1);
     // this.el.appendChild(horizontalSeparator);
-    const keyboardHeight = this.el.sceneEl.systems[
-      "setting"
-    ].settingsManager.getSettingValue("keyboardHeightOffset");
-    if (keyboardHeight) {
-      setTimeout(() => {
-        this.adjustHeight(keyboardHeight);
-        this.el.sceneEl.systems["setting"].settingsManager.addObserver(
-          "keyboardHeightOffset",
-          (value: number) => {
-            if (this.adjustHeightTimeout) {
-              clearTimeout(this.adjustHeightTimeout);
-            }
-            this.adjustHeightTimeout = setTimeout(() => {
-              this.adjustHeight(value);
-            }, 100);
+    setTimeout(() => {
+      let keyboardHeight = this.el.sceneEl.systems[
+        "setting"
+      ].settingsManager.getSettingValue("keyboardHeightOffset");
+      keyboardHeight = keyboardHeight ? keyboardHeight : 0;
+      this.adjustHeight(keyboardHeight);
+      this.el.sceneEl.systems["setting"].settingsManager.addObserver(
+        "keyboardHeightOffset",
+        (value: number) => {
+          if (this.adjustHeightTimeout) {
+            clearTimeout(this.adjustHeightTimeout);
           }
-        );
-      }, 2500); // TODO get rid of this hack
-    }
+          this.adjustHeightTimeout = setTimeout(() => {
+            this.adjustHeight(value);
+          }, 100);
+        }
+      );
+    }, 2500); // TODO get rid of this hack
 
-    fetch(this.hitSound)
-      .then((res) => {
-        return res.arrayBuffer();
-      })
-      .then((buffer) => {
-        return this.audio.registerSound(buffer);
-      })
-      .then((sound) => {
-        this.hitSoundId = sound;
-      });
+    this.audio.registerSoundFromUrl(this.hitSound).then((soundId: number) => {
+      this.hitSoundId = soundId;
+    });
 
     this.el.sceneEl.systems["input"].keyboardInputProvider.addListener(
       (input: Input) => {
-        const id = this.inputKeyMap.get(input.id);
-        const key = this.keys[id];
-        if (input.value === 1) {
-          this.audio.playHitSound(this.hitSoundId);
-          this.triggerRipple(
-            key.object3D.position.x,
-            key.object3D.position.z + 0.1
-          );
-          key.setAttribute("material", "emissiveIntensity", 1);
-          this.noteRails[id].setAttribute("material", "emissiveIntensity", 1);
-        } else {
-          key.setAttribute("material", "emissiveIntensity", 0.1);
-          this.noteRails[id].setAttribute("material", "emissiveIntensity", 0);
+        if (this.el.object3D.visible) {
+          const id = this.inputKeyMap.get(input.id);
+          const key = this.keys[id];
+          if (input.value === 1) {
+            this.audio.playHitSound(this.hitSoundId);
+            this.triggerRipple(
+              key.object3D.position.x,
+              key.object3D.position.z + 0.1
+            );
+            key.setAttribute("material", "emissiveIntensity", 1);
+            this.noteRails[id].setAttribute("material", "emissiveIntensity", 1);
+          } else {
+            key.setAttribute("material", "emissiveIntensity", 0.1);
+            this.noteRails[id].setAttribute("material", "emissiveIntensity", 0);
+          }
         }
       }
     );

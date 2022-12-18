@@ -1,4 +1,4 @@
-import { Event, Object3D, Vector3 } from "three";
+import { Event, Group, Object3D, Vector3 } from "three";
 import Beatmap from "../../beatmap/models/Beatmap";
 import Note from "../../beatmap/models/Note";
 import ArrayPooledNoteManager from "../ArrayPooledNoteManager";
@@ -7,9 +7,9 @@ import Initializable from "./Initializable";
 /**
  * Simple note manager that just spawns notes and moves them forwards
  */
-export default class SimpleNoteManager<T>
+export default class SimpleNoteManager
   extends ArrayPooledNoteManager<Object3D>
-  implements Initializable<T>
+  implements Initializable
 {
   protected moveSpeed: number;
   protected moveDirection: Vector3;
@@ -27,11 +27,13 @@ export default class SimpleNoteManager<T>
     this.spawnPoint = spawnPoint;
   }
 
-  init(parent: Object3D<Event>, params: T): void {
+  init(parent: Object3D<Event>): void {
+    const container = new Group();
+    parent.add(container);
     for (const instance of this.pool) {
-      parent.add(instance);
-      instance.lookAt(this.moveDirection);
+      container.add(instance);
     }
+    container.lookAt(this.moveDirection);
   }
 
   updateInstance(instance: Object3D<Event>, deltaTime: number): void {

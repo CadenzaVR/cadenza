@@ -8,5 +8,7 @@ export default interface BeatmapSetInfo {
   language: string;
   genre: string;
   tags: string[];
+  srcFormat: string;
+  src?: string | number;
   sounds?: string[];
 }

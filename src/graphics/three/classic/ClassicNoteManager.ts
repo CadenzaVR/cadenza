@@ -13,7 +13,6 @@ import ClassicNote from "../../../beatmap/models/ClassicNote";
 import Note from "../../../beatmap/models/Note";
 import { createClampedVisibiltyMaterial } from "../../../objects/note";
 import SimpleNoteManager from "../SimpleNoteManager";
-import ClassicParams from "./ClassicParams";
 
 const COLOR_CYAN = new Vector4(0, 1, 1, 1);
 const createNote = (width: number, height: number) => {
@@ -51,7 +50,7 @@ const createNote = (width: number, height: number) => {
   return object3D;
 };
 
-export default class ClassicNoteManager extends SimpleNoteManager<ClassicParams> {
+export default class ClassicNoteManager extends SimpleNoteManager {
   baseNoteWidth: number;
   baseNoteHeight: number;
   railWidth: number;
@@ -76,18 +75,6 @@ export default class ClassicNoteManager extends SimpleNoteManager<ClassicParams>
     this.baseNoteHeight = 0.05;
     this.baseNoteWidth = 0.12;
     this.railWidth = 0.15;
-  }
-  init(parent: Object3D<Event>, params: ClassicParams): void {
-    super.init(parent, params);
-    const offset = params.keyboardHeight / 100;
-    for (const instance of this.pool) {
-      (<ShaderMaterial>(
-        (<Mesh>instance.children[0]).material
-      )).uniforms.maxY.value = 2.29 + offset;
-      (<ShaderMaterial>(
-        (<Mesh>instance.children[0]).material
-      )).uniforms.minY.value = 0.9 + offset;
-    }
   }
 
   spawnInstance(

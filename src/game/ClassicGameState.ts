@@ -139,6 +139,9 @@ export default class ClassicGameState implements GameState {
     while (this.events.length > 0) {
       this.eventPool.push(this.events.pop());
     }
+    for (const note of this.beatmap.notes) {
+      note.isActive = false;
+    }
   }
 
   setStatus(status: number): void {

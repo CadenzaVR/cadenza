@@ -1,26 +1,20 @@
 <a-entity id="input-devices">
+  <a-text id="info-text" width="2" value="" font="/fonts/SpaceMono-Regular-msdf.json" align="left" negate="false"
+    position="-0.65 1 -0.45" rotation="-29 0 0">
+  </a-text>
+  <a-text id="loading-text" width="1" value="" font="/fonts/SpaceMono-Regular-msdf.json" align="left" negate="false"
+    position="-0.65 1.08 -0.5" rotation="-29 0 0">
+  </a-text>
   <a-entity id="keyboard" keyboard>
-    <a-text
-    id="info-text"
-    width="2"
-    value=""
-    font="/fonts/SpaceMono-Regular-msdf.json"
-    align="left"
-    negate="false"
-    position="-0.65 1 -0.45"
-    rotation="-29 0 0"
-    >
-    </a-text>
-    <a-text
-      id="loading-text"
-      width="1"
-      value=""
-      font="/fonts/SpaceMono-Regular-msdf.json"
-      align="left"
-      negate="false"
-      position="-0.65 1.08 -0.5"
-      rotation="-29 0 0"
-      >
-    </a-text>
+  </a-entity>
+  <a-entity id="drum"
+    visible="false"
+    position="0 0.9 -0.35"
+    rotation="-80 0 0" 
+    geometry="primitive: circle; radius: 0.3; segments: 3"
+    material="shader: flat; color: gray; visible: false"
+    collider="group: drum; static: true"
+    shape="type:circle; radius:0.3"
+    drum="innerRadius:0.15">
   </a-entity>
 </a-entity>

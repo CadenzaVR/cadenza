@@ -6,8 +6,6 @@ export default interface Note {
   sound?: number;
 
   isActive?: boolean;
-  isMiss?: boolean;
-  isHit?: boolean;
   timeDelta?: number;
   absTimeDelta?: number;
 }

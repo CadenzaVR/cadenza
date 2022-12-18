@@ -2,30 +2,51 @@ import {
   Vector3,
   CircleBufferGeometry,
   Vector4,
-  Object3D,
-  ShaderMaterial,
+  RingBufferGeometry,
 } from "three";
 import { createClampedVisibiltyMaterial } from "../../../objects/note";
-import InstancedMeshObjectPool from "../InstancedObjectPool";
+import InstancedMeshObjectPool from "../InstancedMeshObjectPool";
 import InstancedSimpleNoteManager from "../InstancedSimpleNoteManager";
-import TaikoParams from "./TaikoParams";
 
 const COLOR_RED = new Vector4(1, 0, 0, 1);
-const COLOR_BLUE = new Vector4(0, 0, 1, 1);
+const COLOR_BLUE = new Vector4(0, 0.6, 0.8, 1);
 
-const BASE_POSITION = new Vector3(0, 0.0001, 0);
+const BASE_POSITION = new Vector3(0, 0.0001, 100);
 
-const SMALLCIRCLE = new CircleBufferGeometry(0.15, 8);
-const LARGECIRCLE = new CircleBufferGeometry(0.3, 16);
+const SMALLDON = new CircleBufferGeometry(0.13, 24);
+SMALLDON.rotateX(-Math.PI / 2);
+const LARGEDON = new CircleBufferGeometry(0.26, 48);
+LARGEDON.rotateX(-Math.PI / 2);
+const SMALLKAT = new RingBufferGeometry(0.1, 0.13, 24);
+SMALLKAT.rotateX(-Math.PI / 2);
+const LARGEKAT = new RingBufferGeometry(0.16, 0.26, 48);
+LARGEKAT.rotateX(-Math.PI / 2);
 
 const DONMATERIAL = createClampedVisibiltyMaterial({
   color: COLOR_RED,
-});
-const KATMATERIAL = createClampedVisibiltyMaterial({
-  color: COLOR_BLUE,
+  isInstanced: true,
+  maxZ: -0.5,
 });
 
-export default class DonKatNotesManager extends InstancedSimpleNoteManager<TaikoParams> {
+const LARGEDONMATERIAL = createClampedVisibiltyMaterial({
+  color: COLOR_RED,
+  isInstanced: true,
+  maxZ: -0.35,
+});
+
+const KATMATERIAL = createClampedVisibiltyMaterial({
+  color: COLOR_BLUE,
+  isInstanced: true,
+  maxZ: -0.5,
+});
+
+const LARGEKATMATERIAL = createClampedVisibiltyMaterial({
+  color: COLOR_BLUE,
+  isInstanced: true,
+  maxZ: -0.35,
+});
+
+export default class DonKatNotesManager extends InstancedSimpleNoteManager {
   constructor(
     isDon: boolean,
     isLarge: boolean,
@@ -36,8 +57,14 @@ export default class DonKatNotesManager extends InstancedSimpleNoteManager<Taiko
   ) {
     super(
       new InstancedMeshObjectPool(
-        isLarge ? LARGECIRCLE : SMALLCIRCLE,
-        isDon ? DONMATERIAL : KATMATERIAL,
+        isLarge ? (isDon ? LARGEDON : LARGEKAT) : isDon ? SMALLDON : SMALLKAT,
+        isLarge
+          ? isDon
+            ? LARGEDONMATERIAL
+            : LARGEKATMATERIAL
+          : isDon
+          ? DONMATERIAL
+          : KATMATERIAL,
         numInstances,
         BASE_POSITION
       ),
@@ -47,13 +74,7 @@ export default class DonKatNotesManager extends InstancedSimpleNoteManager<Taiko
     );
   }
 
-  public init(parent: Object3D, params: TaikoParams) {
-    super.init(parent, params);
-    const offset = params.drumHeight / 100;
-    (<ShaderMaterial>this.pool.mesh.material).uniforms.maxY.value =
-      2.29 + offset;
-    (<ShaderMaterial>this.pool.mesh.material).uniforms.minY.value =
-      0.9 + offset;
-    //TODO get rid of hardcoded value
+  updateHeight(height: number) {
+    return;
   }
 }

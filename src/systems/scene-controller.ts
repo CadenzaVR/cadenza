@@ -1,8 +1,8 @@
 import { Raycaster, Vector2 } from "three";
 import Beatmap from "../beatmap/models/Beatmap";
+import { deserializeBeatmap } from "../beatmap/serialization/BeatmapDeserializer";
 import { GameStatus } from "../game/GameState";
-import Input from "../input/Input";
-import Score from "../scoring/models/Score";
+import { getColor } from "../graphics/JudgementColors";
 
 const TOUCH_COLLISION_START_EVENT = new CustomEvent("collision-enter", {
   detail: {
@@ -17,6 +17,10 @@ const TOUCH_COLLISION_END_EVENT = new CustomEvent("collision-exit", {
 AFRAME.registerSystem("scene-controller", {
   init: function () {
     this.menu = document.querySelector("#menu");
+    this.inputDevices = [
+      document.querySelector("#keyboard"),
+      document.querySelector("#drum"),
+    ];
     this.mallets = [
       document.querySelector("#mallet1"),
       document.querySelector("#mallet2"),
@@ -25,6 +29,8 @@ AFRAME.registerSystem("scene-controller", {
     this.el.addEventListener("loaded", () => {
       this.keyboard =
         document.querySelector("#keyboard").components["keyboard"];
+
+      this.drum = document.querySelector("#drum").components["drum"];
 
       this.adjustFov();
       window.addEventListener("orientationchange", () => {
@@ -35,15 +41,25 @@ AFRAME.registerSystem("scene-controller", {
       });
 
       this.game = document.querySelector("#game").components["game"];
-      this.gameScore = this.game.controller.state.score;
+      this.gameMode = 0;
       const noteEmitters = this.keyboard.noteEmitters;
-      const gameEvents = this.game.controller.state.events;
       this.game.addGameStateListener("score", () => {
-        for (const event of gameEvents) {
-          for (let i = 0; i < event.note.width; i++) {
-            noteEmitters[event.note.key + i].components[
-              "note-emitter"
-            ].activate(event.judgement);
+        if (this.gameMode === 1) {
+          const colorArr = [];
+          for (const event of this.game.controller.state.events) {
+            const color = getColor(event.judgement);
+            if (color) {
+              colorArr.push(color);
+            }
+          }
+          this.drum.setPrevRippleColors(colorArr);
+        } else {
+          for (const event of this.game.controller.state.events) {
+            for (let i = 0; i < event.note.width; i++) {
+              noteEmitters[event.note.key + i].components[
+                "note-emitter"
+              ].activate(event.judgement);
+            }
           }
         }
         this.updateInfoText();
@@ -58,25 +74,30 @@ AFRAME.registerSystem("scene-controller", {
           this.infoText.setAttribute("width", 2);
         }
         this.updateInfoText();
-        this.updateKeyText();
+        this.updatePauseGameoverPanel();
       });
 
-      this.el.systems.input.keyboardInputProvider.addListener(
-        (input: Input) => {
-          if (input.id === "key2") {
-            this.handleKeyRelease(2);
-          } else if (input.id === "key3") {
-            this.handleKeyRelease(3);
-          } else if (input.id === "key4") {
-            this.handleKeyRelease(4);
-          }
+      this.menu.addEventListener("game-mode-change", (e: CustomEvent) => {
+        this.gameMode = e.detail;
+        for (const inputDevice of this.inputDevices) {
+          inputDevice.setAttribute("visible", false);
+          this.el.systems["collision-detection"].disableColliderGroup(
+            inputDevice.id
+          );
         }
-      );
-      for (let i = 2; i < 5; i++) {
-        this.keyboard.keys[i].addEventListener("collision-exit", () => {
-          this.handleKeyRelease(i);
-        });
-      }
+        this.inputDevices[this.gameMode].setAttribute("visible", true);
+        this.el.systems["collision-detection"].enableColliderGroup(
+          this.inputDevices[this.gameMode].id
+        );
+        switch (this.gameMode) {
+          case 0:
+            this.game.setClassicGameMode();
+            break;
+          case 1:
+            this.game.setTaikoGameMode();
+            break;
+        }
+      });
     });
 
     document.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -100,6 +121,18 @@ AFRAME.registerSystem("scene-controller", {
       this.pauseResume();
     });
 
+    // Retry Button
+    document.querySelector("#retry-button").addEventListener("click", () => {
+      this.game.restart();
+    });
+
+    // Return to Menu Button
+    document
+      .querySelector("#back-to-menu-button")
+      .addEventListener("click", () => {
+        this.returnToMenu();
+      });
+
     this.infoText = document.querySelector("#info-text");
 
     // Initialize loading text
@@ -108,12 +141,10 @@ AFRAME.registerSystem("scene-controller", {
     // Hide keyboard specific instructions for VR
     this.el.addEventListener("exit-vr", () => {
       this.updateInfoText();
-      this.updateKeyText();
     });
     this.el.addEventListener("enter-vr", () => {
       this.el.systems.audio.audioManager.startContext();
       this.updateInfoText();
-      this.updateKeyText();
     });
 
     this.menu.addEventListener("progress", (event: any) => {
@@ -195,52 +226,37 @@ AFRAME.registerSystem("scene-controller", {
       this.menu.object3D.visible = false;
       this.el.systems["collision-detection"].disableColliderGroup("menu");
       const selectedMap = menu.getSelectedMap();
-      const beatmapSet = menu.getSelectedBeatmapSet();
-      this.beatmapSet.info.song = beatmapSet.name;
-      this.beatmapSet.info.artist = beatmapSet.artist;
-      this.beatmapSet.info.creator = beatmapSet.creator;
-      this.beatmapSet.info.imageSrc = beatmapSet.imageSrc;
-      this.beatmapSet.info.audioSrc = menu.currentAudioSrc;
-      this.beatmapSet.info.type = beatmapSet.mode;
-      this.beatmapSet.info.language = beatmapSet.language;
-      this.beatmapSet.info.genre = beatmapSet.genre;
-      this.beatmapSet.info.tags = beatmapSet.tags;
-      this.beatmapSet.info.sounds = ["/sounds/release.ogg"];
 
-      this.beatmap.id = selectedMap.mapSrc;
-      this.beatmap.info.name = selectedMap.beatmapInfo.name;
-      this.beatmap.info.creator = selectedMap.beatmapInfo.creator;
-      this.beatmap.info.type = selectedMap.beatmapInfo.mode;
-      this.beatmap.notes.length = 0;
-
-      let mapUrl;
-      if (isNaN(selectedMap.mapSrc)) {
-        mapUrl = selectedMap.mapSrc;
-      } else {
-        const beatmap = await this.el.systems["db"].db.getBeatmap(
-          selectedMap.mapSrc
-        );
-        mapUrl = URL.createObjectURL(beatmap.data);
-      }
-      const beatmap = await fetch(mapUrl).then((response) => {
-        return response.json();
-      });
-      //TODO converter refactor
-      //parse json notes into objects
-      for (const section of beatmap.sections) {
-        for (const note of section.notes) {
-          this.beatmap.notes.push({
-            type: note[0],
-            key: note[1],
-            startTime: note[2],
-            width: note[3],
-            endTime: note[4] ? note[4] : null,
-            duration: note[4] ? note[4] - note[2] : 0,
-            sound: note[0] === 2 ? 0 : null,
-          });
+      if (!selectedMap.notes) {
+        if (!isNaN(selectedMap.info.src)) {
+          const beatmap = await this.el.systems[
+            "db"
+          ].beatmapSetRepository.getBeatmap(selectedMap.info.src);
+          selectedMap.info.src = URL.createObjectURL(beatmap.data);
         }
+        const beatmapRaw = await fetch(selectedMap.info.src).then(
+          (response) => {
+            return response.blob();
+          }
+        );
+        await deserializeBeatmap(beatmapRaw, selectedMap);
       }
-      this.loadBeatmap(this.beatmap);
+
+      const temp = selectedMap.info.audioSrc;
+      selectedMap.set.info.audioSrc = menu.audio.src;
+      await this.loadBeatmap(selectedMap);
+      selectedMap.set.info.audioSrc = temp;
+      // if (!isNaN(selectedMap.set.info.audioSrc)) {
+      //   const audio = await this.el.systems["db"].beatmapSetRepository.getAudio(
+      //     selectedMap.info.audioSrc
+      //   );
+      //   const temp = selectedMap.info.audioSrc;
+      //   selectedMap.set.info.audioSrc = URL.createObjectURL(audio.data);
+      //   await this.loadBeatmap(selectedMap);
+      //   selectedMap.set.info.audioSrc = temp;
+      // } else {
+      //   this.loadBeatmap(selectedMap);
+      // }
     });
   },
 
@@ -251,9 +267,9 @@ AFRAME.registerSystem("scene-controller", {
   },
 
   returnToMenu: function () {
+    this.game.returnToMenu();
     this.menu.components.menu.el.object3D.visible = true;
     this.menu.components.menu.audio.play();
-    this.game.returnToMenu();
     this.el.systems["collision-detection"].enableColliderGroup("menu");
   },
 
@@ -291,26 +307,47 @@ AFRAME.registerSystem("scene-controller", {
     }
   },
 
-  handleKeyRelease: function (keyID: number) {
-    if (this.game.getStatus() === GameStatus.PAUSED) {
-      if (keyID === 2) {
-        //menu
-        this.returnToMenu();
-      } else if (keyID === 3) {
-        //restart
-        this.game.restart();
-      } else if (keyID === 4) {
-        //resume
-        this.game.resume();
+  updatePauseGameoverPanel: function () {
+    const pauseGameoverPanel = document.getElementById("pause-gameover-panel");
+    const pauseGameOverText = document.getElementById("pause-gameover-text");
+    const scoreText = document.getElementById("score-text");
+    const accuracyText = document.getElementById("accuracy-text");
+    const comboText = document.getElementById("combo-text");
+    const rankText = document.getElementById("rank-text");
+    const statsText = document.getElementById("stats-text");
+    if (
+      this.game.getStatus() === GameStatus.PAUSED ||
+      this.game.getStatus() === GameStatus.GAME_OVER
+    ) {
+      this.el.systems["collision-detection"].enableColliderGroup("pauseMenu");
+      if (this.game.getStatus() === GameStatus.GAME_OVER) {
+        pauseGameOverText.setAttribute("value", "Game Over");
+      } else {
+        pauseGameOverText.setAttribute("value", "Paused");
       }
-    } else if (this.game.getStatus() === GameStatus.GAME_OVER) {
-      if (keyID === 3) {
-        //menu
-        this.returnToMenu();
-      } else if (keyID === 4) {
-        //restart
-        this.game.restart();
-      }
+      const score = this.game.getScore();
+      score.computeAccuracyStats();
+      const pbString =
+        score.score === score.highScore ? " (Personal Best!)" : "";
+      scoreText.setAttribute("value", "Score: " + score.score + pbString);
+      accuracyText.setAttribute(
+        "value",
+        "Accuracy: " + score.accuracy.toFixed(2) + "%" //TODO
+      );
+      comboText.setAttribute("value", "Combo: " + score.maxCombo);
+      rankText.setAttribute("value", ""); // TODO
+      statsText.setAttribute(
+        "value",
+        Object.entries(score.judgementCounts)
+          .map((judgementCount) => {
+            return judgementCount[0] + " " + judgementCount[1];
+          })
+          .join("  ")
+      );
+      pauseGameoverPanel.setAttribute("visible", "true");
+    } else {
+      this.el.systems["collision-detection"].disableColliderGroup("pauseMenu");
+      pauseGameoverPanel.setAttribute("visible", "false");
     }
   },
 
@@ -319,40 +356,19 @@ AFRAME.registerSystem("scene-controller", {
       this.infoText.setAttribute(
         "value",
         "Combo: " +
-          this.gameScore.combo +
+          this.game.getScore().combo +
           " (" +
-          this.gameScore.maxCombo +
+          this.game.getScore().maxCombo +
           ")\nScore: " +
-          this.gameScore.score +
+          this.game.getScore().score +
           " (" +
-          this.gameScore.highScore +
+          this.game.getScore().highScore +
           ")"
       );
-    } else if (this.game.getStatus() === GameStatus.PAUSED) {
-      this.infoText.setAttribute("value", "Paused");
-    } else if (this.game.getStatus() === GameStatus.GAME_OVER) {
-      this.infoText.setAttribute("value", "Game Over");
     } else if (this.game.getStatus() === GameStatus.LOADING) {
       this.infoText.setAttribute("value", "Loading...");
-    } else if (
-      this.game.getStatus() === GameStatus.MENU &&
-      this.menu.components
-    ) {
+    } else {
       this.infoText.setAttribute("value", "");
-    }
-  },
-
-  updateKeyText: function () {
-    for (const keyText of this.keyboard.keyTexts) {
-      keyText.setAttribute("value", "");
-    }
-    if (this.game.getStatus() === GameStatus.PAUSED) {
-      this.keyboard.keyTexts[2].setAttribute("value", "MENU");
-      this.keyboard.keyTexts[3].setAttribute("value", "RESTART");
-      this.keyboard.keyTexts[4].setAttribute("value", "RESUME");
-    } else if (this.game.getStatus() === GameStatus.GAME_OVER) {
-      this.keyboard.keyTexts[3].setAttribute("value", "MENU");
-      this.keyboard.keyTexts[4].setAttribute("value", "RESTART");
     }
   },
 });

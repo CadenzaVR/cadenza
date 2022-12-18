@@ -12,17 +12,17 @@ import {
   ShaderMaterial,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import AudioDataSource from "../../../audio/AudioDataSource";
-import Beatmap from "../../../beatmap/models/Beatmap";
-import CadenzaBeatmap from "../../../beatmap/models/CadenzaBeatmap";
-import Note from "../../../beatmap/models/Note";
-import GameState, { GameStatus } from "../../../game/GameState";
-import SettingsManager from "../../../settings/SettingsManager";
-import ClassicNotesManager from "./ClassicNotesManager";
-import BaseGraphicsManager from "../../BaseGraphicsManager";
+import AudioDataSource from "../../audio/AudioDataSource";
+import Beatmap from "../../beatmap/models/Beatmap";
+import CadenzaBeatmap from "../../beatmap/models/CadenzaBeatmap";
+import GameState, { GameStatus } from "../../game/GameState";
+import SettingsManager from "../../settings/SettingsManager";
+import ClassicNotesManager from "./classic/ClassicNotesManager";
+import BaseGraphicsManager from "../BaseGraphicsManager";
+import NoteManager from "../NoteManager";
+import TaikoNotesManager from "./taiko/TaikoNotesManager";
 
-export default class ClassicGraphicsManager extends BaseGraphicsManager {
-  noteIDs: Map<Note, number>;
+export default class CadenzaGraphicsManager extends BaseGraphicsManager {
   scene: Scene;
   skysphere: Entity;
   defaultSkysphereMaterial: Material | Material[];
@@ -32,12 +32,15 @@ export default class ClassicGraphicsManager extends BaseGraphicsManager {
   audioMaterials: ShaderMaterial[];
   audioDataSource: AudioDataSource;
   loadedModels: Group[];
+  allNoteManagers: NoteManager[];
 
   constructor(
-    noteManager: ClassicNotesManager,
-    audioDataSource: AudioDataSource
+    noteManagers: NoteManager[],
+    audioDataSource: AudioDataSource,
+    activeNoteManagerIndex = 0
   ) {
-    super(noteManager, 3000);
+    super(noteManagers[activeNoteManagerIndex], 3000);
+    this.allNoteManagers = noteManagers;
     this.audioDataSource = audioDataSource;
     this.animationMixers = [];
     this.audioMaterials = [];
@@ -48,9 +51,18 @@ export default class ClassicGraphicsManager extends BaseGraphicsManager {
     this.scene = scene;
     this.skysphere = skysphere;
     this.gltfLoader = new GLTFLoader();
-    (this.notesManager as ClassicNotesManager).init(scene, 0);
+    for (const noteManager of this.allNoteManagers) {
+      (noteManager as TaikoNotesManager | ClassicNotesManager).init(
+        scene.object3D
+      );
+      (noteManager as TaikoNotesManager | ClassicNotesManager).updateHeight(0);
+    }
     settingsManager.addObserver("keyboardHeightOffset", (value) => {
-      (this.notesManager as ClassicNotesManager).updateKeyboardHeight(value);
+      for (const noteManager of this.allNoteManagers) {
+        (noteManager as TaikoNotesManager | ClassicNotesManager).updateHeight(
+          value
+        );
+      }
     });
   }
 

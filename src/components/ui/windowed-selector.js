@@ -26,7 +26,7 @@ AFRAME.registerComponent("windowed-selector", {
     this.spacing = this.data.spacing;
     this.maxVisibleItems = this.data.maxVisibleItems;
 
-    this.activeItems = [].fill(null, 0, this.maxVisibleItems);
+    this.activeItems = [];
 
     // Initialize items starting from center and extending right
     const numVisible = Math.min(
@@ -42,26 +42,59 @@ AFRAME.registerComponent("windowed-selector", {
         imageItem.object3D.visible = false;
         this.itemPool.push(imageItem);
       } else {
-        this.activeItems[i + numVisible - 1] = imageItem;
+        this.activeItems.push(imageItem);
       }
     }
-    this.activeItems[Math.floor(this.maxVisibleItems / 2)].setAttribute(
-      "opacity",
-      1
-    );
+    this.getSelectedItem().setAttribute("opacity", 1);
+  },
+
+  getSelectedItem: function () {
+    let targetIndex = Math.floor(this.maxVisibleItems / 2);
+    if (this.currentIndex < targetIndex) {
+      targetIndex = this.currentIndex;
+    } else if (this.currentIndex > this.sources.length - 1 - targetIndex) {
+      targetIndex =
+        this.activeItems.length - (this.sources.length - this.currentIndex);
+    }
+    return this.activeItems[targetIndex];
   },
 
   setSources: function (newSources) {
     this.sources = newSources;
+    if (this.currentIndex >= this.sources.length) {
+      this.currentIndex = this.sources.length / 2;
+    }
+    this.jumpToIndex(this.currentIndex);
+  },
+
+  jumpToSource: function (source) {
+    let index = this.sources.indexOf(source);
+    if (index < 0) {
+      index = Math.floor(this.sources.length / 2);
+    }
+    this.jumpToIndex(index);
+  },
+
+  jumpToIndex: function (index) {
+    index = Math.max(0, Math.min(index, this.sources.length - 1));
+    this.currentIndex = index;
     const indexOffset = Math.floor(this.maxVisibleItems / 2);
+    const width = this.imageWidth + this.spacing;
+    while (this.activeItems.length < this.maxVisibleItems) {
+      this.activeItems.push(this.itemPool.pop());
+    }
     for (let i = 0; i < this.maxVisibleItems; i++) {
       const sourceIndex = this.currentIndex + i - indexOffset;
-      if (
-        this.activeItems[i] &&
-        sourceIndex >= 0 &&
-        sourceIndex < this.sources.length
-      ) {
-        this.activeItems[i].setAttribute("src", this.sources[sourceIndex]);
+      const item = this.activeItems.shift();
+      item.object3D.position.set(width * (i - indexOffset), 0, 0);
+      if (sourceIndex >= 0 && sourceIndex < this.sources.length) {
+        this.activeItems.push(item);
+        item.object3D.visible = true;
+        item.setAttribute("opacity", i === indexOffset ? 1 : 0.25);
+        item.setAttribute("src", this.sources[sourceIndex]);
+      } else {
+        item.object3D.visible = false;
+        this.itemPool.push(item);
       }
     }
   },
@@ -117,14 +150,16 @@ AFRAME.registerComponent("windowed-selector", {
       return;
     }
 
-    this.activeItems[Math.floor(this.maxVisibleItems / 2)].setAttribute(
-      "opacity",
-      0.25
-    );
+    this.getSelectedItem().setAttribute("opacity", 0.25);
 
     const enteringImageItem = this.getEnteringItem(direction);
     if (enteringImageItem) {
       enteringImageItem.object3D.visible = true;
+      if (direction === MoveDirection.RIGHT) {
+        this.activeItems.push(enteringImageItem);
+      } else if (direction === MoveDirection.LEFT) {
+        this.activeItems.unshift(enteringImageItem);
+      }
     }
 
     // add entering song items
@@ -133,15 +168,16 @@ AFRAME.registerComponent("windowed-selector", {
     // update current index
     let leavingImageItem;
 
+    this.shiftActiveItems(direction);
     if (direction === MoveDirection.RIGHT) {
-      this.activeItems.push(enteringImageItem);
-      this.shiftActiveItems(direction);
-      leavingImageItem = this.activeItems.shift();
+      if (this.activeItems.length > this.maxVisibleItems) {
+        leavingImageItem = this.activeItems.shift();
+      }
       this.currentIndex += 1;
     } else if (direction === MoveDirection.LEFT) {
-      this.activeItems.unshift(enteringImageItem);
-      this.shiftActiveItems(direction);
-      leavingImageItem = this.activeItems.pop();
+      if (this.activeItems.length > this.maxVisibleItems) {
+        leavingImageItem = this.activeItems.pop();
+      }
       this.currentIndex -= 1;
     }
 
@@ -152,19 +188,16 @@ AFRAME.registerComponent("windowed-selector", {
     }
 
     // highlight selected item
-    this.activeItems[Math.floor(this.maxVisibleItems / 2)].setAttribute(
-      "opacity",
-      1
-    );
+    this.getSelectedItem().setAttribute("opacity", 1);
 
     return this.currentIndex;
   },
 
   shiftLeft: function () {
-    return this.shift(MoveDirection.LEFT);
+    return this.jumpToIndex(this.currentIndex - 1);
   },
 
   shiftRight: function () {
-    return this.shift(MoveDirection.RIGHT);
+    return this.jumpToIndex(this.currentIndex + 1);
   },
 });

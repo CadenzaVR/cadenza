@@ -70,7 +70,10 @@ AFRAME.registerComponent("shape", {
     if (this.data.auto) {
       const planeGeometryPoints: Vector3[] = this.__getPointsFromFlatGeometry();
       return {
-        boundingSphere: new Box3().setFromPoints(planeGeometryPoints),
+        boundingSphere: new Sphere(
+          this.el.object3D.getWorldPosition(new Vector3()),
+          this.data.radius
+        ),
         plane: new Plane().setFromCoplanarPoints(
           planeGeometryPoints[0],
           planeGeometryPoints[1],
@@ -127,7 +130,7 @@ AFRAME.registerComponent("shape", {
 
   __updatePositionCircle: function () {
     const planeGeometryPoints: Vector3[] = this.__getPointsFromFlatGeometry();
-    this.shape.boundingSphere.setFromObject(this.mesh);
+    this.el.object3D.getWorldPosition(this.shape.boundingSphere.center);
     this.shape.plane.setFromCoplanarPoints(
       planeGeometryPoints[0],
       planeGeometryPoints[1],

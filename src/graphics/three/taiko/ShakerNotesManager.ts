@@ -1,12 +1,11 @@
 import { CircleBufferGeometry, Mesh, Vector3, Vector4 } from "three";
 import { createClampedVisibiltyMaterial } from "../../../objects/note";
 import SimpleNoteManager from "../SimpleNoteManager";
-import TaikoParams from "./TaikoParams";
 
 const COLOR_CYAN = new Vector4(0, 1, 1, 1);
 const SHAKERMATERIAL = createClampedVisibiltyMaterial({ color: COLOR_CYAN });
 
-export default class ShakerNotesManager extends SimpleNoteManager<TaikoParams> {
+export default class ShakerNotesManager extends SimpleNoteManager {
   constructor(
     numInstances: number,
     spawnPoint: Vector3,

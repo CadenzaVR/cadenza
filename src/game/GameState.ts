@@ -20,6 +20,7 @@ export default interface GameState {
   timingOffset: number;
   score: Score;
   events: Array<HitEvent>;
+  listeners: Map<string, Array<(newValue: any) => void>>;
 
   addChangeListener(property: string, handler: (newValue: any) => void): void;
   loadBeatmap(beatmap: Beatmap): void;
