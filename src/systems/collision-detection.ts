@@ -10,11 +10,11 @@ AFRAME.registerSystem("collision-detection", {
       //wait for colliders to be registered and then build KDTrees
       setTimeout(() => {
         this.collisionDetectionSystem.buildKDTrees();
-        this.initialized = true;
         for (const group of this.groupsToDisable) {
           this.collisionDetectionSystem.disableColliderGroup(group);
         }
         this.groupsToDisable.length = 0;
+        this.initialized = true;
       }, 4000);
     });
   },
@@ -44,6 +44,8 @@ AFRAME.registerSystem("collision-detection", {
   },
 
   tick() {
-    this.collisionDetectionSystem.update();
+    if (this.initialized) {
+      this.collisionDetectionSystem.update();
+    }
   },
 });
