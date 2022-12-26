@@ -19,7 +19,7 @@ const LARGEDON = new CircleBufferGeometry(0.15, 24);
 LARGEDON.rotateX(-Math.PI / 2);
 const SMALLKAT = new RingBufferGeometry(0.15, 0.21, 24, 1, 0, Math.PI);
 SMALLKAT.rotateX(-Math.PI / 2);
-const LARGEKAT = new RingBufferGeometry(0.15, 0.27, 48, 1, 0, Math.PI);
+const LARGEKAT = new RingBufferGeometry(0.15, 0.3, 48, 1, 0, Math.PI);
 LARGEKAT.rotateX(-Math.PI / 2);
 
 const DONMATERIAL = createClampedVisibiltyMaterial({
