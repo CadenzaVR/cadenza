@@ -81,10 +81,11 @@ export default class TaikoGameState implements GameState {
     }
   }
 
-  private pushHitEvent(note: Note, judgement: number) {
+  private pushHitEvent(note: Note, judgement: number, ignoreTimeDelta = false) {
     const event = this.eventPool.pop();
     event.judgement = judgement;
     event.note = note;
+    event.ignoreTimeDelta = ignoreTimeDelta;
     this.events.push(event);
   }
 
@@ -169,7 +170,9 @@ export default class TaikoGameState implements GameState {
             }
           }
 
-          this.score.data.push(event.note.timeDelta);
+          if (!event.ignoreTimeDelta) {
+            this.score.data.push(event.note.timeDelta);
+          }
         }
       }
       for (const handler of this.listeners.get("score")) {
@@ -221,7 +224,7 @@ export default class TaikoGameState implements GameState {
         note.absTimeDelta = Math.abs(note.timeDelta);
         if (note.isActive) {
           if (note.type & DRUMROLLMASK) {
-            this.pushHitEvent(note, Judgement.EXCELLENT);
+            this.pushHitEvent(note, Judgement.EXCELLENT, true);
             //TODO handle small vs large vs shaker
           } else {
             // large don/kat

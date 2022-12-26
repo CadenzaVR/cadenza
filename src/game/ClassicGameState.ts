@@ -87,10 +87,15 @@ export default class ClassicGameState implements GameState {
     }
   }
 
-  private pushHitEvent(note: ClassicNote, judgement: number) {
+  private pushHitEvent(
+    note: ClassicNote,
+    judgement: number,
+    ignoreTimeDelta = false
+  ) {
     const event = this.eventPool.pop();
     event.judgement = judgement;
     event.note = note;
+    event.ignoreTimeDelta = ignoreTimeDelta;
     this.events.push(event);
   }
 
@@ -185,9 +190,7 @@ export default class ClassicGameState implements GameState {
 
           if (event.note.type === NoteTypes.SLIDE_NOTE) {
             this.score.data.push(0);
-          } else if (
-            !(event.note.type === NoteTypes.ROLL_NOTE && event.note.isActive)
-          ) {
+          } else if (!event.ignoreTimeDelta) {
             this.score.data.push(event.note.timeDelta);
           }
         }
@@ -284,7 +287,7 @@ export default class ClassicGameState implements GameState {
               } else {
                 // roll note
                 if (isKeyHit) {
-                  this.pushHitEvent(note, Judgement.EXCELLENT);
+                  this.pushHitEvent(note, Judgement.EXCELLENT, true);
                 }
               }
             } else if (note.absTimeDelta <= JUDGEMENT_THRESHOLD) {
