@@ -274,7 +274,10 @@ export default class CollisionDetectionSystem {
   }
 
   enableColliderGroup(groupId: string) {
-    if (this.staticColliderGroups.has(groupId)) {
+    if (
+      this.staticColliderGroups.has(groupId) &&
+      this.staticColliderGroupTrees.has(groupId)
+    ) {
       this.activeStaticColliderTrees.add(
         this.staticColliderGroupTrees.get(groupId)
       );

@@ -5,6 +5,7 @@ AFRAME.registerSystem("collision-detection", {
   init() {
     this.initialized = false;
     this.groupsToDisable = [];
+    this.groupsToEnable = [];
     this.collisionDetectionSystem = new CollisionDetectionSystem();
     this.el.addEventListener("loaded", () => {
       //wait for colliders to be registered and then build KDTrees
@@ -14,13 +15,22 @@ AFRAME.registerSystem("collision-detection", {
           this.collisionDetectionSystem.disableColliderGroup(group);
         }
         this.groupsToDisable.length = 0;
+
+        for (const group of this.groupsToEnable) {
+          this.collisionDetectionSystem.enableColliderGroup(group);
+        }
+        this.groupsToEnable.length = 0;
         this.initialized = true;
       }, 4000);
     });
   },
 
   enableColliderGroup(group: string) {
-    this.collisionDetectionSystem.enableColliderGroup(group);
+    if (this.initialized) {
+      this.collisionDetectionSystem.enableColliderGroup(group);
+    } else {
+      this.groupsToEnable.push(group);
+    }
   },
 
   disableColliderGroup(group: string) {
