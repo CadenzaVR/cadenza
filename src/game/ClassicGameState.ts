@@ -131,6 +131,8 @@ export default class ClassicGameState implements GameState {
     this.score.score = 0;
     this.score.combo = 0;
     this.score.accuracy = 0;
+    this.score.data.length = 0;
+    this.score.judgementCounts = {};
     this.processedNotes.clear();
     this.shiftCounts.fill(0);
     for (const noteQueue of this.noteQueues) {

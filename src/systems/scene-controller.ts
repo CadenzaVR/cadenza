@@ -355,7 +355,7 @@ AFRAME.registerSystem("scene-controller", {
         "value",
         "Accuracy: " + score.accuracy.toFixed(2) + "%" //TODO
       );
-      comboText.setAttribute("value", "Combo: " + score.maxCombo);
+      comboText.setAttribute("value", "Combo: " + score.combo);
       rankText.setAttribute("value", ""); // TODO
       statsText.setAttribute(
         "value",

@@ -118,6 +118,8 @@ export default class TaikoGameState implements GameState {
     this.score.score = 0;
     this.score.combo = 0;
     this.score.accuracy = 0;
+    this.score.data.length = 0;
+    this.score.judgementCounts = {};
     this.shiftCounts.fill(0);
 
     this.noteQueue.length = 0;
