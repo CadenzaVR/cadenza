@@ -17,7 +17,7 @@ const SMALLDON = new CircleBufferGeometry(0.13, 24);
 SMALLDON.rotateX(-Math.PI / 2);
 const LARGEDON = new CircleBufferGeometry(0.26, 48);
 LARGEDON.rotateX(-Math.PI / 2);
-const SMALLKAT = new RingBufferGeometry(0.1, 0.13, 24);
+const SMALLKAT = new RingBufferGeometry(0.16, 0.26, 24, 1, 0, Math.PI);
 SMALLKAT.rotateX(-Math.PI / 2);
 const LARGEKAT = new RingBufferGeometry(0.16, 0.26, 48);
 LARGEKAT.rotateX(-Math.PI / 2);
