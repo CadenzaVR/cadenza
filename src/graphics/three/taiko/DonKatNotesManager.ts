@@ -13,9 +13,9 @@ const COLOR_BLUE = new Vector4(0, 0.6, 0.8, 1);
 
 const BASE_POSITION = new Vector3(0, 0.0001, 100);
 
-const SMALLDON = new CircleBufferGeometry(0.1, 16, Math.PI, Math.PI);
+const SMALLDON = new CircleBufferGeometry(0.08, 16);
 SMALLDON.rotateX(-Math.PI / 2);
-const LARGEDON = new CircleBufferGeometry(0.16, 24);
+const LARGEDON = new CircleBufferGeometry(0.15, 24);
 LARGEDON.rotateX(-Math.PI / 2);
 const SMALLKAT = new RingBufferGeometry(0.15, 0.21, 24, 1, 0, Math.PI);
 SMALLKAT.rotateX(-Math.PI / 2);
