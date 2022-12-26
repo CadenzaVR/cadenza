@@ -177,6 +177,7 @@ AFRAME.registerComponent("menu", {
     this.beatmapRepo = this.el.sceneEl.systems["db"].beatmapSetRepository;
     this.songs = songs;
     this.audio = new Audio();
+    this.audio.volume = 0.5;
     this.selectedGameMode = 0;
 
     this.beatmapLoader = BeatmapLoader();

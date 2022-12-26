@@ -46,6 +46,7 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
       this.startContext();
     });
     this.audioElement = new Audio();
+    this.audioElement.volume = 0.5;
     this.audioElement.addEventListener("ended", () => {
       this.broadcastEvent("songEnd");
     });
