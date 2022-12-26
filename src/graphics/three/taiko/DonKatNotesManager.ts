@@ -13,13 +13,13 @@ const COLOR_BLUE = new Vector4(0, 0.6, 0.8, 1);
 
 const BASE_POSITION = new Vector3(0, 0.0001, 100);
 
-const SMALLDON = new CircleBufferGeometry(0.13, 24);
+const SMALLDON = new CircleBufferGeometry(0.1, 16, Math.PI, Math.PI);
 SMALLDON.rotateX(-Math.PI / 2);
-const LARGEDON = new CircleBufferGeometry(0.26, 48);
+const LARGEDON = new CircleBufferGeometry(0.16, 24);
 LARGEDON.rotateX(-Math.PI / 2);
-const SMALLKAT = new RingBufferGeometry(0.16, 0.26, 24, 1, 0, Math.PI);
+const SMALLKAT = new RingBufferGeometry(0.15, 0.21, 24, 1, 0, Math.PI);
 SMALLKAT.rotateX(-Math.PI / 2);
-const LARGEKAT = new RingBufferGeometry(0.16, 0.26, 48);
+const LARGEKAT = new RingBufferGeometry(0.15, 0.26, 48);
 LARGEKAT.rotateX(-Math.PI / 2);
 
 const DONMATERIAL = createClampedVisibiltyMaterial({
@@ -28,22 +28,10 @@ const DONMATERIAL = createClampedVisibiltyMaterial({
   maxZ: -0.5,
 });
 
-const LARGEDONMATERIAL = createClampedVisibiltyMaterial({
-  color: COLOR_RED,
-  isInstanced: true,
-  maxZ: -0.35,
-});
-
 const KATMATERIAL = createClampedVisibiltyMaterial({
   color: COLOR_BLUE,
   isInstanced: true,
-  maxZ: -0.5,
-});
-
-const LARGEKATMATERIAL = createClampedVisibiltyMaterial({
-  color: COLOR_BLUE,
-  isInstanced: true,
-  maxZ: -0.35,
+  maxZ: -0.31,
 });
 
 export default class DonKatNotesManager extends InstancedSimpleNoteManager {
@@ -58,13 +46,7 @@ export default class DonKatNotesManager extends InstancedSimpleNoteManager {
     super(
       new InstancedMeshObjectPool(
         isLarge ? (isDon ? LARGEDON : LARGEKAT) : isDon ? SMALLDON : SMALLKAT,
-        isLarge
-          ? isDon
-            ? LARGEDONMATERIAL
-            : LARGEKATMATERIAL
-          : isDon
-          ? DONMATERIAL
-          : KATMATERIAL,
+        isDon ? DONMATERIAL : KATMATERIAL,
         numInstances,
         BASE_POSITION
       ),
