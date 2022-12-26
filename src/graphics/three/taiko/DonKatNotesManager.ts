@@ -3,6 +3,7 @@ import {
   CircleBufferGeometry,
   Vector4,
   RingBufferGeometry,
+  BufferGeometryUtils,
 } from "three";
 import { createClampedVisibiltyMaterial } from "../../../objects/note";
 import InstancedMeshObjectPool from "../InstancedMeshObjectPool";
@@ -17,9 +18,17 @@ const SMALLDON = new CircleBufferGeometry(0.08, 24);
 SMALLDON.rotateX(-Math.PI / 2);
 const LARGEDON = new CircleBufferGeometry(0.15, 24);
 LARGEDON.rotateX(-Math.PI / 2);
-const SMALLKAT = new RingBufferGeometry(0.15, 0.21, 24, 1, 0, Math.PI);
+
+const dot = new CircleBufferGeometry(0.02, 16);
+const SMALLKAT = BufferGeometryUtils.mergeBufferGeometries([
+  new RingBufferGeometry(0.15, 0.21, 24, 1, 0, Math.PI),
+  dot,
+]);
 SMALLKAT.rotateX(-Math.PI / 2);
-const LARGEKAT = new RingBufferGeometry(0.15, 0.3, 48, 1, 0, Math.PI);
+const LARGEKAT = BufferGeometryUtils.mergeBufferGeometries([
+  new RingBufferGeometry(0.15, 0.3, 48, 1, 0, Math.PI),
+  dot,
+]);
 LARGEKAT.rotateX(-Math.PI / 2);
 
 const DONMATERIAL = createClampedVisibiltyMaterial({
