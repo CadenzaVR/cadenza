@@ -176,7 +176,7 @@ AFRAME.registerComponent("keyboard", {
         key.setAttribute("material", "emissiveIntensity", 1);
         noteRail.setAttribute("material", "emissiveIntensity", 1);
       }
-      this.audio.playHitSound("hit");
+      this.audio.playHitSound(this.hitSoundId);
       keyCollisions.add(e.detail.id);
       const colliderCenter = e.detail.collisionShapes[0][1].center; // Assume collision shape is Sphere
       this.triggerRipple(colliderCenter.x, colliderCenter.z + 0.1);

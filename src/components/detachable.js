@@ -1,3 +1,30 @@
+AFRAME.registerSystem("detachable", {
+  init: function () {
+    this.activatedObjects = [];
+    this.isEnabled = true;
+  },
+
+  addActivatedObject: function (object) {
+    if (!this.isEnabled) return;
+    this.activatedObjects.push(object);
+    if (this.activatedObjects.length === 2) {
+      for (const object of this.activatedObjects) {
+        object.detachFromParent();
+      }
+    }
+  },
+
+  removeActivatedObject: function (object) {
+    if (!this.isEnabled) return;
+    if (this.activatedObjects.length === 2) {
+      for (const object of this.activatedObjects) {
+        object.attachToParent();
+      }
+    }
+    this.activatedObjects.splice(this.activatedObjects.indexOf(object), 1);
+  },
+});
+
 AFRAME.registerComponent("detachable", {
   schema: {
     parent: { type: "string" },
@@ -12,22 +39,19 @@ AFRAME.registerComponent("detachable", {
     }
 
     this.scene = this.el.sceneEl.object3D;
-    this.locked = false;
     let hand = this.parentObject.el.parentElement;
 
     hand.addEventListener("triggerdown", () => {
-      this.detachFromParent();
+      this.system.addActivatedObject(this);
     });
 
     hand.addEventListener("triggerup", () => {
-      this.attachToParent();
+      this.system.removeActivatedObject(this);
     });
   },
 
   detachFromParent: function () {
-    if (!this.locked) {
-      this.detach(this.el.object3D, this.parentObject, this.scene);
-    }
+    this.detach(this.el.object3D, this.parentObject, this.scene);
   },
 
   attachToParent: function () {

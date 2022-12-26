@@ -67,9 +67,13 @@ AFRAME.registerSystem("scene-controller", {
 
       this.game.addGameStateListener("status", (status: number) => {
         if (status === GameStatus.PLAYING) {
+          this.el.systems["detachable"].isEnabled = false;
+          this.disablePointers();
           this.infoText.setAttribute("width", 1);
           this.setMalletsLocked(true);
         } else {
+          this.el.systems["detachable"].isEnabled = true;
+          this.enablePointers();
           this.setMalletsLocked(false);
           this.infoText.setAttribute("width", 2);
         }
@@ -143,6 +147,9 @@ AFRAME.registerSystem("scene-controller", {
       this.updateInfoText();
     });
     this.el.addEventListener("enter-vr", () => {
+      if (this.gameMode !== 1) {
+        this.el.systems["collision-detection"].disableColliderGroup("drum");
+      }
       this.el.systems.audio.audioManager.startContext();
       this.updateInfoText();
     });
@@ -242,22 +249,36 @@ AFRAME.registerSystem("scene-controller", {
         await deserializeBeatmap(beatmapRaw, selectedMap);
       }
 
-      const temp = selectedMap.info.audioSrc;
-      selectedMap.set.info.audioSrc = menu.audio.src;
-      await this.loadBeatmap(selectedMap);
-      selectedMap.set.info.audioSrc = temp;
-      // if (!isNaN(selectedMap.set.info.audioSrc)) {
-      //   const audio = await this.el.systems["db"].beatmapSetRepository.getAudio(
-      //     selectedMap.info.audioSrc
-      //   );
-      //   const temp = selectedMap.info.audioSrc;
-      //   selectedMap.set.info.audioSrc = URL.createObjectURL(audio.data);
-      //   await this.loadBeatmap(selectedMap);
-      //   selectedMap.set.info.audioSrc = temp;
-      // } else {
-      //   this.loadBeatmap(selectedMap);
-      // }
+      if (!isNaN(selectedMap.set.info.audioSrc)) {
+        const audio = await this.el.systems["db"].beatmapSetRepository.getSong(
+          selectedMap.set.info.audioSrc
+        );
+        const temp = selectedMap.set.info.audioSrc;
+        selectedMap.set.info.audioSrc = URL.createObjectURL(audio.data);
+        await this.loadBeatmap(selectedMap);
+        selectedMap.set.info.audioSrc = temp;
+      } else {
+        this.loadBeatmap(selectedMap);
+      }
     });
+  },
+
+  enablePointers: function () {
+    const leftHand = document.querySelector("#leftHand");
+    const rightHand = document.querySelector("#rightHand");
+    leftHand.setAttribute("raycaster", "enabled", true);
+    leftHand.setAttribute("raycaster", "showLine", true);
+    rightHand.setAttribute("raycaster", "enabled", true);
+    rightHand.setAttribute("raycaster", "showLine", true);
+  },
+
+  disablePointers: function () {
+    const leftHand = document.querySelector("#leftHand");
+    const rightHand = document.querySelector("#rightHand");
+    leftHand.setAttribute("raycaster", "enabled", false);
+    leftHand.setAttribute("raycaster", "showLine", false);
+    rightHand.setAttribute("raycaster", "enabled", false);
+    rightHand.setAttribute("raycaster", "showLine", false);
   },
 
   setMalletsLocked(locked: boolean) {

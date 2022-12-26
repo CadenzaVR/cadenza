@@ -22,6 +22,7 @@ require("./components/menu");
 require("./components/noteEmitter");
 require("./components/setting");
 require("./components/starfield");
+require("./components/detachable");
 
 require("./systems/audio");
 require("./systems/clickable");
