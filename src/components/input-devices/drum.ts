@@ -3,6 +3,7 @@ import {
   CylinderBufferGeometry,
   Mesh,
   MeshBasicMaterial,
+  RingBufferGeometry,
   Vector3,
 } from "three";
 import { getColor } from "../../graphics/JudgementColors";
@@ -90,7 +91,11 @@ AFRAME.registerComponent("drum", {
       color: 0xdddddd,
     });
     this.innerCircle = new Mesh(
-      new CircleBufferGeometry(this.data.innerRadius, 24),
+      new RingBufferGeometry(
+        this.data.innerRadius - 0.01,
+        this.data.innerRadius,
+        24
+      ),
       this.innerCircleMaterial
     );
     this.el.object3D.add(this.innerCircle);
