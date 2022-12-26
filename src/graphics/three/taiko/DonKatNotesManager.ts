@@ -16,7 +16,7 @@ const BASE_POSITION = new Vector3(0, 0.0001, 100);
 
 const SMALLDON = new CircleBufferGeometry(0.08, 24);
 SMALLDON.rotateX(-Math.PI / 2);
-const LARGEDON = new CircleBufferGeometry(0.15, 24);
+const LARGEDON = new CircleBufferGeometry(0.13, 24);
 LARGEDON.rotateX(-Math.PI / 2);
 
 const dot = new CircleBufferGeometry(0.02, 16);
@@ -34,13 +34,13 @@ LARGEKAT.rotateX(-Math.PI / 2);
 const DONMATERIAL = createClampedVisibiltyMaterial({
   color: COLOR_RED,
   isInstanced: true,
-  maxZ: -0.5,
+  maxZ: -0.37,
 });
 
 const KATMATERIAL = createClampedVisibiltyMaterial({
   color: COLOR_BLUE,
   isInstanced: true,
-  maxZ: -0.5,
+  maxZ: -0.37,
 });
 
 export default class DonKatNotesManager extends InstancedSimpleNoteManager {
