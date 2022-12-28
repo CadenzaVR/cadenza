@@ -47,9 +47,9 @@ AFRAME.registerSystem("scene-controller", {
         if (this.gameMode === 1) {
           const colorArr = [];
           for (const event of this.game.controller.state.events) {
-            const color = getColor(event.judgement);
-            if (color) {
-              colorArr.push(color);
+            if (event.judgement !== 2 && event.note.timeDelta <= 180) {
+              //TODO clean up
+              colorArr.push(getColor(event.judgement));
             }
           }
           this.drum.setPrevRippleColors(colorArr);

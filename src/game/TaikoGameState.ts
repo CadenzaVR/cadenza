@@ -6,6 +6,7 @@ import GameState, { GameStatus } from "./GameState";
 import HitEvent from "./HitEvent";
 
 const JUDGEMENT_THRESHOLD = 500;
+const LARGE_HIT_THRESHOLD = 30;
 const DON = "don";
 const KAT = "kat";
 const enum ErrorThresholds {
@@ -130,6 +131,12 @@ export default class TaikoGameState implements GameState {
     }
     for (const note of this.beatmap.notes) {
       note.isActive = false;
+      if (
+        note.type === NoteTypes.LARGEDON ||
+        note.type === NoteTypes.LARGEKAT
+      ) {
+        delete note.activationTime;
+      }
     }
   }
 
@@ -206,15 +213,23 @@ export default class TaikoGameState implements GameState {
           }
           this.noteQueue.pop();
           note = this.noteQueue[this.noteQueue.length - 1];
-        } else if (
-          note.timeDelta > 0 &&
-          note.isActive &&
-          note.type & DRUMROLLMASK
-        ) {
-          note.isActive = false;
-          this.pushHitEvent(note, Judgement.PASS);
-          this.noteQueue.pop();
-          note = this.noteQueue[this.noteQueue.length - 1];
+        } else if (note.isActive) {
+          if (note.type & DRUMROLLMASK) {
+            if (note.timeDelta > 0) {
+              note.isActive = false;
+              this.pushHitEvent(note, Judgement.PASS);
+              this.noteQueue.pop();
+              note = this.noteQueue[this.noteQueue.length - 1];
+            }
+          } else if (
+            this.currentSongTime - note.activationTime >
+            LARGE_HIT_THRESHOLD
+          ) {
+            note.isActive = false;
+            this.pushHitEvent(note, Judgement.PASS);
+            this.noteQueue.pop();
+            note = this.noteQueue[this.noteQueue.length - 1];
+          }
         }
       }
 
@@ -264,6 +279,7 @@ export default class TaikoGameState implements GameState {
                     this.noteQueue.pop();
                   } else {
                     note.isActive = true;
+                    note.activationTime = this.currentSongTime;
                   }
                 } else {
                   this.noteQueue.pop();
@@ -283,6 +299,7 @@ export default class TaikoGameState implements GameState {
                     this.noteQueue.pop();
                   } else {
                     note.isActive = true;
+                    note.activationTime = this.currentSongTime;
                   }
                 } else {
                   this.noteQueue.pop();

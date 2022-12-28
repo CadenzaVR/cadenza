@@ -13,18 +13,15 @@ const enum Judgement {
 }
 
 export function getColor(judgement: number): Vector3 {
-  if (judgement !== Judgement.PASS) {
-    switch (judgement) {
-      case Judgement.MISS:
-      case Judgement.BAD:
-        return COLOR_BAD_MISS;
-      case Judgement.GOOD:
-        return COLOR_GOOD;
-      case Judgement.EXCELLENT:
-        return COLOR_EXCELLENT;
-      default:
-        return null;
-    }
+  switch (judgement) {
+    case Judgement.MISS:
+    case Judgement.BAD:
+      return COLOR_BAD_MISS;
+    case Judgement.GOOD:
+      return COLOR_GOOD;
+    case Judgement.EXCELLENT:
+      return COLOR_EXCELLENT;
+    default:
+      return null;
   }
-  return null;
 }
