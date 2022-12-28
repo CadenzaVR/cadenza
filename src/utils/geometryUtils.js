@@ -10,7 +10,7 @@ function roundedRectGeometry(x, y, width, height, radius) {
   rect.quadraticCurveTo(x + width, y, x + width - radius, y);
   rect.lineTo(x + radius, y);
   rect.quadraticCurveTo(x, y, x, y + radius);
-  return new THREE.ShapeBufferGeometry(rect);
+  return new THREE.ShapeGeometry(rect);
 }
 
 function rectOutlineGeometry(width, height) {
@@ -64,7 +64,7 @@ function capsule2DGeometry(length, radius, numSegments) {
     .absarc(0, halfLength, radius, Math.PI, 0, true)
     .lineTo(radius, -halfLength)
     .absarc(0, -halfLength, radius, 2 * Math.PI, Math.PI, true);
-  return new THREE.ShapeBufferGeometry(shape, numSegments);
+  return new THREE.ShapeGeometry(shape, numSegments);
 }
 
 export {

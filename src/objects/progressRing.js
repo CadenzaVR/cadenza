@@ -1,5 +1,5 @@
 export const createProgressRing = (maxRadius) => {
-  const geometry = new THREE.PlaneBufferGeometry(maxRadius * 2, maxRadius * 2);
+  const geometry = new THREE.PlaneGeometry(maxRadius * 2, maxRadius * 2);
   const material = new THREE.ShaderMaterial({
     uniforms: {
       outerRadius: { value: maxRadius },

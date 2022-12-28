@@ -4,7 +4,7 @@ AFRAME.registerComponent("x-button", {
   init: function () {
     const xShape = createXShape(0.015);
     const mesh = new THREE.Mesh(
-      new THREE.ShapeBufferGeometry(xShape),
+      new THREE.ShapeGeometry(xShape),
       new THREE.MeshBasicMaterial()
     );
     this.el.object3D.add(mesh);

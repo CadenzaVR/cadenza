@@ -1,9 +1,9 @@
 import {
-  CircleBufferGeometry,
-  CylinderBufferGeometry,
+  CircleGeometry,
+  CylinderGeometry,
   Mesh,
   MeshBasicMaterial,
-  RingBufferGeometry,
+  RingGeometry,
   Vector3,
 } from "three";
 import { getColor } from "../../graphics/JudgementColors";
@@ -80,7 +80,7 @@ AFRAME.registerComponent("drum", {
     this.nextRippleSurface = 0;
     // Initialize ripple surfaces
     for (let i = 0; i < 5; i++) {
-      const rippleSurfaceGeometry = new CircleBufferGeometry(1, 32);
+      const rippleSurfaceGeometry = new CircleGeometry(1, 32);
       const rippleSurface = createRippleSurface(rippleSurfaceGeometry, "xy");
       this.rippleSurfaces.push(rippleSurface);
       this.el.object3D.add(rippleSurface);
@@ -91,11 +91,7 @@ AFRAME.registerComponent("drum", {
       color: 0xdddddd,
     });
     this.innerCircle = new Mesh(
-      new RingBufferGeometry(
-        this.data.innerRadius - 0.01,
-        this.data.innerRadius,
-        24
-      ),
+      new RingGeometry(this.data.innerRadius - 0.01, this.data.innerRadius, 24),
       this.innerCircleMaterial
     );
     this.el.object3D.add(this.innerCircle);
@@ -107,7 +103,7 @@ AFRAME.registerComponent("drum", {
       opacity: 0.5,
     });
 
-    const cylinderGeometry = new CylinderBufferGeometry(0.3, 0.25, 0.2, 32);
+    const cylinderGeometry = new CylinderGeometry(0.3, 0.25, 0.2, 32);
     cylinderGeometry.rotateX(Math.PI / 2);
     this.barrel = new Mesh(cylinderGeometry, this.barrelMaterial);
 

@@ -28,12 +28,12 @@
     "jszip": "^3.6.0",
     "micromodal": "^0.4.6",
     "osu-parser-web": "git+https://github.com/oliverfei/osu-parser-web.git",
-    "three": "^0.145.0"
+    "three": "^0.147.0"
   },
   "devDependencies": {
     "@types/aframe": "^1.2.0",
     "@types/micromodal": "^0.3.3",
-    "@types/three": "^0.137.0",
+    "@types/three": "^0.146.0",
     "@types/webpack-env": "^1.16.3",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.6.0",

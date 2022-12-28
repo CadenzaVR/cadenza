@@ -1,8 +1,8 @@
 import {
   Group,
   Mesh,
-  CircleBufferGeometry,
-  PlaneBufferGeometry,
+  CircleGeometry,
+  PlaneGeometry,
   Vector4,
   Vector3,
   Object3D,
@@ -21,17 +21,14 @@ const DRUMROLLMATERIAL = createClampedVisibiltyMaterial({
 
 function createDrumroll(radius: number, numSegments: number, length: number) {
   const head = new Mesh(
-    new CircleBufferGeometry(radius, numSegments),
+    new CircleGeometry(radius, numSegments),
     DRUMROLLMATERIAL
   );
   const tail = new Mesh(
-    new CircleBufferGeometry(radius, numSegments),
+    new CircleGeometry(radius, numSegments),
     DRUMROLLMATERIAL
   );
-  const body = new Mesh(
-    new PlaneBufferGeometry(radius * 2, 1),
-    DRUMROLLMATERIAL
-  );
+  const body = new Mesh(new PlaneGeometry(radius * 2, 1), DRUMROLLMATERIAL);
   body.scale.set(1, length, 1);
 
   const object = new Group();

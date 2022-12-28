@@ -1,4 +1,4 @@
-import { Mesh, PlaneBufferGeometry, ShaderMaterial, Vector3 } from "three";
+import { Mesh, PlaneGeometry, ShaderMaterial, Vector3 } from "three";
 import { getColor } from "../graphics/JudgementColors";
 
 AFRAME.registerComponent("note-emitter", {
@@ -9,7 +9,7 @@ AFRAME.registerComponent("note-emitter", {
   init: function () {
     this.active = false;
     this.animationTime = 0;
-    this.geometry = new PlaneBufferGeometry(0.15, 0.05, 1, 1);
+    this.geometry = new PlaneGeometry(0.15, 0.05, 1, 1);
     this.material = new ShaderMaterial({
       uniforms: {
         time: { value: 0 },

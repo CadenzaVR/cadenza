@@ -13,7 +13,7 @@ AFRAME.registerComponent("checkbox", {
     );
     const xShape = createXShape(0.01);
     this.xMesh = new THREE.Mesh(
-      new THREE.ShapeBufferGeometry(xShape),
+      new THREE.ShapeGeometry(xShape),
       new THREE.MeshBasicMaterial()
     );
     this.xMesh.visible = this.data.value;

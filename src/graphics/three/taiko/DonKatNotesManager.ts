@@ -1,8 +1,8 @@
 import {
   Vector3,
-  CircleBufferGeometry,
+  CircleGeometry,
   Vector4,
-  RingBufferGeometry,
+  RingGeometry,
   BufferGeometryUtils,
 } from "three";
 import { createClampedVisibiltyMaterial } from "../../../objects/note";
@@ -14,19 +14,19 @@ const COLOR_BLUE = new Vector4(0, 0.6, 0.8, 1);
 
 const BASE_POSITION = new Vector3(0, 0.0001, 100);
 
-const SMALLDON = new CircleBufferGeometry(0.08, 24);
+const SMALLDON = new CircleGeometry(0.08, 24);
 SMALLDON.rotateX(-Math.PI / 2);
-const LARGEDON = new CircleBufferGeometry(0.13, 24);
+const LARGEDON = new CircleGeometry(0.13, 24);
 LARGEDON.rotateX(-Math.PI / 2);
 
-const dot = new CircleBufferGeometry(0.02, 16);
+const dot = new CircleGeometry(0.02, 16);
 const SMALLKAT = BufferGeometryUtils.mergeBufferGeometries([
-  new RingBufferGeometry(0.15, 0.21, 24, 1, 0, Math.PI),
+  new RingGeometry(0.15, 0.21, 24, 1, 0, Math.PI),
   dot,
 ]);
 SMALLKAT.rotateX(-Math.PI / 2);
 const LARGEKAT = BufferGeometryUtils.mergeBufferGeometries([
-  new RingBufferGeometry(0.15, 0.3, 48, 1, 0, Math.PI),
+  new RingGeometry(0.15, 0.3, 48, 1, 0, Math.PI),
   dot,
 ]);
 LARGEKAT.rotateX(-Math.PI / 2);

@@ -1,4 +1,4 @@
-import { CircleBufferGeometry, Mesh, Vector3, Vector4 } from "three";
+import { CircleGeometry, Mesh, Vector3, Vector4 } from "three";
 import { createClampedVisibiltyMaterial } from "../../../objects/note";
 import SimpleNoteManager from "../SimpleNoteManager";
 
@@ -14,9 +14,7 @@ export default class ShakerNotesManager extends SimpleNoteManager {
   ) {
     super([], spawnPoint, moveSpeed, moveDirection);
     for (let i = 0; i < numInstances; i++) {
-      this.pool.push(
-        new Mesh(new CircleBufferGeometry(0.3, 16), SHAKERMATERIAL)
-      );
+      this.pool.push(new Mesh(new CircleGeometry(0.3, 16), SHAKERMATERIAL));
     }
   }
 }
