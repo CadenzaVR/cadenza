@@ -1,4 +1,4 @@
-import { Euler, MathUtils, Object3D, Vector3 } from "three";
+import { Euler, Object3D, Vector3 } from "three";
 import BaseNotesManager from "../../BaseNotesManager";
 import NoteManager from "../../NoteManager";
 import Initializable from "../Initializable";
@@ -17,26 +17,20 @@ const enum NoteTypes {
   SHAKER = 0b1010,
 }
 
-const timeWindow = 3000; // milliseconds
-const railLength = 8;
-const moveSpeed = railLength / timeWindow;
-const railAngle = MathUtils.degToRad(10);
-const moveDirection = new Vector3(0, 0, 1).applyEuler(
-  new Euler(railAngle, 0, 0)
-);
 const basePositionY = 1.57;
 const basePositionZ = -4.29;
-const baseSpawnPoint = new Vector3(
-  0,
-  basePositionY + (railLength / 2) * Math.sin(railAngle),
-  basePositionZ - (railLength / 2) * Math.cos(railAngle)
-).applyAxisAngle(new Vector3(-1, 0, 0), railAngle);
 
 export default class TaikoNotesManager
   extends BaseNotesManager
   implements Initializable
 {
+  railAngle: number;
+  railLength: number;
+  timeWindow: number;
   constructor(
+    railAngle: number,
+    railLength: number,
+    timeWindow: number,
     numSmallDon = 50,
     numSmallKat = 50,
     numLargeDon = 25,
@@ -52,9 +46,13 @@ export default class TaikoNotesManager
             true,
             false,
             numSmallDon,
-            baseSpawnPoint,
-            moveSpeed,
-            moveDirection
+            new Vector3(
+              0,
+              basePositionY + (railLength / 2) * Math.sin(railAngle),
+              basePositionZ - (railLength / 2) * Math.cos(railAngle)
+            ).applyAxisAngle(new Vector3(-1, 0, 0), railAngle),
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
         [
@@ -63,9 +61,13 @@ export default class TaikoNotesManager
             false,
             false,
             numSmallKat,
-            baseSpawnPoint,
-            moveSpeed,
-            moveDirection
+            new Vector3(
+              0,
+              basePositionY + (railLength / 2) * Math.sin(railAngle),
+              basePositionZ - (railLength / 2) * Math.cos(railAngle)
+            ).applyAxisAngle(new Vector3(-1, 0, 0), railAngle),
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
         [
@@ -74,9 +76,13 @@ export default class TaikoNotesManager
             true,
             true,
             numLargeDon,
-            baseSpawnPoint,
-            moveSpeed,
-            moveDirection
+            new Vector3(
+              0,
+              basePositionY + (railLength / 2) * Math.sin(railAngle),
+              basePositionZ - (railLength / 2) * Math.cos(railAngle)
+            ).applyAxisAngle(new Vector3(-1, 0, 0), railAngle),
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
         [
@@ -85,9 +91,13 @@ export default class TaikoNotesManager
             false,
             true,
             numLargeKat,
-            baseSpawnPoint,
-            moveSpeed,
-            moveDirection
+            new Vector3(
+              0,
+              basePositionY + (railLength / 2) * Math.sin(railAngle),
+              basePositionZ - (railLength / 2) * Math.cos(railAngle)
+            ).applyAxisAngle(new Vector3(-1, 0, 0), railAngle),
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
         [
@@ -95,9 +105,13 @@ export default class TaikoNotesManager
           new DrumrollNoteManager(
             false,
             numSmallDrumroll,
-            baseSpawnPoint,
-            moveSpeed,
-            moveDirection
+            new Vector3(
+              0,
+              basePositionY + (railLength / 2) * Math.sin(railAngle),
+              basePositionZ - (railLength / 2) * Math.cos(railAngle)
+            ).applyAxisAngle(new Vector3(-1, 0, 0), railAngle),
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
         [
@@ -105,13 +119,20 @@ export default class TaikoNotesManager
           new DrumrollNoteManager(
             true,
             numLargeDrumroll,
-            baseSpawnPoint,
-            moveSpeed,
-            moveDirection
+            new Vector3(
+              0,
+              basePositionY + (railLength / 2) * Math.sin(railAngle),
+              basePositionZ - (railLength / 2) * Math.cos(railAngle)
+            ).applyAxisAngle(new Vector3(-1, 0, 0), railAngle),
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
       ])
     );
+    this.railAngle = railAngle;
+    this.railLength = railLength;
+    this.timeWindow = timeWindow;
   }
 
   public init(parent: Object3D) {

@@ -37,9 +37,10 @@ export default class CadenzaGraphicsManager extends BaseGraphicsManager {
   constructor(
     noteManagers: NoteManager[],
     audioDataSource: AudioDataSource,
-    activeNoteManagerIndex = 0
+    activeNoteManagerIndex = 0,
+    timeWindow = 3000
   ) {
-    super(noteManagers[activeNoteManagerIndex], 3000);
+    super(noteManagers[activeNoteManagerIndex], timeWindow);
     this.allNoteManagers = noteManagers;
     this.audioDataSource = audioDataSource;
     this.animationMixers = [];

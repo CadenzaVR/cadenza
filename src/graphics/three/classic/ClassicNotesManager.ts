@@ -1,4 +1,4 @@
-import { Euler, MathUtils, Object3D, Vector3 } from "three";
+import { Euler, Object3D, Vector3 } from "three";
 import BaseNotesManager from "../../BaseNotesManager";
 import InstancedClassicNoteManager from "./InstancedClassicNoteManager";
 
@@ -9,16 +9,11 @@ const enum NoteTypes {
   ROLL_NOTE = 3,
 }
 
-const RAIL_LENGTH = 8;
-const RAIL_ANGLE = MathUtils.degToRad(10);
-const TIME_WINDOW = 3000;
-const MOVE_SPEED = RAIL_LENGTH / TIME_WINDOW;
-const MOVE_DIRECTION = new Vector3(0, 0, 1).applyEuler(
-  new Euler(RAIL_ANGLE, 0, 0)
-);
-
 export default class ClassicNotesManager extends BaseNotesManager {
-  constructor() {
+  railAngle: number;
+  railLength: number;
+  timeWindow: number;
+  constructor(railAngle: number, railLength: number, timeWindow: number) {
     super(
       new Map([
         [
@@ -26,8 +21,8 @@ export default class ClassicNotesManager extends BaseNotesManager {
           new InstancedClassicNoteManager(
             NoteTypes.HIT_NOTE,
             100,
-            MOVE_SPEED,
-            MOVE_DIRECTION
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
         [
@@ -35,8 +30,8 @@ export default class ClassicNotesManager extends BaseNotesManager {
           new InstancedClassicNoteManager(
             NoteTypes.SLIDE_NOTE,
             100,
-            MOVE_SPEED,
-            MOVE_DIRECTION
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
         [
@@ -44,8 +39,8 @@ export default class ClassicNotesManager extends BaseNotesManager {
           new InstancedClassicNoteManager(
             NoteTypes.HOLD_NOTE,
             20,
-            MOVE_SPEED,
-            MOVE_DIRECTION
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
         [
@@ -53,12 +48,15 @@ export default class ClassicNotesManager extends BaseNotesManager {
           new InstancedClassicNoteManager(
             NoteTypes.ROLL_NOTE,
             20,
-            MOVE_SPEED,
-            MOVE_DIRECTION
+            railLength / timeWindow,
+            new Vector3(0, 0, 1).applyEuler(new Euler(railAngle, 0, 0))
           ),
         ],
       ])
     );
+    this.railAngle = railAngle;
+    this.railLength = railLength;
+    this.timeWindow = timeWindow;
   }
 
   public init(parent: Object3D) {

@@ -29,6 +29,7 @@ export default class InstancedClassicNoteManager extends InstancedSimpleNoteMana
   baseNoteWidth: number;
   baseNoteHeight: number;
   railWidth: number;
+  baseSpawnPoint: Vector3;
   spawnPoints: Vector3[];
   angleAdjustedSpawnPoints: Vector3[];
 

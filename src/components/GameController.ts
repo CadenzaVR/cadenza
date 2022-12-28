@@ -1,3 +1,4 @@
+import { MathUtils } from "three";
 import Beatmap from "../beatmap/models/Beatmap";
 import ClassicGameState from "../game/ClassicGameState";
 import GameController from "../game/GameController";
@@ -15,8 +16,14 @@ AFRAME.registerComponent("game", {
     const audioManager = this.el.sceneEl.systems["audio"].audioManager;
     audioManager.init(settingsManager);
 
-    this.classicNotesManager = new ClassicNotesManager();
-    this.taikoNotesManager = new TaikoNotesManager();
+    const railAngle = MathUtils.degToRad(10);
+    const railLength = 8;
+    this.classicNotesManager = new ClassicNotesManager(
+      railAngle,
+      railLength,
+      3000
+    );
+    this.taikoNotesManager = new TaikoNotesManager(railAngle, railLength, 3000);
 
     this.classicGameState = new ClassicGameState();
     this.taikoGameState = new TaikoGameState();
