@@ -102,7 +102,7 @@ AFRAME.registerComponent("drum", {
     this.innerCircle.position.z = 0.0001;
 
     this.barrelMaterial = new MeshBasicMaterial({
-      color: 0xaaaaaa,
+      color: 0x555555,
       transparent: true,
       opacity: 0.5,
     });
