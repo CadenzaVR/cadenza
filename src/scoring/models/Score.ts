@@ -10,8 +10,8 @@ function sigmoid(x: number): number {
 
 function getAccuracy(
   timeDelta: number,
-  scaleFactor = 60,
-  fiftyPctValue = 170
+  scaleFactor = 27,
+  fiftyPctValue = 120
 ): number {
   const absTimeDelta = Math.abs(timeDelta);
   const adjust = 100 / (1 - sigmoid(-fiftyPctValue / scaleFactor));
