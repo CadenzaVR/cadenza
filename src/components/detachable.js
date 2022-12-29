@@ -1,3 +1,4 @@
+const dummyMatrix = new THREE.Matrix4();
 AFRAME.registerSystem("detachable", {
   init: function () {
     this.activatedObjects = [];
@@ -59,13 +60,14 @@ AFRAME.registerComponent("detachable", {
   },
 
   detach: function (child, parent, scene) {
-    child.applyMatrix(parent.matrixWorld);
+    child.applyMatrix4(parent.matrixWorld);
     parent.remove(child);
     scene.add(child);
   },
 
   attach: function (child, parent, scene) {
-    child.applyMatrix(new THREE.Matrix4().getInverse(parent.matrixWorld));
+    dummyMatrix.copy(parent.matrixWorld);
+    child.applyMatrix4(dummyMatrix.invert());
     scene.remove(child);
     parent.add(child);
   },
