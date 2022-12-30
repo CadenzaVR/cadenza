@@ -236,26 +236,21 @@ AFRAME.registerSystem("scene-controller", {
       this.el.systems["collision-detection"].disableColliderGroup("menu");
       const selectedMap = menu.getSelectedMap();
 
-      if (!selectedMap.notes) {
-        if (!isNaN(selectedMap.info.src)) {
-          const beatmap = await this.el.systems[
-            "db"
-          ].beatmapSetRepository.getBeatmap(selectedMap.info.src);
-          selectedMap.info.src = URL.createObjectURL(beatmap.data);
-        }
-        const beatmapRaw = await fetch(selectedMap.info.src).then(
-          (response) => {
-            return response.blob();
-          }
-        );
-        await deserializeBeatmap(beatmapRaw, selectedMap);
+      if (!isNaN(selectedMap.info.src)) {
+        const beatmap = await this.el.systems[
+          "db"
+        ].beatmapSetRepository.getBeatmap(selectedMap.info.src);
+        selectedMap.info.src = URL.createObjectURL(beatmap.data);
       }
+      const beatmapRaw = await fetch(selectedMap.info.src).then((response) => {
+        return response.blob();
+      });
+      await deserializeBeatmap(beatmapRaw, selectedMap);
 
-      if (
-        SUPPORTED_BEATMAP_TYPES[this.gameMode].primary.indexOf(
-          parseInt(selectedMap.info.type)
-        ) === -1
-      ) {
+      const mapType = selectedMap.info.type
+        ? parseInt(selectedMap.info.type)
+        : parseInt(selectedMap.set.info.type);
+      if (!SUPPORTED_BEATMAP_TYPES[this.gameMode].primary.includes(mapType)) {
         convertBeatmap(selectedMap, this.gameMode);
       }
 

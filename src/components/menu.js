@@ -193,10 +193,10 @@ AFRAME.registerComponent("menu", {
     this.gameModeSelect.addEventListener("change", (event) => {
       const gameMode = event.detail.value;
       this.selectedGameMode = gameMode;
-      this.updateSongs();
       this.el.dispatchEvent(
         new CustomEvent("game-mode-change", { detail: gameMode })
       );
+      this.updateSongs();
     });
 
     this.songSelect = document.getElementById("song-select");
@@ -227,7 +227,7 @@ AFRAME.registerComponent("menu", {
     this.saveButton = document.getElementById("save-button");
     this.saveButton.addEventListener("click", () => {
       const selectedBeatmapSet = this.getSelectedBeatmapSet();
-      if (!selectedBeatmapSet.isDefaultMap) {
+      if (!selectedBeatmapSet.isDefault) {
         if (!selectedBeatmapSet.isSaved) {
           this.saveButton.object3D.visible = false;
           this.beatmapRepo.saveBeatmapSet(selectedBeatmapSet).then(() => {
