@@ -23,6 +23,8 @@ export async function deserializeOsuBeatmap(
     if (hitObject.endTime) {
       note.endTime = hitObject.endTime;
       note.duration = hitObject.endTime - hitObject.startTime;
+    } else {
+      note.duration = 0;
     }
     if (osuBeatmap.Mode == 1) {
       // Taiko
