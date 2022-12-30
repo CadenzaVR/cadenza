@@ -253,13 +253,13 @@ AFRAME.registerSystem("scene-controller", {
 
       if (
         SUPPORTED_BEATMAP_TYPES[this.gameMode].primary.indexOf(
-          selectedMap.info.type
+          parseInt(selectedMap.info.type)
         ) === -1
       ) {
         convertBeatmap(selectedMap, this.gameMode);
       }
 
-      if (!isNaN(selectedMap.set.info.audioSrc)) {
+      if (typeof selectedMap.set.info.audioSrc === "number") {
         const audio = await this.el.systems["db"].beatmapSetRepository.getSong(
           selectedMap.set.info.audioSrc
         );
