@@ -1,3 +1,4 @@
+import { SUPPORTED_BEATMAP_TYPES } from "../game/GameModes";
 import { BeatmapLoader } from "../utils/BeatmapLoader";
 
 const SongDifficulty = Object.freeze({
@@ -166,11 +167,6 @@ const songs = [
     }
     return beatmapSet;
   });
-
-const SUPPORTED_BEATMAP_TYPES = Object.freeze({
-  0: [3, 7], //Classic supports osu!taiko, osu!mania, Cadenza
-  1: [1], //Taiko currently only supports osu!taiko
-});
 
 AFRAME.registerComponent("menu", {
   init: function () {
@@ -343,17 +339,21 @@ AFRAME.registerComponent("menu", {
     if (!isSaved) {
       const currentGameMode =
         this.gameModeSelect.components["spinner"].data.value;
-      if (song.info.type == 1 && currentGameMode != 1) {
-        // taiko
-        this.gameModeSelect.setAttribute("spinner", "value", 1);
-        this.el.dispatchEvent(
-          new CustomEvent("game-mode-change", { detail: 1 })
-        );
-      } else if (song.info.type == 0 && currentGameMode != 0) {
-        this.gameModeSelect.setAttribute("spinner", "value", 0);
-        this.el.dispatchEvent(
-          new CustomEvent("game-mode-change", { detail: 0 })
-        );
+
+      for (const i of Object.keys(SUPPORTED_BEATMAP_TYPES)) {
+        const gameMode = parseInt(i);
+        if (
+          SUPPORTED_BEATMAP_TYPES[gameMode].primary.includes(
+            parseInt(song.info.type)
+          )
+        ) {
+          if (currentGameMode != gameMode) {
+            this.gameModeSelect.setAttribute("spinner", "value", gameMode);
+            this.gameModeSelect.components.spinner.update();
+            this.selectedGameMode = gameMode;
+          }
+          break;
+        }
       }
     }
     songs.push(song);
@@ -371,7 +371,10 @@ AFRAME.registerComponent("menu", {
     this.songs = songs
       .filter((song) => {
         return (
-          SUPPORTED_BEATMAP_TYPES[this.selectedGameMode].indexOf(
+          SUPPORTED_BEATMAP_TYPES[this.selectedGameMode].primary.indexOf(
+            parseInt(song.info.type)
+          ) !== -1 ||
+          SUPPORTED_BEATMAP_TYPES[this.selectedGameMode].secondary.indexOf(
             parseInt(song.info.type)
           ) !== -1
         );

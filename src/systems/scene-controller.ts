@@ -1,6 +1,8 @@
 import { Raycaster, Vector2 } from "three";
+import convertBeatmap from "../beatmap/converters/BeatmapConverter";
 import Beatmap from "../beatmap/models/Beatmap";
 import { deserializeBeatmap } from "../beatmap/serialization/BeatmapDeserializer";
+import { SUPPORTED_BEATMAP_TYPES } from "../game/GameModes";
 import { GameStatus } from "../game/GameState";
 import { getColor } from "../graphics/JudgementColors";
 
@@ -247,6 +249,14 @@ AFRAME.registerSystem("scene-controller", {
           }
         );
         await deserializeBeatmap(beatmapRaw, selectedMap);
+      }
+
+      if (
+        SUPPORTED_BEATMAP_TYPES[this.gameMode].primary.indexOf(
+          selectedMap.info.type
+        ) === -1
+      ) {
+        convertBeatmap(selectedMap, this.gameMode);
       }
 
       if (!isNaN(selectedMap.set.info.audioSrc)) {

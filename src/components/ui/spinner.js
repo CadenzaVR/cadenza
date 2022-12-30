@@ -43,7 +43,12 @@ AFRAME.registerComponent("spinner", {
       this.update();
     });
 
-    this.text = createTextElement(this.data.width, "center", "roboto", true);
+    this.text = createTextElement(
+      this.data.width,
+      "center",
+      "/fonts/Roboto-msdf.json",
+      true
+    );
     this.text.setAttribute("text", "wrapCount", this.data.wrapCount);
     this.el.appendChild(this.text);
 
