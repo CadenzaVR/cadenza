@@ -62,6 +62,7 @@ export default class ClassicGameState implements GameState {
   ];
   private shiftCounts = [0, 0, 0, 0, 0, 0, 0, 0];
   private processedNotes = new Set<ClassicNote>();
+  private toRemoveAtEndOfUpdate = [] as ClassicNote[];
 
   constructor() {
     this.status = GameStatus.MENU;
@@ -251,7 +252,7 @@ export default class ClassicGameState implements GameState {
                 inputs.stateMap.get(KEY_INPUT_STATES[key]).value
               ) {
                 this.pushHitEvent(note, Judgement.EXCELLENT);
-                this.removeLeadingNote(note);
+                this.toRemoveAtEndOfUpdate.push(note);
               }
             }
             break;
@@ -284,7 +285,7 @@ export default class ClassicGameState implements GameState {
                   this.pushHitEvent(note, this.judgeHit(note));
                   this.removeLeadingNote(note);
                 }
-              } else {
+              } else if (note.type === NoteTypes.ROLL_NOTE) {
                 // roll note
                 if (isKeyHit) {
                   this.pushHitEvent(note, Judgement.EXCELLENT, true);
@@ -314,6 +315,10 @@ export default class ClassicGameState implements GameState {
             }
           }
         }
+      }
+
+      while (this.toRemoveAtEndOfUpdate.length > 0) {
+        this.removeLeadingNote(this.toRemoveAtEndOfUpdate.pop());
       }
     }
   }
