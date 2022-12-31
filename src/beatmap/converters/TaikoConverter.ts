@@ -76,5 +76,4 @@ export function taikoToClassic(beatmap: Beatmap): void {
     }
   }
   beatmap.notes = newNotes;
-  console.log(beatmap);
 }
