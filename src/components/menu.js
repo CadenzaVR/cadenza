@@ -259,23 +259,37 @@ AFRAME.registerComponent("menu", {
     this.saveImportedBeatmapCheck = document.getElementById(
       "save-imported-check"
     );
-    document.getElementById("beatmap-input").addEventListener("change", () => {
-      const file = document.getElementById("beatmap-input").files[0];
-      if (file.name === "beatmaps.txt") {
-        file.text().then(async (text) => {
-          const urls = text.split(/\r?\n/);
-          for (const url of urls) {
-            await this.loadBeatmapFromUrl(url);
+    document
+      .getElementById("beatmap-input")
+      .addEventListener("change", async () => {
+        for (const file of document.getElementById("beatmap-input").files) {
+          if (file.name === "beatmaps.txt") {
+            file.text().then(async (text) => {
+              const urls = text.split(/\r?\n/);
+              for (const url of urls) {
+                await this.loadBeatmapFromUrl(url);
+              }
+            });
+          } else {
+            await file.arrayBuffer().then((buffer) => {
+              this.loadBeatmapFromArrayBuffer(buffer);
+            });
           }
-        });
-      } else {
-        file.arrayBuffer().then((buffer) => {
-          this.beatmapLoader
-            .loadBeatmap(buffer)
-            .then((song) => this.addNewSong(song));
-        });
-      }
-    });
+        }
+      });
+
+    document
+      .getElementById("beatmap-folder-import-button")
+      .addEventListener("click", async () => {
+        const directoryHandle = await window.showDirectoryPicker();
+        for await (const entry of directoryHandle.values()) {
+          if (entry.kind === "file" && entry.name.endsWith(".osz")) {
+            const file = await entry.getFile();
+            const buffer = await file.arrayBuffer();
+            await this.loadBeatmapFromArrayBuffer(buffer);
+          }
+        }
+      });
 
     document
       .getElementById("url-input-button")
@@ -311,13 +325,25 @@ AFRAME.registerComponent("menu", {
     this.selectCurrentSong();
   },
 
+  loadBeatmapFromArrayBuffer: function (buffer) {
+    return this.beatmapLoader.loadBeatmap(buffer).then((song) => {
+      this.addNewSong(song);
+      if (this.saveImportedBeatmapCheck.checked) {
+        this.saveButton.object3D.visible = false;
+        this.beatmapRepo.saveBeatmapSet(song).then(() => {
+          song.isSaved = true;
+        });
+      }
+    });
+  },
+
   loadBeatmapFromUrl: function (url) {
     return this.beatmapLoader
       .loadBeatmapFromUrl(url, this.dispatchProgressEvent)
       .then((song) => {
         this.el.dispatchEvent(new Event("downloadComplete"));
         this.addSongFromUrl(song, url);
-        if (this.saveImportedBeatmapCheck.value === "on") {
+        if (this.saveImportedBeatmapCheck.checked) {
           this.saveButton.object3D.visible = false;
           this.beatmapRepo.saveBeatmapSet(song).then(() => {
             song.isSaved = true;
