@@ -18,7 +18,7 @@
       </header>
       <main class="modal__content" id="modal-2-content">
         <p>
-          Supports .osz osu! taiko or mania beatmaps in addition to regular Cadenza beatmaps that can be created via the editor.
+          Supports .osz osu! taiko or mania beatmaps in addition to regular Cadenza beatmaps that can be created via the editor. You can also load beatmaps in bulk by placing them in a folder and loading the folder or by loading a "beatmaps.txt" file with beatmap urls in it (one per line).
           <br>
           A beatmap listing has been made available here: <a href="https://cadenzavr.com/beatmaps">https://cadenzavr.com/beatmaps</a>
           <br>
@@ -28,7 +28,7 @@
           <label for="beatmap-input">Load beatmap from local file:</label>
           <input
             type="file"
-            accept="application/zip, .osz"
+            accept="application/zip, .osz, .txt"
             id="beatmap-input"
             name="beatmap-input"
           />
@@ -37,6 +37,10 @@
           <label for="url-input">Load beatmap from external url:</label>
           <input type="text" id="url-input" name="url-input" />
           <button id="url-input-button">Load</button>
+        </div>
+        <div>
+          <label for="save-imported-check">Save imported beatmaps</label>
+          <input type="checkbox" id="save-imported-check" name="save-imported-check" />
         </div>
       </main>
       <footer class="modal__footer"></footer>

@@ -256,27 +256,32 @@ AFRAME.registerComponent("menu", {
     this.selectedSongMapper = document.getElementById("mapper-text");
 
     // Handle custom beatmap loading
+    this.saveImportedBeatmapCheck = document.getElementById(
+      "save-imported-check"
+    );
     document.getElementById("beatmap-input").addEventListener("change", () => {
       const file = document.getElementById("beatmap-input").files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.beatmapLoader
-          .loadBeatmap(reader.result)
-          .then((song) => this.addNewSong(song));
-      };
-      reader.readAsArrayBuffer(file);
+      if (file.name === "beatmaps.txt") {
+        file.text().then(async (text) => {
+          const urls = text.split(/\r?\n/);
+          for (const url of urls) {
+            await this.loadBeatmapFromUrl(url);
+          }
+        });
+      } else {
+        file.arrayBuffer().then((buffer) => {
+          this.beatmapLoader
+            .loadBeatmap(buffer)
+            .then((song) => this.addNewSong(song));
+        });
+      }
     });
 
     document
       .getElementById("url-input-button")
       .addEventListener("click", () => {
         const url = document.getElementById("url-input").value;
-        this.beatmapLoader
-          .loadBeatmapFromUrl(url, this.dispatchProgressEvent)
-          .then((song) => {
-            this.el.dispatchEvent(new Event("downloadComplete"));
-            this.addSongFromUrl(song, url);
-          });
+        this.loadBeatmapFromUrl(url);
       });
 
     this.songSelect.components["windowed-selector"].setSources(
@@ -300,16 +305,25 @@ AFRAME.registerComponent("menu", {
     );
 
     mapUrls.forEach((url) => {
-      const decodedUrl = decodeURI(url);
-      this.beatmapLoader
-        .loadBeatmapFromUrl(decodedUrl, this.dispatchProgressEvent)
-        .then((song) => {
-          this.el.dispatchEvent(new Event("downloadComplete"));
-          this.addSongFromUrl(song, decodedUrl);
-        });
+      this.loadBeatmapFromUrl(decodeURI(url));
     });
 
     this.selectCurrentSong();
+  },
+
+  loadBeatmapFromUrl: function (url) {
+    return this.beatmapLoader
+      .loadBeatmapFromUrl(url, this.dispatchProgressEvent)
+      .then((song) => {
+        this.el.dispatchEvent(new Event("downloadComplete"));
+        this.addSongFromUrl(song, url);
+        if (this.saveImportedBeatmapCheck.value === "on") {
+          this.saveButton.object3D.visible = false;
+          this.beatmapRepo.saveBeatmapSet(song).then(() => {
+            song.isSaved = true;
+          });
+        }
+      });
   },
 
   dispatchProgressEvent: function (event) {
