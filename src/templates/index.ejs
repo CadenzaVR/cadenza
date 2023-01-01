@@ -21,8 +21,9 @@
       keyboard-shortcuts="enterVR: false"
     >
       <%= require('html-loader!./assets.html').default %>
-      <a-entity id="skysphere" starfield material="shader: flat; color: #000; side: back;" geometry="primitive: sphere; radius: 500;"></a-entity>
-      <a-entity light="type: ambient; color: #666"></a-entity>
+      <a-entity id="skysphere" starfield material="src: #sky; side: back;" geometry="primitive: sphere; radius: 500; thetaLength: 90;"></a-entity>
+      <a-entity id="skysphere-bottom-half" material="src: #sky; side: back;" geometry="primitive: sphere; radius: 500; thetaLength: 90;" rotation="180 0 0"></a-entity>
+      <a-entity id="light" light="type: ambient; color: #fff" bind-setting="settingName:lightIntensity; boundComponent:light; boundComponentAttribute: intensity"></a-entity>
       <a-entity id="game" game></a-entity>
 
       <%= require('html-loader!./player-rig.html').default %>

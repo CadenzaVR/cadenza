@@ -21,6 +21,7 @@ require("./components/mallet");
 require("./components/menu");
 require("./components/noteEmitter");
 require("./components/setting");
+require("./components/bindSetting");
 require("./components/starfield");
 require("./components/detachable");
 

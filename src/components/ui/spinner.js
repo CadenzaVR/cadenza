@@ -20,6 +20,11 @@ AFRAME.registerComponent("spinner", {
     type: { type: "number", default: SpinnerTypes.HORIZONTAL },
     showOutline: { type: "boolean", default: true },
     displayedValues: { type: "string", default: "" },
+    buttonColor: { type: "color", default: "#fff" },
+    buttonOpacity: { type: "number", default: 0.2 },
+    buttonHighlightColor: { type: "color", default: "#fff" },
+    buttonHighlightOpacity: { type: "number", default: 0.5 },
+    buttonTransparent: { type: "boolean", default: false },
   },
 
   init: function () {
@@ -29,14 +34,30 @@ AFRAME.registerComponent("spinner", {
     );
     this.el.object3D.add(this.outline);
 
-    this.increaseButton = createTriangleButton(0.02, 0.06);
+    this.increaseButton = createTriangleButton(
+      0.02,
+      0.06,
+      this.data.buttonColor,
+      this.data.buttonOpacity,
+      this.data.buttonTransparent,
+      this.data.buttonHighlightColor,
+      this.data.buttonHighlightOpacity
+    );
     this.el.appendChild(this.increaseButton);
     this.increaseButton.components.button.registerClickHandler(() => {
       this.data.value += this.data.increment;
       this.update();
     });
 
-    this.decreaseButton = createTriangleButton(0.02, 0.06);
+    this.decreaseButton = createTriangleButton(
+      0.02,
+      0.06,
+      this.data.buttonColor,
+      this.data.buttonOpacity,
+      this.data.buttonTransparent,
+      this.data.buttonHighlightColor,
+      this.data.buttonHighlightOpacity
+    );
     this.el.appendChild(this.decreaseButton);
     this.decreaseButton.components.button.registerClickHandler(() => {
       this.data.value -= this.data.increment;

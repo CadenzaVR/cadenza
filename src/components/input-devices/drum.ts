@@ -98,9 +98,9 @@ AFRAME.registerComponent("drum", {
     this.innerCircle.position.z = 0.0001;
 
     this.barrelMaterial = new MeshBasicMaterial({
-      color: 0x555555,
+      color: 0xffffff,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.1,
     });
 
     const cylinderGeometry = new CylinderGeometry(0.3, 0.25, 0.2, 32);
@@ -141,7 +141,7 @@ AFRAME.registerComponent("drum", {
           this.katInput.value |= bit;
           this.inputProvider.notifyListeners(this.katInput);
           this.collisionInputMap.set(e.detail.id, this.katInput);
-          this.barrel.material.opacity = 1;
+          this.barrel.material.opacity = 0.4;
           this.barrel.scale.x = 1.05;
           this.barrel.scale.y = 1.05;
         }
@@ -158,7 +158,7 @@ AFRAME.registerComponent("drum", {
         this.barrel.scale.x = 1;
         this.barrel.scale.y = 1;
         if (input === this.katInput) {
-          this.barrel.material.opacity = 0.5;
+          this.barrel.material.opacity = 0.1;
         }
         const bit = this.colliderBitMap.get(id);
         input.value &= ~bit;

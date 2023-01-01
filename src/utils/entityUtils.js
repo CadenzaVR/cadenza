@@ -12,31 +12,15 @@ function createTextElement(
   return elem;
 }
 
-function createTextButton(width, text) {
-  const textElem = createTextElement(width);
-  textElem.setAttribute("value", text);
-  const buttonElem = document.createElement("a-entity");
-  buttonElem.setAttribute("geometry", {
-    primitive: "roundedRect",
-    width: 0.04 * text.length,
-    height: 0.07,
-  });
-  buttonElem.setAttribute("material", {
-    shader: "flat",
-    color: "#aaa",
-  });
-  buttonElem.setAttribute("button", "");
-  buttonElem.setAttribute("clickable", "");
-  buttonElem.object3D.position.set(0, -0.02, 0);
-  textElem.appendChild(buttonElem);
-  return {
-    object3D: textElem.object3D,
-    textEl: textElem,
-    buttonEl: buttonElem,
-  };
-}
-
-function createTriangleButton(width, height) {
+function createTriangleButton(
+  width,
+  height,
+  color = "#aaa",
+  opacity = 1,
+  isTransparent = false,
+  highlightColor = "#aaa",
+  highlightOpacity = 1
+) {
   const buttonElem = document.createElement("a-entity");
   const halfWidth = width / 2;
   const halfHeight = height / 2;
@@ -49,9 +33,14 @@ function createTriangleButton(width, height) {
   });
   buttonElem.setAttribute("material", {
     shader: "flat",
-    color: "#aaa",
+    color: color,
+    opacity: opacity,
+    transparent: isTransparent,
   });
-  buttonElem.setAttribute("button", "");
+  buttonElem.setAttribute("button", {
+    highlightColor: highlightColor,
+    highlightOpacity: highlightOpacity,
+  });
   buttonElem.setAttribute("clickable", {
     activationTime: 1,
     showProgressRing: false,
@@ -67,4 +56,4 @@ function createTriangleButton(width, height) {
   return buttonElem;
 }
 
-export { createTextElement, createTextButton, createTriangleButton };
+export { createTextElement, createTriangleButton };

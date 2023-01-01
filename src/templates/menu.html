@@ -1,5 +1,5 @@
 <a-entity id="pause-gameover-panel" position="0 1.5 -0.49" visible="false"
-  geometry="primitive: roundedRect; width:1.3; height: 0.8" material="shader: flat; color: #888888">
+  geometry="primitive: roundedRect; width:1.3; height: 0.8" material="shader: flat; color: #888888; transparent: true; opacity: 0.35">
   <a-text id="pause-gameover-text" width="2" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center"
     value="Game Over" position="0 0.30 0.01"></a-text>
   <a-text id="score-text" width="1.3" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center"
@@ -12,14 +12,14 @@
     value="Rank: F" position="0 0.02 0.01"></a-text>
   <a-text id="stats-text" width="1.2" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center"
     value="Excellent 0 | Good 0 | Bad 0 | Miss 0" position="0 -0.08 0.01"></a-text>
-    <a-entity id="retry-button" material="shader: flat; color: #aaa"
-    geometry="primitive: roundedRect; width: 0.15; height: 0.06" position="-0.2 -0.24 0.01" button clickable
+    <a-entity id="retry-button" material="shader: flat; color: #fff; transparent: true; opacity: 0.2"
+    geometry="primitive: roundedRect; width: 0.15; height: 0.06" position="-0.2 -0.24 0.01" button="highlightColor:#ffffff; highlightOpacity:0.5" clickable
     collider="group: pauseMenu; static: true" shape="type: rect">
     <a-text position="0 0.015 0" width="0.13" wrap-count="5" font="/fonts/SpaceMono-Regular-msdf.json" negate="false"
       align="center" value="Retry"></a-text>
   </a-entity>
-  <a-entity id="back-to-menu-button" material="shader: flat; color: #aaa"
-    geometry="primitive: roundedRect; width: 0.15; height: 0.06" position="0.2 -0.24 0.01" button clickable
+  <a-entity id="back-to-menu-button" material="shader: flat; color: #fff; transparent: true; opacity: 0.2"
+    geometry="primitive: roundedRect; width: 0.15; height: 0.06" position="0.2 -0.24 0.01" button="highlightColor:#ffffff; highlightOpacity:0.5" clickable
     collider="group: pauseMenu; static: true" shape="type: rect">
     <a-text position="0 0.015 0" width="0.13" wrap-count="5" font="/fonts/SpaceMono-Regular-msdf.json" negate="false"
       align="center" value="Menu"></a-text>
@@ -28,7 +28,7 @@
 
 <a-entity id="menu" menu position="0 1.5 -0.5">
   <a-entity id="left-panel" position="-0.8 0.15 0.21" rotation="0 57.2957795 0"
-    geometry="primitive: roundedRect; width:0.5; height:0.5" material="shader: flat; color: #888888">
+    geometry="primitive: roundedRect; width:0.5; height:0.5" material="shader: flat; color: #888888; transparent: true; opacity: 0.35">
     <a-text width="1" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="left" value="About"
       position="-0.21 0.2 0.01">
     </a-text>
@@ -47,7 +47,7 @@
     id="center-panel"
     position="0 0 -0.01"
     geometry="primitive: roundedRect; width:1.3; height: 0.8"
-    material="shader: flat; color: #888888"
+    material="shader: flat; color: #888888; transparent: true; opacity: 0.35"
   >
     <a-text id="title-text" width="1.3" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center" value="Title" position="0 0.32 0.01"></a-text>
     <a-text id="artist-text" width="1.15" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="center" value="Artist" position="0 0.25 0.01"></a-text>
@@ -61,8 +61,8 @@
         position="-0.6 0 0" 
         rotation="0 0 180" 
         geometry="primitive: triangle; vertexB: -0.025 0.05 0; vertexA: 0.025 0 0; vertexC: -0.025 -0.05 0" 
-        material="shader: flat; color: #aaa" 
-        button 
+        material="shader: flat; color: #fff; transparent: true; opacity: 0.2" 
+        button="highlightColor:#ffffff; highlightOpacity:0.5" 
         clickable="activationTime: 1; showProgressRing: false; repeatOnHold: true"
         collider="group: menu; static: true"
         shape="type: rect">
@@ -71,8 +71,8 @@
         id="shift-right-button"
         position="0.6 0 0"
         geometry="primitive: triangle; vertexB: -0.025 0.05 0; vertexA: 0.025 0 0; vertexC: -0.025 -0.05 0"
-        material="shader: flat; color: #aaa"
-        button
+        material="shader: flat; color: #fff; transparent: true; opacity: 0.2"
+        button="highlightColor:#ffffff; highlightOpacity:0.5"
         clickable="activationTime: 1; showProgressRing: false; repeatOnHold: true"
         collider="group: menu; static: true"
         shape="type: rect">
@@ -85,10 +85,10 @@
     </a-entity>
     <a-entity
       id="play-button"
-      material="shader: flat; color: #aaa"
+      material="shader: flat; color: #fff; transparent: true; opacity: 0.2"
       geometry="primitive: roundedRect; width: 0.15; height: 0.06"
       position="0 -0.24 0.01"
-      button
+      button="highlightColor:#ffffff; highlightOpacity:0.5"
       clickable
       collider="group: menu; static: true"
       shape="type: rect">
@@ -96,10 +96,10 @@
     </a-entity>
     <a-entity
       id="save-button"
-      material="shader: flat; color: #aaa"
+      material="shader: flat; color: #fff; transparent: true; opacity: 0.2"
       geometry="primitive: roundedRect; width: 0.15; height: 0.06"
       position="0 -0.32 0.01"
-      button
+      button="highlightColor:#ffffff; highlightOpacity:0.5"
       clickable
       collider="group: menu; static: true"
       shape="type: rect">
@@ -111,7 +111,7 @@
     position="0.8 0 0.21"
     rotation="0 -57.2957795 0"
     geometry="primitive: roundedRect; width:0.5; height:0.8"
-    material="shader: flat; color: #888888"
+    material="shader: flat; color: #888888; transparent: true; opacity: 0.35"
   >
     <a-text
       width="1"
@@ -175,8 +175,17 @@
       spinner="width: 0.06; wrapCount: 4; increment: 0.1"
       setting="name: keyboardHeightOffset; component: spinner"
     ></a-entity>
+    <a-text id="lightIntensitySettingLabel" width="0.8" font="/fonts/SpaceMono-Regular-msdf.json" negate="false"
+      align="left" value="Light Intensity" position="-0.19 -0.1 0.01">
+    </a-text>
+    <a-entity 
+      id="lightIntensitySetting" 
+      position="0.17, -0.11, 0.01" 
+      rotation="0 0 0"
+      spinner="width: 0.06; wrapCount: 4; increment: 0.1; min: 0; max: 1; value: 1"
+      setting="name: lightIntensity; component: spinner"></a-entity>
     <a-text id="malletAdjustText" width="0.8" font="/fonts/SpaceMono-Regular-msdf.json" negate="false" align="left"
-      value="Hold down both\ntriggers to adjust\n mallet positions" position="-0.19 -0.15 0.01">
+      value="Hold down both\ntriggers to adjust\n mallet positions" position="-0.19 -0.25 0.01">
     </a-text>
   </a-entity>
 </a-entity>

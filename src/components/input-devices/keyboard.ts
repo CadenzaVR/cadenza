@@ -129,8 +129,12 @@ AFRAME.registerComponent("keyboard", {
             key.setAttribute("material", "emissiveIntensity", 1);
             this.noteRails[id].setAttribute("material", "emissiveIntensity", 1);
           } else {
-            key.setAttribute("material", "emissiveIntensity", 0.1);
-            this.noteRails[id].setAttribute("material", "emissiveIntensity", 0);
+            key.setAttribute("material", "emissiveIntensity", -0.5);
+            this.noteRails[id].setAttribute(
+              "material",
+              "emissiveIntensity",
+              -0.5
+            );
           }
         }
       }
@@ -152,7 +156,7 @@ AFRAME.registerComponent("keyboard", {
     key.setAttribute("material", {
       color: "#fff",
       emissive: "#fff",
-      emissiveIntensity: 0.1,
+      emissiveIntensity: -0.5,
       opacity: 0.2,
     });
 
@@ -186,8 +190,8 @@ AFRAME.registerComponent("keyboard", {
       if (input.value === 1 && keyCollisions.size === 1) {
         input.value = 0;
         this.inputProvider.notifyListeners(input);
-        key.setAttribute("material", "emissiveIntensity", 0.1);
-        noteRail.setAttribute("material", "emissiveIntensity", 0);
+        key.setAttribute("material", "emissiveIntensity", -0.5);
+        noteRail.setAttribute("material", "emissiveIntensity", -0.5);
       }
       keyCollisions.delete(e.detail.id);
     });
@@ -224,7 +228,7 @@ AFRAME.registerComponent("keyboard", {
     noteRail.setAttribute("material", {
       color: "#fff",
       emissive: "#fff",
-      emissiveIntensity: 0,
+      emissiveIntensity: -0.5,
       transparent: true,
       opacity: 0.2,
     });
