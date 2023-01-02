@@ -1,7 +1,7 @@
 AFRAME.registerComponent("starfield", {
   init: function () {
     const vertices = [];
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 1000; i++) {
       const x = THREE.MathUtils.randFloatSpread(1000);
       const y = THREE.MathUtils.randFloat(0, 500);
       const z = THREE.MathUtils.randFloatSpread(1000);
