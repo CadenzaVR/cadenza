@@ -77,4 +77,28 @@ export default class Score {
       this.accuracy = 0;
     }
   }
+
+  getRank(): string {
+    if (this.accuracy > 95 && this.judgementCounts["Miss"] == 0) {
+      if (
+        Object.values(this.judgementCounts).filter((x) => x > 0).length === 1
+      ) {
+        return "SS";
+      }
+      return "S";
+    }
+    if (this.accuracy > 90) {
+      return "A";
+    }
+    if (this.accuracy > 80) {
+      return "B";
+    }
+    if (this.accuracy > 70) {
+      return "C";
+    }
+    if (this.accuracy > 60) {
+      return "D";
+    }
+    return "F";
+  }
 }

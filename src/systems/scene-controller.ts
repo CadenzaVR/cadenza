@@ -338,7 +338,6 @@ AFRAME.registerSystem("scene-controller", {
     const pauseGameOverText = document.getElementById("pause-gameover-text");
     const scoreText = document.getElementById("score-text");
     const accuracyText = document.getElementById("accuracy-text");
-    const comboText = document.getElementById("combo-text");
     const rankText = document.getElementById("rank-text");
     const statsText = document.getElementById("stats-text");
     if (
@@ -358,10 +357,9 @@ AFRAME.registerSystem("scene-controller", {
       scoreText.setAttribute("value", "Score: " + score.score + pbString);
       accuracyText.setAttribute(
         "value",
-        "Accuracy: " + score.accuracy.toFixed(2) + "%" //TODO
+        "Accuracy: " + score.accuracy.toFixed(2) + "%"
       );
-      comboText.setAttribute("value", "Combo: " + score.combo);
-      rankText.setAttribute("value", ""); // TODO
+      rankText.setAttribute("value", "Rank: " + score.getRank());
       statsText.setAttribute(
         "value",
         Object.entries(score.judgementCounts)
