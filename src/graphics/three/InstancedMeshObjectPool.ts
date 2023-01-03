@@ -26,7 +26,7 @@ export default class InstancedMeshObjectPool {
     this.defaultPosition = defaultPosition;
     this.pool = [];
     for (let i = 0; i < count; i++) {
-      this.pool.push(i);
+      this.releaseInstance(i);
     }
   }
 

@@ -1,7 +1,7 @@
 export function createClampedVisibiltyMaterial(params = {}) {
   const uniforms = {
-    maxZ: { value: params.maxZ ? params.maxZ : -0.5 },
-    minZ: { value: params.minZ ? params.minZ : -8.5 },
+    maxZ: { value: params.maxZ ? params.maxZ : 100 },
+    minZ: { value: params.minZ ? params.minZ : -100 },
     color: {
       value: params.color ? params.color : new THREE.Vector4(1, 1, 1, 1),
     },

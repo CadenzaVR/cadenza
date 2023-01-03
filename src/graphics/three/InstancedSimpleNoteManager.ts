@@ -1,4 +1,4 @@
-import { Event, Matrix4, Object3D, Vector3 } from "three";
+import { Event, Object3D, Vector3 } from "three";
 import Beatmap from "../../beatmap/models/Beatmap";
 import Note from "../../beatmap/models/Note";
 import Initializable from "./Initializable";
@@ -30,12 +30,8 @@ export default class InstancedSimpleNoteManager
   }
 
   init(parent: Object3D<Event>): void {
-    parent.add(this.pool.mesh);
     this.pool.mesh.lookAt(this.moveDirection);
-    const identityMatrix = new Matrix4().identity();
-    for (let i = 0; i < this.pool.mesh.count; i++) {
-      this.pool.mesh.setMatrixAt(i, identityMatrix);
-    }
+    parent.add(this.pool.mesh);
   }
 
   getOffsetSpawnPosition(note: Note, spawnOffsetTime: number): Vector3 {
