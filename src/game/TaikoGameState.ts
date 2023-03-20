@@ -2,6 +2,7 @@ import Beatmap from "../beatmap/models/Beatmap";
 import Note from "../beatmap/models/Note";
 import InputState from "../input/InputState";
 import Score from "../scoring/models/Score";
+import { GAMEMODE_TAIKO } from "./GameModes";
 import GameState, { GameStatus } from "./GameState";
 import HitEvent from "./HitEvent";
 
@@ -64,7 +65,21 @@ export default class TaikoGameState implements GameState {
     this.beatmap = null;
     this.currentSongTime = 0;
     this.timingOffset = 0;
-    this.score = new Score(null, 0, 0, 0, 0, 0, []);
+    this.score = {
+      beatmap: null,
+      gameMode: GAMEMODE_TAIKO,
+      score: 0,
+      highScore: 0,
+      combo: 0,
+      maxCombo: 0,
+      accuracy: 0,
+      judgementCounts: null,
+      data: [],
+    };
+  }
+
+  getGameMode(): number {
+    return GAMEMODE_TAIKO;
   }
 
   addChangeListener(property: string, handler: (newValue: any) => void): void {
@@ -76,6 +91,7 @@ export default class TaikoGameState implements GameState {
 
   loadBeatmap(beatmap: Beatmap) {
     this.beatmap = beatmap;
+    this.score.beatmap = beatmap;
     // assume beatmap notes are sorted by time in ascending order
     for (let i = this.beatmap.notes.length - 1; i > -1; i--) {
       this.noteQueue.push(this.beatmap.notes[i]);

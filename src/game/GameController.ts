@@ -3,6 +3,7 @@ import Beatmap from "../beatmap/models/Beatmap";
 import GraphicsManager from "../graphics/GraphicsManager";
 import InputManager from "../input/InputManager";
 import InputState from "../input/InputState";
+import { computeAccuracyStats } from "../scoring/models/Score";
 import ScoreManager from "../scoring/ScoreManager";
 import SettingsManager from "../settings/SettingsManager";
 import Timer from "../timing/Timer";
@@ -49,11 +50,13 @@ export default class GameController {
     });
   }
 
-  loadBeatmap(beatmap: Beatmap) {
+  async loadBeatmap(beatmap: Beatmap) {
     this.state.setStatus(GameStatus.LOADING);
     this.state.loadBeatmap(beatmap);
-    const highScore = this.scoreManager.getHighscore(beatmap.id);
-    this.state.score.beatmapId = beatmap.id;
+    const highScore = await this.scoreManager.getHighscore(
+      beatmap,
+      this.state.getGameMode()
+    );
     this.state.score.highScore = highScore.highScore;
     this.state.score.maxCombo = highScore.maxCombo;
     return Promise.all([
@@ -66,7 +69,7 @@ export default class GameController {
     this.audioManager.onGamePause();
     this.timer.pause();
     this.state.setStatus(GameStatus.PAUSED);
-    this.state.score.computeAccuracyStats();
+    computeAccuracyStats(this.state.score);
   }
 
   async start() {
@@ -98,7 +101,7 @@ export default class GameController {
   }
 
   endMap() {
-    this.state.score.computeAccuracyStats();
+    computeAccuracyStats(this.state.score);
     this.scoreManager.processScore(this.state.score);
     this.state.setStatus(GameStatus.GAME_OVER);
   }

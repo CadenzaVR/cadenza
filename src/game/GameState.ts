@@ -28,4 +28,5 @@ export default interface GameState {
   updateScore(): void;
   setStatus(status: number): void;
   reset(): void;
+  getGameMode(): number;
 }

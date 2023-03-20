@@ -7,7 +7,7 @@ interface SupportedTypes {
 }
 
 /**
- * The supported gamemodes for each gamemode.
+ * The supported beatmap types for each gamemode.
  */
 export const SUPPORTED_BEATMAP_TYPES = Object.freeze({
   0: Object.freeze({

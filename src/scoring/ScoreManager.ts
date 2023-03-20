@@ -1,3 +1,4 @@
+import Beatmap from "../beatmap/models/Beatmap";
 import Score from "./models/Score";
 import ScoreRepository from "./repositories/ScoreRepository";
 
@@ -8,13 +9,13 @@ export default class ScoreManager {
     this.scoreRepository = scoreRepository;
   }
 
-  processScore(score: Score) {
+  async processScore(score: Score) {
     if (score.score === score.highScore || score.combo === score.maxCombo) {
-      this.scoreRepository.saveHighscore(score);
+      await this.scoreRepository.saveHighscore(score);
     }
   }
 
-  getHighscore(beatmapId: string): Score {
-    return this.scoreRepository.getHighscore(beatmapId);
+  getHighscore(beatmap: Beatmap, gameMode: number): Promise<Score> {
+    return this.scoreRepository.getHighscore(beatmap, gameMode);
   }
 }

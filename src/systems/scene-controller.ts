@@ -5,6 +5,7 @@ import { deserializeBeatmap } from "../beatmap/serialization/BeatmapDeserializer
 import { SUPPORTED_BEATMAP_TYPES } from "../game/GameModes";
 import { GameStatus } from "../game/GameState";
 import { getColor } from "../graphics/JudgementColors";
+import { computeAccuracyStats, getRank } from "../scoring/models/Score";
 
 const TOUCH_COLLISION_START_EVENT = new CustomEvent("collision-enter", {
   detail: {
@@ -351,7 +352,7 @@ AFRAME.registerSystem("scene-controller", {
         pauseGameOverText.setAttribute("value", "Paused");
       }
       const score = this.game.getScore();
-      score.computeAccuracyStats();
+      computeAccuracyStats(score);
       const pbString =
         score.score === score.highScore ? " (Personal Best!)" : "";
       scoreText.setAttribute("value", "Score: " + score.score + pbString);
@@ -359,7 +360,7 @@ AFRAME.registerSystem("scene-controller", {
         "value",
         "Accuracy: " + score.accuracy.toFixed(2) + "%"
       );
-      rankText.setAttribute("value", "Rank: " + score.getRank());
+      rankText.setAttribute("value", "Rank: " + getRank(score));
       statsText.setAttribute(
         "value",
         Object.entries(score.judgementCounts)
