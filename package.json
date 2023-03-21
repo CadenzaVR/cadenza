@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "start:dev": "webpack-dev-server --host 0.0.0.0",
+    "dev": "webpack-dev-server --host 0.0.0.0",
     "lint": "eslint --ext .js,.ts src",
     "lint:fix": "eslint --ext .js,.ts src --fix",
     "format": "prettier --write \"**/*.+(js|ts)\""
@@ -24,6 +24,7 @@
     "aframe-haptics-component": "^1.6.3",
     "axios": "^0.26.0",
     "dexie": "^3.0.3",
+    "hash-wasm": "^4.9.0",
     "jsmediatags": "3.9.7",
     "jszip": "^3.6.0",
     "micromodal": "^0.4.6",
