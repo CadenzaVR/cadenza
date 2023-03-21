@@ -1,18 +1,29 @@
 import Beatmap from "../models/Beatmap";
 import { xxhash128 } from "hash-wasm";
 
-const KEYFIELDS = ["startTime", "type", "endTime", "key", "width"];
+export const KEYFIELDS_TAIKO: readonly string[] = [
+  "startTime",
+  "type",
+  "endTime",
+];
+export const KEYFIELDS_CLASSIC: readonly string[] = [
+  "startTime",
+  "type",
+  "endTime",
+  "key",
+  "width",
+];
 
 export default function hash(
   beatmap: Beatmap,
-  keyFields: string[] = KEYFIELDS
+  keyFields: string[] | readonly string[] = KEYFIELDS_CLASSIC
 ): Promise<string> {
-  keyFields.sort();
+  const sortedKeyFields = [...keyFields].sort();
   const str = beatmap.notes
     .sort((a, b) => {
       // sort by key fields in order
-      for (let i = 0; i < keyFields.length; i++) {
-        const field = keyFields[i];
+      for (let i = 0; i < sortedKeyFields.length; i++) {
+        const field = sortedKeyFields[i];
         if ((a as any)[field] < (b as any)[field]) return -1;
         if ((a as any)[field] > (b as any)[field]) return 1;
       }
@@ -23,9 +34,9 @@ export default function hash(
       return (
         acc +
         "[" +
-        keyFields.reduce((acc, field) => {
-          const val = (note as any)[field];
-          if (val === undefined) return acc;
+        sortedKeyFields.reduce((acc, field) => {
+          let val = (note as any)[field];
+          if (val === undefined || val === null) val = "";
           return acc + val + ",";
         }, "") +
         "]"
