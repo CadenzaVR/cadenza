@@ -5,11 +5,15 @@ import ScoreRepository from "./ScoreRepository";
 export default class LocalStorageScoreRepository implements ScoreRepository {
   async saveHighscore(score: Score): Promise<void> {
     localStorage.setItem(
-      score.gameMode + "score" + score.beatmap.id,
+      score.gameMode + "score" + score.beatmap.id
+        ? score.beatmap.id
+        : score.beatmap.hash,
       score.highScore + ""
     );
     localStorage.setItem(
-      score.gameMode + "combo" + score.beatmap.id,
+      score.gameMode + "combo" + score.beatmap.id
+        ? score.beatmap.id
+        : score.beatmap.hash,
       score.maxCombo + ""
     );
   }
