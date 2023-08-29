@@ -72,8 +72,6 @@ export default class TaikoGameState implements GameState {
       highScore: 0,
       combo: 0,
       maxCombo: 0,
-      accuracy: 0,
-      judgementCounts: null,
       data: [],
     };
   }
@@ -91,7 +89,6 @@ export default class TaikoGameState implements GameState {
 
   loadBeatmap(beatmap: Beatmap) {
     this.beatmap = beatmap;
-    this.score.beatmap = beatmap;
     // assume beatmap notes are sorted by time in ascending order
     for (let i = this.beatmap.notes.length - 1; i > -1; i--) {
       this.noteQueue.push(this.beatmap.notes[i]);

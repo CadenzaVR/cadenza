@@ -6,11 +6,13 @@ export default class KDTreeNode {
   left: KDTreeNode;
   right: KDTreeNode;
   colliders: Collider[];
+  layerMask: number;
   constructor() {
     this.axis = null;
     this.axisValue = null;
     this.left = null;
     this.right = null;
     this.colliders = null;
+    this.layerMask = 0;
   }
 }

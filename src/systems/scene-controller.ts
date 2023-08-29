@@ -2,10 +2,15 @@ import { Raycaster, Vector2 } from "three";
 import convertBeatmap from "../beatmap/converters/BeatmapConverter";
 import Beatmap from "../beatmap/models/Beatmap";
 import { deserializeBeatmap } from "../beatmap/serialization/BeatmapDeserializer";
-import { SUPPORTED_BEATMAP_TYPES } from "../game/GameModes";
+import {
+  GAMEMODE_CLASSIC,
+  GAMEMODE_TAIKO,
+  GAMEMODE_TONO,
+} from "../game/GameModes";
 import { GameStatus } from "../game/GameState";
 import { getColor } from "../graphics/JudgementColors";
-import { computeAccuracyStats, getRank } from "../scoring/models/Score";
+import { computeAccuracyStats } from "../scoring/models/Score";
+import { Entity } from "aframe";
 
 const TOUCH_COLLISION_START_EVENT = new CustomEvent("collision-enter", {
   detail: {
@@ -20,9 +25,17 @@ const TOUCH_COLLISION_END_EVENT = new CustomEvent("collision-exit", {
 AFRAME.registerSystem("scene-controller", {
   init: function () {
     this.menu = document.querySelector("#menu");
+    this.menu.addEventListener("song-change", () => {
+      this.schedulePreload();
+    });
     this.inputDevices = [
-      document.querySelector("#keyboard"),
-      document.querySelector("#drum"),
+      [document.querySelector("#keyboard")],
+      [document.querySelector("#drum")],
+      [
+        document.querySelector("#tone-display"),
+        document.querySelector("#microphone"),
+        document.querySelector("#trombone"),
+      ],
     ];
     this.mallets = [
       document.querySelector("#mallet1"),
@@ -30,6 +43,8 @@ AFRAME.registerSystem("scene-controller", {
     ];
 
     this.el.addEventListener("loaded", () => {
+      this.microphone =
+        document.querySelector("#microphone").components["microphone"];
       this.keyboard =
         document.querySelector("#keyboard").components["keyboard"];
 
@@ -82,28 +97,54 @@ AFRAME.registerSystem("scene-controller", {
         }
         this.updateInfoText();
         this.updatePauseGameoverPanel();
+        if (status === GameStatus.GAME_OVER) {
+          const score = this.game.getScore();
+          const beatmapHash = score.beatmap.hash;
+          const gameMode = this.gameMode;
+          this.updateHighscoreText();
+          gtag("event", "songend", {
+            mode: gameMode,
+            map: beatmapHash,
+          });
+        }
+      });
+
+      this.loadSongTimeout = null;
+
+      this.menu.addEventListener("difficulty-change", () => {
+        this.schedulePreload();
       });
 
       this.menu.addEventListener("game-mode-change", (e: CustomEvent) => {
         this.gameMode = e.detail;
-        for (const inputDevice of this.inputDevices) {
-          inputDevice.setAttribute("visible", false);
-          this.el.systems["collision-detection"].disableColliderGroup(
+        this.microphone.disableMic();
+        for (const inputDeviceList of this.inputDevices) {
+          for (const inputDevice of inputDeviceList) {
+            inputDevice.setAttribute("visible", false);
+            this.el.systems["collision-detection"].disableColliderGroup(
+              inputDevice.id
+            );
+          }
+        }
+        for (const inputDevice of this.inputDevices[this.gameMode]) {
+          inputDevice.setAttribute("visible", true);
+          this.el.systems["collision-detection"].enableColliderGroup(
             inputDevice.id
           );
         }
-        this.inputDevices[this.gameMode].setAttribute("visible", true);
-        this.el.systems["collision-detection"].enableColliderGroup(
-          this.inputDevices[this.gameMode].id
-        );
         switch (this.gameMode) {
-          case 0:
+          case GAMEMODE_CLASSIC:
             this.game.setClassicGameMode();
             break;
-          case 1:
+          case GAMEMODE_TAIKO:
             this.game.setTaikoGameMode();
             break;
+          case GAMEMODE_TONO:
+            this.game.setTonoGameMode();
+            this.microphone.enableMic();
+            break;
         }
+        this.schedulePreload();
       });
     });
 
@@ -128,9 +169,61 @@ AFRAME.registerSystem("scene-controller", {
       this.pauseResume();
     });
 
+    // Hand tracking pause
+    const leftHand = document.querySelector("#leftHand");
+    const rightHand = document.querySelector("#rightHand");
+    const LEFT_TRIGGER = 1; // 01 in binary
+    const RIGHT_TRIGGER = 2; // 10 in binary
+    const BOTH_TRIGGERS = LEFT_TRIGGER | RIGHT_TRIGGER; // 11 in binary
+
+    let triggerState = 0;
+
+    function updateTriggerState(triggerBit: number, isDown: boolean) {
+      if (isDown) {
+        triggerState |= triggerBit; // Set the bit
+      } else {
+        triggerState &= ~triggerBit; // Clear the bit
+      }
+
+      if (triggerState === BOTH_TRIGGERS) {
+        this.pauseResume(false);
+      }
+    }
+
+    leftHand.addEventListener("triggerdown", () => {
+      if (
+        leftHand.components["generic-tracked-controller-controls"]
+          .controllerEventsActive
+      ) {
+        updateTriggerState(LEFT_TRIGGER, true);
+      }
+    });
+
+    leftHand.addEventListener("triggerup", () => {
+      updateTriggerState(LEFT_TRIGGER, false);
+    });
+
+    rightHand.addEventListener("triggerdown", () => {
+      if (
+        rightHand.components["generic-tracked-controller-controls"]
+          .controllerEventsActive
+      ) {
+        updateTriggerState(RIGHT_TRIGGER, true);
+      }
+    });
+
+    rightHand.addEventListener("triggerup", () => {
+      updateTriggerState(RIGHT_TRIGGER, false);
+    });
+
     // Retry Button
     document.querySelector("#retry-button").addEventListener("click", () => {
       this.game.restart();
+    });
+
+    // Resume Button
+    document.querySelector("#resume-button").addEventListener("click", () => {
+      this.pauseResume();
     });
 
     // Return to Menu Button
@@ -150,11 +243,42 @@ AFRAME.registerSystem("scene-controller", {
       this.updateInfoText();
     });
     this.el.addEventListener("enter-vr", () => {
+      if (this.gameMode !== 0) {
+        this.el.systems["collision-detection"].disableColliderGroup("keyboard");
+      }
       if (this.gameMode !== 1) {
         this.el.systems["collision-detection"].disableColliderGroup("drum");
       }
+      if (this.gameMode !== 2) {
+        this.el.systems["collision-detection"].disableColliderGroup("trombone");
+      }
       this.el.systems.audio.audioManager.startContext();
       this.updateInfoText();
+
+      if (this.el.xrSession) {
+        this.el.xrSession.addEventListener(
+          "visibilitychange",
+          async (eventData: any) => {
+            switch (eventData.session.visibilityState) {
+              case "visible":
+                //...
+                break;
+              case "visible-blurred":
+                //...
+                break;
+              case "hidden":
+                this.pauseResume(false);
+                this.menu.components["menu"].audio.pause();
+                await this.el.xrSession.end();
+                break;
+            }
+          }
+        );
+      }
+    });
+
+    this.menu.addEventListener("downloadStart", () => {
+      this.loadingText.setAttribute("value", "Loading...");
     });
 
     this.menu.addEventListener("progress", (event: any) => {
@@ -180,6 +304,8 @@ AFRAME.registerSystem("scene-controller", {
     this.menu.addEventListener("downloadComplete", () => {
       this.loadingText.setAttribute("value", "");
     });
+
+    this.el.systems["collision-detection"].disableColliderGroup("pauseMenu");
 
     // Touch input
     const raycaster = new Raycaster();
@@ -235,47 +361,117 @@ AFRAME.registerSystem("scene-controller", {
       menu.audio.pause();
       this.menu.object3D.visible = false;
       this.el.systems["collision-detection"].disableColliderGroup("menu");
-      const selectedMap = menu.getSelectedMap();
+      this.menu.object3D.position.y = -100;
+      const selectedMap = menu.getSelectedMap() as Beatmap;
 
-      if (!isNaN(selectedMap.info.src)) {
-        const beatmap = await this.el.systems[
-          "db"
-        ].beatmapSetRepository.getBeatmap(selectedMap.info.src);
-        selectedMap.info.src = URL.createObjectURL(beatmap.data);
+      if (this.loadSongTimeout) {
+        clearTimeout(this.loadSongTimeout);
+        this.loadSongTimeout = null;
       }
-      const beatmapRaw = await fetch(selectedMap.info.src).then((response) => {
-        return response.blob();
-      });
-      await deserializeBeatmap(beatmapRaw, selectedMap);
+      await this.preloadBeatmap(selectedMap);
 
-      const mapType = selectedMap.info.type
-        ? parseInt(selectedMap.info.type)
-        : parseInt(selectedMap.set.info.type);
-      if (!SUPPORTED_BEATMAP_TYPES[this.gameMode].primary.includes(mapType)) {
-        convertBeatmap(selectedMap, this.gameMode);
-      }
+      let temp = null;
 
       if (typeof selectedMap.set.info.audioSrc === "number") {
         const audio = await this.el.systems["db"].beatmapSetRepository.getSong(
           selectedMap.set.info.audioSrc
         );
-        const temp = selectedMap.set.info.audioSrc;
+        temp = selectedMap.set.info.audioSrc;
         selectedMap.set.info.audioSrc = URL.createObjectURL(audio.data);
+      }
+
+      if (selectedMap.set.info.audioSrc.startsWith("https://")) {
+        //cross origin
+        temp = selectedMap.set.info.audioSrc;
+        selectedMap.set.info.audioSrc = await fetch(
+          selectedMap.set.info.audioSrc
+        )
+          .then((response) => response.blob())
+          .then((blob) => URL.createObjectURL(blob));
+      }
+
+      if (temp) {
         await this.loadBeatmap(selectedMap);
         selectedMap.set.info.audioSrc = temp;
       } else {
         this.loadBeatmap(selectedMap);
       }
+
+      gtag("event", "play", {
+        mode: this.gameMode,
+        creator: selectedMap.info.creator
+          ? selectedMap.info.creator
+          : selectedMap.set.info.creator,
+        name: selectedMap.set.info.song + "_" + selectedMap.info.name,
+        map: selectedMap.hash,
+      });
     });
   },
 
+  updateHighscoreText: async function () {
+    const selectedMap = this.menu.components[
+      "menu"
+    ].getSelectedMap() as Beatmap;
+    const localHighscore =
+      await this.el.systems.scores.scoreManager.scoreRepository.getHighscore(
+        selectedMap,
+        this.gameMode
+      );
+    const accuracyRankStr = localHighscore.highScoreAccuracy
+      ? ` (${localHighscore.highScoreAccuracy.toFixed(2)}% - ${
+          localHighscore.highScoreRank
+        })`
+      : "";
+    document
+      .querySelector("#highscore-text")
+      .setAttribute(
+        "value",
+        `Highscore: ${localHighscore.highScore + accuracyRankStr}`
+      );
+  },
+
+  schedulePreload: function (ms = 2000) {
+    if (this.loadSongTimeout) {
+      clearTimeout(this.loadSongTimeout);
+    }
+    document.querySelector("#high-scores-text").setAttribute("value", "");
+    this.updateHighscoreText();
+
+    this.loadSongTimeout = setTimeout(async () => {
+      const selectedMap = this.menu.components[
+        "menu"
+      ].getSelectedMap() as Beatmap;
+      await this.preloadBeatmap(selectedMap);
+      this.updateHighscoreText();
+      this.loadSongTimeout = null;
+    }, ms);
+  },
+
+  preloadBeatmap: async function (beatmap: Beatmap) {
+    if (!isNaN(beatmap.info.src as number)) {
+      const map = await this.el.systems["db"].beatmapSetRepository.getBeatmap(
+        beatmap.info.src
+      );
+      beatmap.info.src = URL.createObjectURL(map.data);
+    }
+    const beatmapRaw = await fetch(beatmap.info.src as string).then(
+      (response) => {
+        return response.blob();
+      }
+    );
+    await deserializeBeatmap(beatmapRaw, beatmap);
+    await convertBeatmap(beatmap, this.gameMode);
+  },
+
   enablePointers: function () {
-    const leftHand = document.querySelector("#leftHand");
-    const rightHand = document.querySelector("#rightHand");
-    leftHand.setAttribute("raycaster", "enabled", true);
-    leftHand.setAttribute("raycaster", "showLine", true);
-    rightHand.setAttribute("raycaster", "enabled", true);
-    rightHand.setAttribute("raycaster", "showLine", true);
+    if (this.el.sceneEl.is("vr-mode")) {
+      const leftHand = document.querySelector("#leftHand");
+      const rightHand = document.querySelector("#rightHand");
+      leftHand.setAttribute("raycaster", "enabled", true);
+      leftHand.setAttribute("raycaster", "showLine", true);
+      rightHand.setAttribute("raycaster", "enabled", true);
+      rightHand.setAttribute("raycaster", "showLine", true);
+    }
   },
 
   disablePointers: function () {
@@ -294,10 +490,15 @@ AFRAME.registerSystem("scene-controller", {
   },
 
   returnToMenu: function () {
-    this.game.returnToMenu();
-    this.menu.components.menu.el.object3D.visible = true;
-    this.menu.components.menu.audio.play();
-    this.el.systems["collision-detection"].enableColliderGroup("menu");
+    if (
+      this.game.controller.state.status === GameStatus.PAUSED ||
+      this.game.controller.state.status === GameStatus.GAME_OVER
+    ) {
+      this.game.returnToMenu();
+      this.menu.components.menu.el.object3D.visible = true;
+      this.el.systems["collision-detection"].enableColliderGroup("menu");
+      this.menu.object3D.position.y = 1.5;
+    }
   },
 
   loadBeatmap: async function (beatmap: Beatmap) {
@@ -326,8 +527,11 @@ AFRAME.registerSystem("scene-controller", {
     }
   },
 
-  pauseResume: function () {
-    if (this.game.controller.state.status === GameStatus.PAUSED) {
+  pauseResume: function (resumeEnabled = true) {
+    if (
+      this.game.controller.state.status === GameStatus.PAUSED &&
+      resumeEnabled
+    ) {
       this.game.resume();
     } else if (this.game.controller.state.status === GameStatus.PLAYING) {
       this.game.pauseGame();
@@ -335,12 +539,15 @@ AFRAME.registerSystem("scene-controller", {
   },
 
   updatePauseGameoverPanel: function () {
-    const pauseGameoverPanel = document.getElementById("pause-gameover-panel");
+    const pauseGameoverPanel = document.getElementById(
+      "pause-gameover-panel"
+    ) as Entity;
     const pauseGameOverText = document.getElementById("pause-gameover-text");
     const scoreText = document.getElementById("score-text");
     const accuracyText = document.getElementById("accuracy-text");
     const rankText = document.getElementById("rank-text");
     const statsText = document.getElementById("stats-text");
+    const resumeButton = document.getElementById("resume-button");
     if (
       this.game.getStatus() === GameStatus.PAUSED ||
       this.game.getStatus() === GameStatus.GAME_OVER
@@ -348,8 +555,10 @@ AFRAME.registerSystem("scene-controller", {
       this.el.systems["collision-detection"].enableColliderGroup("pauseMenu");
       if (this.game.getStatus() === GameStatus.GAME_OVER) {
         pauseGameOverText.setAttribute("value", "Game Over");
+        resumeButton.setAttribute("visible", "false");
       } else {
         pauseGameOverText.setAttribute("value", "Paused");
+        resumeButton.setAttribute("visible", "true");
       }
       const score = this.game.getScore();
       computeAccuracyStats(score);
@@ -360,7 +569,7 @@ AFRAME.registerSystem("scene-controller", {
         "value",
         "Accuracy: " + score.accuracy.toFixed(2) + "%"
       );
-      rankText.setAttribute("value", "Rank: " + getRank(score));
+      rankText.setAttribute("value", "Rank: " + score.rank);
       statsText.setAttribute(
         "value",
         Object.entries(score.judgementCounts)
@@ -369,10 +578,10 @@ AFRAME.registerSystem("scene-controller", {
           })
           .join("  ")
       );
-      pauseGameoverPanel.setAttribute("visible", "true");
+      pauseGameoverPanel.object3D.visible = true;
     } else {
       this.el.systems["collision-detection"].disableColliderGroup("pauseMenu");
-      pauseGameoverPanel.setAttribute("visible", "false");
+      pauseGameoverPanel.object3D.visible = false;
     }
   },
 

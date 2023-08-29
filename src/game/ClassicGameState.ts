@@ -77,8 +77,6 @@ export default class ClassicGameState implements GameState {
       highScore: 0,
       combo: 0,
       maxCombo: 0,
-      accuracy: 0,
-      judgementCounts: null,
       data: [],
     };
   }
@@ -96,7 +94,6 @@ export default class ClassicGameState implements GameState {
 
   loadBeatmap(beatmap: Beatmap) {
     this.beatmap = beatmap;
-    this.score.beatmap = beatmap;
     for (const note of <ClassicNote[]>this.beatmap.notes) {
       for (let i = 0; i < note.width; i++) {
         this.noteQueues[i + note.key].push(note);

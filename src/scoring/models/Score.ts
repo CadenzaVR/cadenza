@@ -24,12 +24,17 @@ export default interface Score {
   beatmap: Beatmap;
   gameMode: number;
   score: number;
-  highScore: number;
   combo: number;
-  maxCombo: number;
-  accuracy: number;
-  judgementCounts: Record<string, number>;
   data: Array<number>;
+
+  highScore: number;
+  highScoreAccuracy?: number;
+  highScoreRank?: string;
+  maxCombo: number;
+
+  accuracy?: number;
+  judgementCounts?: Record<string, number>;
+  rank?: string;
 }
 
 export function computeAccuracyStats(
@@ -64,27 +69,29 @@ export function computeAccuracyStats(
   } else {
     score.accuracy = 0;
   }
+  score.rank = getRank(score.accuracy, score.judgementCounts);
 }
 
-export function getRank(score: Score): string {
-  if (score.accuracy > 95 && !score.judgementCounts["Miss"]) {
-    if (
-      Object.values(score.judgementCounts).filter((x) => x > 0).length === 1
-    ) {
+export function getRank(
+  accuracy: number,
+  judgementCounts: Record<string, number>
+): string {
+  if (accuracy > 95 && !judgementCounts["Miss"]) {
+    if (Object.values(judgementCounts).filter((x) => x > 0).length === 1) {
       return "SS";
     }
     return "S";
   }
-  if (score.accuracy > 85) {
+  if (accuracy > 85) {
     return "A";
   }
-  if (score.accuracy > 75) {
+  if (accuracy > 75) {
     return "B";
   }
-  if (score.accuracy > 65) {
+  if (accuracy > 65) {
     return "C";
   }
-  if (score.accuracy > 55) {
+  if (accuracy > 55) {
     return "D";
   }
   return "F";

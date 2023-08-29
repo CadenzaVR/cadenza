@@ -6,7 +6,7 @@
       name="description"
       content="A WebVR rhythm game that involves striking keys to the beat of the music."
     />
-    <script src="/scripts/aframe.min.js"></script>
+    <script src="/scripts/aframe-v1.4.2.min.js"></script>
     <link
       href="https://fonts.googleapis.com/css?family=Space+Mono&display=swap"
       rel="stylesheet"
@@ -17,18 +17,36 @@
     <title>Cadenza!!</title>
   </head>
   <body>
-    <a-scene
-      keyboard-shortcuts="enterVR: false"
-    >
+    <a-scene keyboard-shortcuts="enterVR: false">
       <%= require('html-loader!./assets.html').default %>
-      <a-entity id="skysphere" starfield material="src: #sky; side: back;" geometry="primitive: sphere; radius: 500; thetaLength: 90;"></a-entity>
-      <a-entity id="skysphere-bottom-half" material="src: #sky; side: back;" geometry="primitive: sphere; radius: 500; thetaLength: 90;" rotation="180 0 0"></a-entity>
-      <a-entity id="light" light="type: ambient; color: #fff" bind-setting="settingName:lightIntensity; boundComponent:light; boundComponentAttribute: intensity"></a-entity>
+      <a-entity
+        id="skysphere"
+        starfield
+        material="src: #sky; side: back;"
+        geometry="primitive: sphere; radius: 500; thetaLength: 90;"
+      ></a-entity>
+      <a-entity
+        id="skysphere-bottom-half"
+        material="src: #sky; side: back;"
+        geometry="primitive: sphere; radius: 500; thetaLength: 90;"
+        rotation="180 0 0"
+      ></a-entity>
+      <a-entity
+        id="light"
+        light="type: ambient; color: #fff"
+        bind-setting="
+          settingName: lightIntensity; boundComponent:light; boundComponentAttribute: intensity
+        "
+      ></a-entity>
+      <a-entity
+        light="type: point;distance:1;intensity:5"
+        position="0 2 0"
+      ></a-entity>
       <a-entity id="game" game></a-entity>
 
-      <%= require('html-loader!./player-rig.html').default %>
-      <%= require('html-loader!./input-devices.html').default %>
-      <%= require('html-loader!./menu.html').default %>
+      <%= require('html-loader!./player-rig.html').default %> <%=
+      require('html-loader!./input-devices.html').default %> <%=
+      require('html-loader!./menu.html').default %>
     </a-scene>
     <%= require('html-loader!./modals.html').default %>
   </body>

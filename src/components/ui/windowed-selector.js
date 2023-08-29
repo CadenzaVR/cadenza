@@ -64,7 +64,18 @@ AFRAME.registerComponent("windowed-selector", {
     if (this.currentIndex >= this.sources.length) {
       this.currentIndex = this.sources.length / 2;
     }
-    this.jumpToIndex(this.currentIndex);
+    this.loadActiveImages();
+  },
+
+  loadActiveImages: function () {
+    const startIndex = Math.max(
+      this.currentIndex - Math.floor(this.maxVisibleItems / 2),
+      0
+    );
+    for (let i = 0; i < this.activeItems.length; i++) {
+      const item = this.activeItems[i];
+      item.setAttribute("src", this.sources[startIndex + i]);
+    }
   },
 
   jumpToSource: function (source) {
@@ -77,6 +88,7 @@ AFRAME.registerComponent("windowed-selector", {
 
   jumpToIndex: function (index) {
     index = Math.max(0, Math.min(index, this.sources.length - 1));
+    if (index === this.currentIndex) return false;
     this.currentIndex = index;
     const indexOffset = Math.floor(this.maxVisibleItems / 2);
     const width = this.imageWidth + this.spacing;
@@ -97,6 +109,7 @@ AFRAME.registerComponent("windowed-selector", {
         this.itemPool.push(item);
       }
     }
+    return true;
   },
 
   createImageItem: function () {

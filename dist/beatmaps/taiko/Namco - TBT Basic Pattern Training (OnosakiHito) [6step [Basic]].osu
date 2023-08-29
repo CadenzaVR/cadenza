@@ -1,0 +1,102 @@
+osu file format v14
+
+[General]
+AudioFilename: SONG_WTOU150.mp3
+AudioLeadIn: 0
+PreviewTime: 100
+Countdown: 1
+SampleSet: None
+StackLeniency: 0.7
+Mode: 1
+LetterboxInBreaks: 1
+WidescreenStoryboard: 0
+
+[Editor]
+DistanceSpacing: 0.8
+BeatDivisor: 4
+GridSize: 8
+TimelineZoom: 1
+
+[Metadata]
+Title:TBT Basic Pattern Training
+TitleUnicode:TBT Basic Pattern Training
+Artist:Namco
+ArtistUnicode:Namco
+Creator:OnosakiHito
+Version:6step [Basic]
+Source:
+Tags:Taiko TBT
+BeatmapID:3462590
+BeatmapSetID:1694569
+
+[Difficulty]
+HPDrainRate:10
+CircleSize:5
+OverallDifficulty:3
+ApproachRate:3
+SliderMultiplier:1.4
+SliderTickRate:1
+
+[Events]
+//Background and Video events
+0,0,"Basic.png",0,0
+//Break Periods
+//Storyboard Layer 0 (Background)
+//Storyboard Layer 1 (Fail)
+//Storyboard Layer 2 (Pass)
+//Storyboard Layer 3 (Foreground)
+//Storyboard Layer 4 (Overlay)
+//Storyboard Sound Samples
+
+[TimingPoints]
+1700,400,4,2,0,100,1,0
+
+
+[HitObjects]
+480,176,1700,1,0,0:0:0:0:
+480,176,1900,1,8,0:0:0:0:
+480,176,2100,1,8,0:0:0:0:
+480,176,2300,1,8,0:0:0:0:
+480,176,2500,1,0,0:0:0:0:
+480,176,2900,1,0,0:0:0:0:
+480,176,3300,1,0,0:0:0:0:
+480,176,3500,1,8,0:0:0:0:
+480,176,3700,1,0,0:0:0:0:
+480,176,3900,1,0,0:0:0:0:
+480,176,4100,1,0,0:0:0:0:
+480,176,4500,1,8,0:0:0:0:
+480,176,4900,1,0,0:0:0:0:
+480,176,5100,1,8,0:0:0:0:
+456,192,5300,1,8,0:0:0:0:
+480,176,5500,1,8,0:0:0:0:
+480,176,5700,1,0,0:0:0:0:
+480,176,6100,1,0,0:0:0:0:
+480,176,6500,1,0,0:0:0:0:
+480,176,6700,1,8,0:0:0:0:
+480,176,6900,1,0,0:0:0:0:
+480,176,7100,1,0,0:0:0:0:
+480,176,7300,1,8,0:0:0:0:
+480,176,9700,1,0,0:0:0:0:
+480,176,9900,1,8,0:0:0:0:
+480,176,10100,1,8,0:0:0:0:
+480,176,10300,1,8,0:0:0:0:
+480,176,10500,1,0,0:0:0:0:
+480,176,10900,1,0,0:0:0:0:
+480,176,11300,1,0,0:0:0:0:
+480,176,11500,1,8,0:0:0:0:
+480,176,11700,1,0,0:0:0:0:
+480,176,11900,1,0,0:0:0:0:
+480,176,12100,1,0,0:0:0:0:
+480,176,12500,1,8,0:0:0:0:
+480,176,12900,1,0,0:0:0:0:
+480,176,13100,1,8,0:0:0:0:
+456,192,13300,1,8,0:0:0:0:
+480,176,13500,1,8,0:0:0:0:
+480,176,13700,1,0,0:0:0:0:
+480,176,14100,1,0,0:0:0:0:
+480,176,14500,1,0,0:0:0:0:
+480,176,14700,1,8,0:0:0:0:
+480,176,14900,1,0,0:0:0:0:
+480,176,15100,1,0,0:0:0:0:
+480,176,15300,1,8,0:0:0:0:
+480,176,16100,1,4,0:0:0:0:

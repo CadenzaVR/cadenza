@@ -1,5 +1,6 @@
 import Beatmap from "../models/Beatmap";
 import { xxhash128 } from "hash-wasm";
+import { GAMEMODE_CLASSIC, GAMEMODE_TAIKO } from "../../game/GameModes";
 
 export const KEYFIELDS_TAIKO: readonly string[] = [
   "startTime",
@@ -14,12 +15,26 @@ export const KEYFIELDS_CLASSIC: readonly string[] = [
   "width",
 ];
 
-export default function hash(
+export default function getHash(
+  beatmap: Beatmap,
+  gameMode: number
+): Promise<string> {
+  switch (gameMode) {
+    case GAMEMODE_CLASSIC:
+      return hash(beatmap, KEYFIELDS_CLASSIC);
+    case GAMEMODE_TAIKO:
+      return hash(beatmap, KEYFIELDS_TAIKO);
+    default:
+      return hash(beatmap);
+  }
+}
+
+export function hash(
   beatmap: Beatmap,
   keyFields: string[] | readonly string[] = KEYFIELDS_CLASSIC
 ): Promise<string> {
   const sortedKeyFields = [...keyFields].sort();
-  const str = beatmap.notes
+  const str = [...beatmap.notes]
     .sort((a, b) => {
       // sort by key fields in order
       for (let i = 0; i < sortedKeyFields.length; i++) {

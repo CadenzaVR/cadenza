@@ -6,7 +6,7 @@ AFRAME.registerSystem("collision-detection", {
     this.initialized = false;
     this.groupsToDisable = [];
     this.groupsToEnable = [];
-    this.collisionDetectionSystem = new CollisionDetectionSystem();
+    this.collisionDetectionSystem = new CollisionDetectionSystem([[0, 1]]);
     this.el.addEventListener("loaded", () => {
       //wait for colliders to be registered and then build KDTrees
       setTimeout(() => {

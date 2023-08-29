@@ -29,32 +29,6 @@ AFRAME.registerComponent("drum", {
     this.inputs = [this.donInput, this.katInput];
     this.inputProvider = new SimpleInputProvider(this.inputs);
     this.el.sceneEl.systems.input.registerInputProvider(this.inputProvider);
-    this.el.sceneEl.systems["input"].keyboardInputProvider.addListener(
-      (input: Input) => {
-        const inputId = this.keyInputMap.get(input.id);
-        if (this.el.object3D.visible && inputId) {
-          const colliderId = -parseInt(inputId.slice(-1));
-          if (input.value === 1) {
-            if (inputId.startsWith("don")) {
-              this.el.emit("collision-enter", {
-                id: colliderId,
-                collisionShapes: [[null, this.boundingSphere]],
-              });
-            } else {
-              this.el.emit("collision-enter", {
-                id: colliderId,
-                collisionShapes: [[null, this.offCenter]],
-              });
-            }
-          } else {
-            this.el.emit("collision-exit", {
-              id: colliderId,
-              collisionShapes: [[null, this.boundingSphere]],
-            });
-          }
-        }
-      }
-    );
 
     // Audio
     this.hitSoundDon = "/sounds/taikohit.ogg";
@@ -113,8 +87,39 @@ AFRAME.registerComponent("drum", {
     this.plane = this.el.components.shape.shape.plane;
     this.boundingSphere = this.el.components.shape.shape.boundingSphere;
     this.center = this.boundingSphere.center;
-    this.offCenter = { center: this.center.clone() };
-    this.offCenter.center.x += this.data.innerRadius;
+    this.offCenter = {
+      boundingSphere: {
+        center: this.center.clone(),
+      },
+    };
+    this.offCenter.boundingSphere.center.x += this.data.innerRadius;
+
+    this.el.sceneEl.systems["input"].keyboardInputProvider.addListener(
+      (input: Input) => {
+        const inputId = this.keyInputMap.get(input.id);
+        if (this.el.object3D.visible && inputId) {
+          const colliderId = -parseInt(inputId.slice(-1));
+          if (input.value === 1) {
+            if (inputId.startsWith("don")) {
+              this.el.emit("collision-enter", {
+                id: colliderId,
+                collisionShapes: [this],
+              });
+            } else {
+              this.el.emit("collision-enter", {
+                id: colliderId,
+                collisionShapes: [this.offCenter],
+              });
+            }
+          } else {
+            this.el.emit("collision-exit", {
+              id: colliderId,
+              collisionShapes: [this],
+            });
+          }
+        }
+      }
+    );
 
     // Collision
     this.collisionInputMap = new Map();
@@ -125,7 +130,7 @@ AFRAME.registerComponent("drum", {
     ];
 
     this.el.addEventListener("collision-enter", (e: CustomEvent) => {
-      const colliderCenter = e.detail.collisionShapes[0][1].center; // Assume collision shape is Sphere
+      const colliderCenter = e.detail.collisionShapes[0].boundingSphere.center; // Assume collision shape is Sphere
       if (!this.colliderBitMap.has(e.detail.id)) {
         const bit = this.bitStack.pop();
         this.colliderBitMap.set(e.detail.id, bit);
@@ -151,7 +156,9 @@ AFRAME.registerComponent("drum", {
     this.el.addEventListener("collision-exit", (e: CustomEvent) => {
       // Assume collision shape is Sphere
       if (
-        this.plane.distanceToPoint(e.detail.collisionShapes[0][1].center) >= 0
+        this.plane.distanceToPoint(
+          e.detail.collisionShapes[0].boundingSphere.center
+        ) >= 0
       ) {
         const id = e.detail.id;
         const input = this.collisionInputMap.get(id);
@@ -167,6 +174,25 @@ AFRAME.registerComponent("drum", {
         this.bitStack.push(bit);
       }
     });
+
+    setTimeout(() => {
+      let keyboardHeight = this.el.sceneEl.systems[
+        "setting"
+      ].settingsManager.getSettingValue("keyboardHeightOffset");
+      keyboardHeight = keyboardHeight ? keyboardHeight : 0;
+      this.adjustHeight(keyboardHeight);
+      this.el.sceneEl.systems["setting"].settingsManager.addObserver(
+        "keyboardHeightOffset",
+        (value: number) => {
+          if (this.adjustHeightTimeout) {
+            clearTimeout(this.adjustHeightTimeout);
+          }
+          this.adjustHeightTimeout = setTimeout(() => {
+            this.adjustHeight(value);
+          }, 100);
+        }
+      );
+    }, 2500); // TODO get rid of this hack
   },
 
   setRippleColorsFromJudgement: function (judgementValues: number[]) {
@@ -206,5 +232,15 @@ AFRAME.registerComponent("drum", {
       surface.material.uniforms.time.value =
         surface.material.uniforms.time.value + deltaSeconds;
     }
+  },
+
+  adjustHeight: function (value: number) {
+    this.el.object3D.position.y = 0.9 + value / 100;
+    for (const component of Object.entries(this.el.components)) {
+      if (component[0] === "shape" || component[0].startsWith("shape__")) {
+        (<any>component[1]).updatePosition();
+      }
+    }
+    this.el.sceneEl.systems["collision-detection"].buildKDTree("drum");
   },
 });

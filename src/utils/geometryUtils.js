@@ -55,6 +55,36 @@ function flatRectGeometry(width, height) {
   return geometry;
 }
 
+function trapezoidGeometry(width1, width2, height) {
+  const halfWidth1 = width1 / 2;
+  const halfWidth2 = width2 / 2;
+  const halfHeight = height / 2;
+  const geometry = new THREE.BufferGeometry();
+  const vertices = new Float32Array([
+    -halfWidth1,
+    0,
+    halfHeight,
+    halfWidth1,
+    0,
+    halfHeight,
+    halfWidth2,
+    0,
+    -halfHeight,
+
+    -halfWidth1,
+    0,
+    halfHeight,
+    halfWidth2,
+    0,
+    -halfHeight,
+    -halfWidth2,
+    0,
+    -halfHeight,
+  ]);
+  geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+  return geometry;
+}
+
 // adapted from https://github.com/mrdoob/three.js/blob/f021ec0c9051eb11d110b0c2b93305bffd0942e0/examples/webgl_geometry_shapes.html#L253
 function capsule2DGeometry(length, radius, numSegments) {
   const halfLength = length / 2;
@@ -72,4 +102,5 @@ export {
   rectOutlineGeometry,
   capsule2DGeometry,
   flatRectGeometry,
+  trapezoidGeometry,
 };

@@ -1,28 +1,29 @@
 import Collider from "../../physics/Collider";
-import { Box3, Plane, Sphere } from "three";
+import CollisionShape from "../../physics/shapes/CollisionShape";
 
-function round(num: number, precision: number) {
-  return Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision);
-}
-
+let i;
+let len;
 AFRAME.registerComponent("collider", {
   schema: {
     group: { type: "string", default: "default" },
     static: { type: "boolean", default: true },
+    layer: { type: "int", default: 0 },
   },
 
   init: function () {
-    this.mesh = this.el.getObject3D("mesh");
-    this.collider = new Collider(this.data.group, this.data.static);
+    this.parentMatrix = this.el.object3D.matrixWorld;
+    this.collider = new Collider(
+      this.data.group,
+      this.data.static,
+      this.data.layer
+    );
+    this.collisionShapes = this.collider.collisionShapes;
     this.collider.onCollisionEnter = (other: Collider) => {
       this.el.emit("collision-enter", other, false);
     };
     this.collider.onCollisionExit = (other: Collider) => {
       this.el.emit("collision-exit", other, false);
     };
-    setTimeout(() => {
-      this.updateBoundingBox();
-    }, 3000);
     this.el.sceneEl.systems["collision-detection"].registerCollider(
       this.collider
     );
@@ -35,22 +36,24 @@ AFRAME.registerComponent("collider", {
   },
 
   updateBoundingBox: function () {
-    this.collider.boundingBox.setFromObject(this.mesh);
-    this.collider.boundingBox.min.x = round(this.collider.boundingBox.min.x, 3);
-    this.collider.boundingBox.min.y = round(this.collider.boundingBox.min.y, 3);
-    this.collider.boundingBox.min.z = round(this.collider.boundingBox.min.z, 3);
-    this.collider.boundingBox.max.x = round(this.collider.boundingBox.max.x, 3);
-    this.collider.boundingBox.max.y = round(this.collider.boundingBox.max.y, 3);
-    this.collider.boundingBox.max.z = round(this.collider.boundingBox.max.z, 3);
+    console.log(this.collisionShapes);
   },
 
-  addCollisionShape: function (shape: [number, Plane | Box3 | Sphere]) {
+  addCollisionShape: function (shape: CollisionShape) {
     this.collider.addCollisionShape(shape);
+    if (this.collisionShapes.length === 1) {
+      this.collider.boundingBox = shape.boundingBox;
+    }
   },
 
   tick: function () {
     if (!this.collider.isStatic) {
-      this.collider.boundingBox.setFromObject(this.mesh);
+      i = 0;
+      len = this.collisionShapes.length;
+      while (i < len) {
+        this.collisionShapes[i].updateParentTransform(this.parentMatrix);
+        i++;
+      }
     }
   },
 });

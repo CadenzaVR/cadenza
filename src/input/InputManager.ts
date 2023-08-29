@@ -3,6 +3,7 @@ import InputProvider from "./InputProvider";
 import InputState from "./InputState";
 
 let temp;
+let i;
 export default class InputManager {
   private inputState: InputState;
   private pollInputProviders: Array<InputProvider>;
@@ -44,8 +45,10 @@ export default class InputManager {
     // clear events from previous frame
     this.inputState.eventMap.clear();
     // update inputs
-    for (const inputProvider of this.pollInputProviders) {
-      inputProvider.update();
+    i = 0;
+    while (i < this.pollInputProviders.length) {
+      this.pollInputProviders[i].update();
+      i++;
     }
     // swap queued and previously active maps
     temp = this.inputState.eventMap;

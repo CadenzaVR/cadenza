@@ -3,11 +3,11 @@ import Beatmap from "../beatmap/models/Beatmap";
 import ClassicGameState from "../game/ClassicGameState";
 import GameController from "../game/GameController";
 import TaikoGameState from "../game/TaikoGameState";
+import TonoGameState from "../game/TonoGameState";
+import TonoNotesManager from "../graphics/three/tono/TonoNotesManager";
 import CadenzaGraphicsManager from "../graphics/three/CadenzaGraphicsManager";
 import ClassicNotesManager from "../graphics/three/classic/ClassicNotesManager";
 import TaikoNotesManager from "../graphics/three/taiko/TaikoNotesManager";
-import LocalStorageScoreRepository from "../scoring/repositories/LocalStorageScoreRepository";
-import ScoreManager from "../scoring/ScoreManager";
 import Timer from "../timing/Timer";
 
 AFRAME.registerComponent("game", {
@@ -24,12 +24,14 @@ AFRAME.registerComponent("game", {
       3000
     );
     this.taikoNotesManager = new TaikoNotesManager(railAngle, railLength, 3000);
+    this.tonoNotesManager = new TonoNotesManager(railAngle, railLength, 3000);
 
+    this.tonoGameState = new TonoGameState();
     this.classicGameState = new ClassicGameState();
     this.taikoGameState = new TaikoGameState();
 
     const graphicsManager = new CadenzaGraphicsManager(
-      [this.classicNotesManager, this.taikoNotesManager],
+      [this.classicNotesManager, this.taikoNotesManager, this.tonoNotesManager],
       audioManager
     );
     graphicsManager.init(
@@ -43,9 +45,17 @@ AFRAME.registerComponent("game", {
       new Timer(audioManager.audioContext),
       graphicsManager,
       this.el.sceneEl.systems.input.inputManager,
-      new ScoreManager(new LocalStorageScoreRepository()),
+      this.el.sceneEl.systems.scores.scoreManager,
       settingsManager
     );
+  },
+
+  setTonoGameMode: function () {
+    const prevStateListeners = this.controller.state.listeners;
+    this.controller.state = this.tonoGameState;
+    this.tonoGameState.listeners = prevStateListeners;
+    this.controller.graphicsManager.notesManager = this.tonoNotesManager;
+    this.tonoNotesManager.reset();
   },
 
   setTaikoGameMode: function () {

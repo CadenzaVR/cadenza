@@ -7,9 +7,7 @@
       aria-labelledby="modal-2-title"
     >
       <header class="modal__header">
-        <h2 class="modal__title" id="modal-2-title">
-          Load Beatmap
-        </h2>
+        <h2 class="modal__title" id="modal-2-title">Load Beatmap</h2>
         <button
           class="modal__close"
           aria-label="Close modal"
@@ -19,12 +17,21 @@
       <main class="modal__content" id="modal-2-content">
         <p>
           Supports .osz osu! taiko or mania beatmaps.
-          <br>
-          You can load beatmaps in bulk by placing them in a folder and loading the folder or by loading a "beatmaps.txt" file with beatmap urls in it (one per line).
-          <br>
-          A beatmap listing has been made available here: <a href="https://cadenzavr.com/beatmaps">https://cadenzavr.com/beatmaps</a>
-          <br>
-          More osu! beatmaps can be downloaded from the official website (account required): <a href="https://osu.ppy.sh/beatmapsets">https://osu.ppy.sh/beatmapsets</a>
+          <br />
+          You can load beatmaps in bulk by placing them in a folder and loading
+          the folder or by loading a "beatmaps.txt" file with beatmap urls in it
+          (one per line).
+          <br />
+          A beatmap listing has been made available here:
+          <a href="https://cadenzavr.com/beatmaps"
+            >https://cadenzavr.com/beatmaps</a
+          >
+          <br />
+          More osu! beatmaps can be downloaded from the official website
+          (account required):
+          <a href="https://osu.ppy.sh/beatmapsets"
+            >https://osu.ppy.sh/beatmapsets</a
+          >
         </p>
         <div>
           <label for="beatmap-input">Load beatmap from local file(s):</label>
@@ -37,7 +44,10 @@
           />
         </div>
         <div>
-          <label for="beatmap-folder-button">Load beatmaps from local folder:</label>
+          <label for="beatmap-folder-button"
+            >Load beatmaps from local folder (not supported in all
+            browsers):</label
+          >
           <button id="beatmap-folder-import-button">Select Folder</button>
         </div>
         <div>
@@ -47,7 +57,11 @@
         </div>
         <div>
           <label for="save-imported-check">Save imported beatmaps</label>
-          <input type="checkbox" id="save-imported-check" name="save-imported-check" />
+          <input
+            type="checkbox"
+            id="save-imported-check"
+            name="save-imported-check"
+          />
         </div>
       </main>
       <footer class="modal__footer"></footer>
@@ -63,9 +77,7 @@
       aria-labelledby="modal-1-title"
     >
       <header class="modal__header">
-        <h2 class="modal__title" id="modal-1-title">
-          How To Play
-        </h2>
+        <h2 class="modal__title" id="modal-1-title">How To Play</h2>
         <button
           class="modal__close"
           aria-label="Close modal"
@@ -80,37 +92,46 @@
 
         <h3>Hit Notes</h3>
         <div class="modal-content-section">
-          <video autoplay loop><source type="video/webm" src="images/hit_note.webm"></video>
+          <video autoplay loop>
+            <source type="video/webm" src="images/hit_note.webm" />
+          </video>
           <div>
-            Wait for the note to overlap with the white line and then strike any key covered by the
-            note to gain points. The more accurately you hit the notes, the more points you gain.
+            Wait for the note to overlap with the white line and then strike any
+            key covered by the note to gain points. The more accurately you hit
+            the notes, the more points you gain.
           </div>
         </div>
 
         <h3>Slide Notes</h3>
         <div class="modal-content-section">
-          <video autoplay loop><source type="video/webm" src="images/slide_note.webm"></video>
+          <video autoplay loop>
+            <source type="video/webm" src="images/slide_note.webm" />
+          </video>
           <div>
-            Slide notes do not need to be hit accurately. 
-            As long as the key is active when the slide note is near the white line, you will receive full points.
+            Slide notes do not need to be hit accurately. As long as the key is
+            active when the slide note is near the white line, you will receive
+            full points.
           </div>
         </div>
 
         <h3>Hold Notes</h3>
         <div class="modal-content-section">
-          <video autoplay loop><source type="video/webm" src="images/hold_note.webm"></video>
+          <video autoplay loop>
+            <source type="video/webm" src="images/hold_note.webm" />
+          </video>
           <div>
-            Hit the key when the front edge overlaps with the white line.
-            Hold the key down and release it when the back edge overlaps with the white line.
+            Hit the key when the front edge overlaps with the white line. Hold
+            the key down and release it when the back edge overlaps with the
+            white line.
           </div>
         </div>
 
         <h3>Drumroll Notes</h3>
         <div class="modal-content-section">
-          <video autoplay loop><source type="video/webm" src="images/drumroll_note.webm"></video>
-          <div>
-            Hit the keys as fast as possible.
-          </div>
+          <video autoplay loop>
+            <source type="video/webm" src="images/drumroll_note.webm" />
+          </video>
+          <div>Hit the keys as fast as possible.</div>
         </div>
 
         <h3>Controls</h3>

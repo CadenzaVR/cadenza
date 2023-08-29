@@ -21,6 +21,7 @@ import ClassicNotesManager from "./classic/ClassicNotesManager";
 import BaseGraphicsManager from "../BaseGraphicsManager";
 import NoteManager from "../NoteManager";
 import TaikoNotesManager from "./taiko/TaikoNotesManager";
+import TonoNotesManager from "./tono/TonoNotesManager";
 
 export default class CadenzaGraphicsManager extends BaseGraphicsManager {
   scene: Scene;
@@ -53,16 +54,27 @@ export default class CadenzaGraphicsManager extends BaseGraphicsManager {
     this.skysphere = skysphere;
     this.gltfLoader = new GLTFLoader();
     for (const noteManager of this.allNoteManagers) {
-      (noteManager as TaikoNotesManager | ClassicNotesManager).init(
-        scene.object3D
-      );
-      (noteManager as TaikoNotesManager | ClassicNotesManager).updateHeight(0);
+      (
+        noteManager as
+          | TaikoNotesManager
+          | ClassicNotesManager
+          | TonoNotesManager
+      ).init(scene.object3D);
+      (
+        noteManager as
+          | TaikoNotesManager
+          | ClassicNotesManager
+          | TonoNotesManager
+      ).updateHeight(0);
     }
     settingsManager.addObserver("keyboardHeightOffset", (value) => {
       for (const noteManager of this.allNoteManagers) {
-        (noteManager as TaikoNotesManager | ClassicNotesManager).updateHeight(
-          value
-        );
+        (
+          noteManager as
+            | TaikoNotesManager
+            | ClassicNotesManager
+            | TonoNotesManager
+        ).updateHeight(value);
       }
     });
   }

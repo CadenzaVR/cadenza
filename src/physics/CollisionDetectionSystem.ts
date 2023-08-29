@@ -1,6 +1,24 @@
 import Collider from "./Collider";
 import KDTreeNode from "./KDTreeNode";
-import { intersects } from "./ShapeCollisions";
+import { intersects } from "./shapes/CollisionShape";
+
+// update() method variables
+let tempVar;
+let tempCollisionId;
+let tempCollider;
+let tempShape;
+let tempShapeOther;
+let i;
+let j;
+
+export function collisionMaskArrFromPairs(pairs: [number, number][]): number[] {
+  const arr = new Array(31).fill(0);
+  for (const pair of pairs) {
+    arr[pair[0]] |= 1 << pair[1];
+    arr[pair[1]] |= 1 << pair[0];
+  }
+  return arr;
+}
 
 /**
  * Assumptions:
@@ -10,21 +28,24 @@ import { intersects } from "./ShapeCollisions";
  * - input devices will typically have relatively few colliders and majority of collisions will often come from a single direction
  * - during gameplay, dynamic colliders typically hover close to input devices
  */
-let tempVar;
 export default class CollisionDetectionSystem {
   numColliders = 0;
 
   currentCollisionMap: Map<number, Collider>;
   previousCollisionMap: Map<number, Collider>;
 
+  layerCollisionMasks: number[];
   dynamicColliders: Collider[];
-  activeStaticColliderTrees: Set<KDTreeNode>;
+  disabledDynamicColliders: Collider[];
+  activeStaticColliderTrees: KDTreeNode[];
   staticColliderGroups: Map<string, Collider[]>;
   staticColliderGroupTrees: Map<string, KDTreeNode>;
 
-  constructor() {
+  constructor(layerCollisionPairs: [number, number][] = []) {
+    this.layerCollisionMasks = collisionMaskArrFromPairs(layerCollisionPairs);
     this.dynamicColliders = [];
-    this.activeStaticColliderTrees = new Set();
+    this.disabledDynamicColliders = [];
+    this.activeStaticColliderTrees = [];
     this.staticColliderGroups = new Map();
     this.staticColliderGroupTrees = new Map();
     this.currentCollisionMap = new Map();
@@ -59,6 +80,11 @@ export default class CollisionDetectionSystem {
 
     if (colliders.length <= 1) {
       node.colliders = colliders;
+      if (colliders.length === 1) {
+        node.layerMask = colliders[0].layerMask;
+      } else {
+        node.layerMask = 0;
+      }
       return node;
     }
 
@@ -88,7 +114,7 @@ export default class CollisionDetectionSystem {
       [...splittingPlanesY].sort((a, b) => a - b),
     ];
 
-    //prioritize axis with most number values
+    //prioritize axis with most values
     const splittingPlanesSorted = [
       sortedSplittingPlanesX,
       sortedSplittingPlanesY,
@@ -156,6 +182,7 @@ export default class CollisionDetectionSystem {
             node.axisValue = value;
             node.left = this._buildKDTree(left);
             node.right = this._buildKDTree(right);
+            node.layerMask = node.left.layerMask | node.right.layerMask;
             return node;
           }
         }
@@ -172,44 +199,51 @@ export default class CollisionDetectionSystem {
       currentBestRight.length >= colliders.length
     ) {
       node.colliders = colliders;
+      node.layerMask = 0;
+      for (i = 0; i < colliders.length; i++) {
+        node.layerMask |= colliders[i].layerMask;
+      }
     } else {
       node.axis = currentBestAxis;
       node.axisValue = currrentBestAxisValue;
       node.left = this._buildKDTree(currentBestLeft);
       node.right = this._buildKDTree(currentBestRight);
+      node.layerMask = node.left.layerMask | node.right.layerMask;
     }
 
     return node;
+  }
+
+  update() {
+    this.previousCollisionMap.clear();
+    tempVar = this.currentCollisionMap;
+    this.currentCollisionMap = this.previousCollisionMap;
+    this.previousCollisionMap = tempVar;
+    for (i of this.dynamicColliders) {
+      for (j of this.activeStaticColliderTrees) {
+        if (i.layerCollisionMask & j.layerMask) this.findCollisions(i, j);
+      }
+    }
+    tempVar = this.dynamicColliders.length;
+    for (i = 0; i < tempVar; i++) {
+      for (j = i + 1; j < tempVar; j++) {
+        this.checkCollision(this.dynamicColliders[i], this.dynamicColliders[j]);
+      }
+    }
+
+    for (tempVar of this.previousCollisionMap) {
+      // old collisions remaining have ended
+      tempVar[1].collisions.get(tempVar[0]).collisionEnd(tempVar[0]);
+      tempVar[1].collisionEnd(tempVar[0]);
+    }
   }
 
   // Only run on dynamic colliders for now
   findCollisions(collider: Collider, tree: KDTreeNode) {
     if (tree.colliders !== null) {
       // leaf node
-      for (const other of tree.colliders) {
-        collisionCheck: for (const shape of collider.collisionShapes) {
-          for (const otherShape of other.collisionShapes) {
-            if (intersects(shape, otherShape)) {
-              let collisionId;
-              if (collider.id < other.id) {
-                // get unique id for collision
-                collisionId = other.id * other.id - collider.id;
-              } else {
-                collisionId = collider.id * collider.id - other.id;
-              }
-              this.currentCollisionMap.set(collisionId, collider);
-
-              if (this.previousCollisionMap.has(collisionId)) {
-                this.previousCollisionMap.delete(collisionId);
-              } else {
-                // collision started
-                collider.collisionStart(collisionId, other);
-                other.collisionStart(collisionId, collider);
-              }
-              break collisionCheck;
-            }
-          }
-        }
+      for (tempCollider of tree.colliders) {
+        this.checkCollision(collider, tempCollider);
       }
       return;
     }
@@ -226,25 +260,41 @@ export default class CollisionDetectionSystem {
     }
   }
 
-  update() {
-    this.previousCollisionMap.clear();
-    tempVar = this.currentCollisionMap;
-    this.currentCollisionMap = this.previousCollisionMap;
-    this.previousCollisionMap = tempVar;
-    for (const dynamicCollider of this.dynamicColliders) {
-      for (const tree of this.activeStaticColliderTrees) {
-        this.findCollisions(dynamicCollider, tree);
+  checkCollision(collider: Collider, other: Collider) {
+    if (collider.layerCollisionMask & other.layerMask) {
+      for (tempShape of collider.collisionShapes) {
+        for (tempShapeOther of other.collisionShapes) {
+          if (intersects(tempShape, tempShapeOther)) {
+            // get unique id with pairing function f(x, y) = {x*x - y if x > y, y*y - x if x <= y}
+            // proof:
+            // smallest possible value of f(_, n): n*n - (n-1) = n*n - n + 1
+            // largest possible value of f(_, n-1): (n-1)*(n-1) - n = n*n - 2*n + 1
+            if (collider.id < other.id) {
+              tempCollisionId = other.id * other.id - collider.id;
+            } else {
+              tempCollisionId = collider.id * collider.id - other.id;
+            }
+            this.currentCollisionMap.set(tempCollisionId, collider);
+
+            if (this.previousCollisionMap.has(tempCollisionId)) {
+              // collision ongoing. remove from previous map to indicate it's still active
+              this.previousCollisionMap.delete(tempCollisionId);
+            } else {
+              // collision started
+              collider.collisionStart(tempCollisionId, other);
+              other.collisionStart(tempCollisionId, collider);
+            }
+            return true;
+          }
+        }
       }
     }
-    for (const entry of this.previousCollisionMap) {
-      // old collisions remaining have ended
-      entry[1].collisions.get(entry[0]).collisionEnd(entry[0]);
-      entry[1].collisionEnd(entry[0]);
-    }
+    return false;
   }
 
   addCollider(collider: Collider) {
     collider.id = this.numColliders++;
+    collider.layerCollisionMask = this.layerCollisionMasks[collider.layer];
     if (collider.isStatic) {
       if (!this.staticColliderGroups.has(collider.groupId)) {
         this.staticColliderGroups.set(collider.groupId, []);
@@ -266,21 +316,37 @@ export default class CollisionDetectionSystem {
   }
 
   disableColliderGroup(groupId: string) {
+    // Disable static collider group if it exists
     if (this.staticColliderGroups.has(groupId)) {
-      this.activeStaticColliderTrees.delete(
+      const index = this.activeStaticColliderTrees.indexOf(
         this.staticColliderGroupTrees.get(groupId)
       );
+      if (index !== -1) {
+        this.activeStaticColliderTrees.splice(index, 1);
+      }
+    }
+    for (i = 0; i < this.dynamicColliders.length; i++) {
+      if (this.dynamicColliders[i].groupId === groupId) {
+        this.disabledDynamicColliders.push(this.dynamicColliders[i]);
+        this.dynamicColliders.splice(i, 1);
+        i--;
+      }
     }
   }
 
   enableColliderGroup(groupId: string) {
-    if (
-      this.staticColliderGroups.has(groupId) &&
-      this.staticColliderGroupTrees.has(groupId)
-    ) {
-      this.activeStaticColliderTrees.add(
-        this.staticColliderGroupTrees.get(groupId)
-      );
+    if (this.staticColliderGroupTrees.has(groupId)) {
+      const tree = this.staticColliderGroupTrees.get(groupId);
+      if (!this.activeStaticColliderTrees.includes(tree)) {
+        this.activeStaticColliderTrees.push(tree);
+      }
+    }
+    for (i = 0; i < this.disabledDynamicColliders.length; i++) {
+      if (this.disabledDynamicColliders[i].groupId === groupId) {
+        this.dynamicColliders.push(this.disabledDynamicColliders[i]);
+        this.disabledDynamicColliders.splice(i, 1);
+        i--;
+      }
     }
   }
 }

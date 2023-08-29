@@ -45,8 +45,8 @@ export default class GameController {
         this.state.timingOffset = newOffset;
       }
     );
-    this.audioManager.addEventListener("songEnd", () => {
-      this.endMap();
+    this.audioManager.addEventListener("songEnd", async () => {
+      await this.endMap();
     });
   }
 
@@ -89,27 +89,29 @@ export default class GameController {
   }
 
   async restart() {
-    this.scoreManager.processScore(this.state.score);
-    this.state.reset();
-    this.state.loadBeatmap(this.state.beatmap);
-    this.graphicsManager.onGameRestart();
-    this.timer.reset();
-    const startTime = await this.audioManager.onGameRestart();
-    this.timer.start(startTime);
-    this.state.setStatus(GameStatus.PLAYING);
-    //this.state.setStatus(GameStatus.STARTING);
+    if (
+      this.state.status === GameStatus.PAUSED ||
+      this.state.status === GameStatus.GAME_OVER
+    ) {
+      this.state.reset();
+      this.state.loadBeatmap(this.state.beatmap);
+      this.graphicsManager.onGameRestart();
+      this.timer.reset();
+      const startTime = await this.audioManager.onGameRestart();
+      this.timer.start(startTime);
+      this.state.setStatus(GameStatus.PLAYING);
+      //this.state.setStatus(GameStatus.STARTING);
+    }
   }
 
-  endMap() {
+  async endMap() {
     computeAccuracyStats(this.state.score);
-    this.scoreManager.processScore(this.state.score);
+    this.state.score.beatmap = this.state.beatmap;
+    await this.scoreManager.processScore(this.state.score);
     this.state.setStatus(GameStatus.GAME_OVER);
   }
 
-  returnToMainMenu() {
-    if (this.state.status === GameStatus.PAUSED) {
-      this.scoreManager.processScore(this.state.score);
-    }
+  async returnToMainMenu() {
     this.state.reset();
     this.graphicsManager.onReturnToMenu();
     this.state.setStatus(GameStatus.MENU);

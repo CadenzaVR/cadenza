@@ -1,4 +1,4 @@
-import { Euler, Object3D, Vector3 } from "three";
+import { Euler, Group, Object3D, Vector3 } from "three";
 import BaseNotesManager from "../../BaseNotesManager";
 import NoteManager from "../../NoteManager";
 import Initializable from "../Initializable";
@@ -27,6 +27,7 @@ export default class TaikoNotesManager
   railAngle: number;
   railLength: number;
   timeWindow: number;
+  noteContainer: Group;
   constructor(
     railAngle: number,
     railLength: number,
@@ -136,18 +137,16 @@ export default class TaikoNotesManager
   }
 
   public init(parent: Object3D) {
+    this.noteContainer = new Group();
+    parent.add(this.noteContainer);
     for (const noteManager of this.noteManagerArr) {
       (<SimpleNoteManager | InstancedSimpleNoteManager>noteManager).init(
-        parent
+        this.noteContainer
       );
     }
   }
 
   public updateHeight(height: number) {
-    for (const noteManager of this.noteManagerArr) {
-      (noteManager as DonKatNotesManager | DrumrollNoteManager).updateHeight(
-        height
-      );
-    }
+    this.noteContainer.position.y = height / 100;
   }
 }

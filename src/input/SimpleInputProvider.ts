@@ -1,6 +1,7 @@
 import Input from "./Input";
 import InputProvider from "./InputProvider";
 
+let i;
 export default class SimpleInputProvider implements InputProvider {
   private inputs: Input[];
   private listeners: Array<(input: Input) => void>;
@@ -15,8 +16,10 @@ export default class SimpleInputProvider implements InputProvider {
   }
 
   notifyListeners(input: Input): void {
-    for (const listener of this.listeners) {
-      listener(input);
+    i = 0;
+    while (i < this.listeners.length) {
+      this.listeners[i](input);
+      i++;
     }
   }
 

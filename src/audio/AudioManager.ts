@@ -3,6 +3,8 @@ import GameState from "../game/GameState";
 import SettingsManager from "../settings/SettingsManager";
 import AudioDataSource from "./AudioDataSource";
 import GameAudioManager from "./GameAudioManager";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import MidiPlayer from "./MidiPlayer";
 export default class AudioManager implements AudioDataSource, GameAudioManager {
   audioContext: AudioContext;
   analyser: AnalyserNode;
@@ -14,6 +16,9 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
   hitSoundsEnabled: boolean;
   audioBuffers: Array<AudioBuffer>;
   listeners: Map<string, Array<() => void>>;
+
+  midiPlayer: MidiPlayer;
+  isMidiActive: boolean;
 
   constructor() {
     this.hitSoundsEnabled = true;
@@ -59,6 +64,10 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
         .connect(this.analyser);
       this.analyser.connect(this.audioContext.destination);
       this.audioData = new Uint8Array(this.analyser.frequencyBinCount);
+      this.midiPlayer = new MidiPlayer(this.audioContext);
+      this.midiPlayer.addEventListener("ended", () => {
+        this.broadcastEvent("songEnd");
+      });
     } else {
       console.error("AudioContext not supported");
     }
@@ -70,9 +79,23 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
     }
   }
 
+  async loadMidiBeatmap(beatmap: Beatmap): Promise<void> {
+    const midiFile = await fetch(beatmap.set.info.audioSrc).then((res) =>
+      res.arrayBuffer()
+    );
+    await this.midiPlayer.loadArrayBuffer(midiFile);
+  }
+
   async loadBeatmap(beatmap: Beatmap): Promise<void> {
-    this.audioElement.src = beatmap.set.info.audioSrc;
-    this.audioElement.load();
+    this.beatmap = beatmap;
+    if (beatmap.set.info.srcFormat === "midi") {
+      await this.loadMidiBeatmap(beatmap);
+      this.isMidiActive = true;
+    } else {
+      this.audioElement.src = beatmap.set.info.audioSrc;
+      this.audioElement.load();
+      this.isMidiActive = false;
+    }
     const sounds = beatmap.set.info.sounds;
     if (sounds) {
       const soundIds = [];
@@ -94,15 +117,26 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
 
   async onGameStart(): Promise<number> {
     await this.startContext();
-    await this.audioElement.play();
+    if (this.isMidiActive) {
+      return await this.midiPlayer.play();
+    } else {
+      await this.audioElement.play();
+    }
     return this.audioContext.currentTime;
   }
 
   onGamePause(): void {
-    this.audioElement.pause();
+    if (this.isMidiActive) {
+      this.midiPlayer.pause();
+    } else {
+      this.audioElement.pause();
+    }
   }
 
   async onGameResume(): Promise<number> {
+    if (this.isMidiActive) {
+      return await this.midiPlayer.resume();
+    }
     await this.audioElement.play();
     return this.audioContext.currentTime;
   }
@@ -110,7 +144,12 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
   async onGameRestart(): Promise<number> {
     this.audioElement.pause();
     this.audioElement.currentTime = 0;
-    await this.audioElement.play();
+    if (this.isMidiActive) {
+      this.midiPlayer.reset();
+      await this.midiPlayer.play();
+    } else {
+      await this.audioElement.play();
+    }
     return this.audioContext.currentTime;
   }
 

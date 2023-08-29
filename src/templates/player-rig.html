@@ -1,21 +1,37 @@
 <a-entity
   id="camera"
   camera="far: 2500; near: 0.1"
-  look-controls="enabled: false"
+  look-controls="enabled: false; mouseEnabled: false"
   position="0 1.6 0.5"
   rotation="-10 0 0"
   game-camera
-></a-entity>
+>
+  <a-entity
+    id="trombone"
+    gltf-model="#tromboneModel"
+    rotation="45 90 0"
+    position="-0.03 -0.12 -0.06"
+    scale="0.1 0.1 0.1"
+    trombone
+    collider="static: false; group: trombone"
+    shape="type: capsule; radius: 0.6; height: 5; positionOffset: 3.1 0 0; rotationOffset: 0 0 90;"
+    visible="false"
+  >
+    <a-entity id="tromboneSlide" gltf-model="#tromboneSlideModel"></a-entity>
+  </a-entity>
+</a-entity>
 
 <a-entity
   id="leftHand"
-  laser-controls="hand: left"
+  gltf-model="#leftPaw"
+  laser-controls="hand: left; model: false"
   raycaster="objects: [clickable]"
   haptics
 >
   <a-entity>
     <a-box id="mallet1" mixin="mallet" rotation="90 0 0">
       <a-entity id="mallet-head1" mixin="mallet-head" mallet="handEl:#leftHand">
+        <a-entity id="microphone" microphone></a-entity>
       </a-entity>
     </a-box>
   </a-entity>
@@ -23,13 +39,18 @@
 
 <a-entity
   id="rightHand"
-  laser-controls="hand: right"
+  gltf-model="#rightPaw"
+  laser-controls="hand: right; model: false"
   raycaster="objects: [clickable]"
   haptics
 >
   <a-entity>
     <a-box id="mallet2" mixin="mallet" rotation="90 0 0">
-      <a-entity id="mallet-head2" mixin="mallet-head" mallet="handEl:#rightHand">
+      <a-entity
+        id="mallet-head2"
+        mixin="mallet-head"
+        mallet="handEl:#rightHand"
+      >
       </a-entity>
     </a-box>
   </a-entity>

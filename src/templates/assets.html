@@ -3,6 +3,7 @@
     id="mallet"
     geometry="primitive: cylinder; height: 0.3; radius: 0.005;"
     material="color: #fff; opacity: 0.5"
+    position="0 0 0.1"
     detachable
   >
   </a-mixin>
@@ -11,10 +12,29 @@
     id="mallet-head"
     position="0 -0.15 0"
     geometry="primitive: sphere; radius: 0.02"
-    material="shader: flat; color: white"
-    collider="static: false"
+    material="color: white; opacity: 0.9"
+    collider="static: false; layer: 1"
     shape="type:sphere; radius:0.02"
   >
   </a-mixin>
-  <img id="sky" src="images/sky.jpg">
+
+  <a-asset-item id="rightPaw" src="/models/paw.gltf"></a-asset-item>
+  <a-asset-item id="leftPaw" src="/models/leftpaw.gltf"></a-asset-item>
+  <a-asset-item id="tromboneModel" src="/models/trombone.gltf"></a-asset-item>
+  <a-asset-item
+    id="tromboneSlideModel"
+    src="/models/trombone_slide.gltf"
+  ></a-asset-item>
+
+  <img id="sky" src="images/sky.jpg" />
+
+  <img id="advance" src="images/advance.jpg" />
+  <img id="basic" src="images/basic.jpg" />
+  <img id="beethoven" src="images/beethoven.jpg" />
+  <img id="debussy" src="images/debussy.jpg" />
+  <img id="extra" src="images/extra.jpg" />
+  <img id="intermediate" src="images/intermediate.jpg" />
+  <img id="joplin" src="images/joplin.jpg" />
+  <img id="mozart" src="images/mozart.jpeg" />
+  <img id="satie" src="images/satie.jpg" />
 </a-assets>

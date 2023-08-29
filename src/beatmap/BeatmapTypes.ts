@@ -1,0 +1,6 @@
+export const BEATMAPTYPE_OSU_MANIA = 3;
+export const BEATMAPTYPE_OSU_TAIKO = 1;
+export const BEATMAPTYPE_CADENZA_CLASSIC = 7;
+export const BEATMAPTYPE_MIDI_SOLO = 8;
+export const BEATMAPTYPE_MIDI_KARAOKE = 9;
+export const BEATMAPTYPE_MIDI_MANIA = 10;

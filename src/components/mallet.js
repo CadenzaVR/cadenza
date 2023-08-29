@@ -11,6 +11,7 @@ AFRAME.registerComponent("mallet", {
         setTimeout(() => {
           const haptics = this.handEl.components.haptics;
           if (
+            haptics.gamepad &&
             haptics.gamepad.hapticActuators &&
             haptics.gamepad.hapticActuators.length > 0
           ) {

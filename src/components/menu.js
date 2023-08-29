@@ -13,7 +13,7 @@ const songs = [
       name: "Fur Elise",
       artist: "Ludwig van Beethoven",
       creator: "Oliver Fei",
-      imageSrc: "images/beethoven.jpg",
+      imageSrc: "#beethoven",
       audioSrc: "beatmaps/elise.ogg",
     },
     beatmaps: [
@@ -34,7 +34,7 @@ const songs = [
       name: "Moonlight Sonata",
       artist: "Ludwig van Beethoven",
       creator: "Oliver Fei",
-      imageSrc: "images/beethoven.jpg",
+      imageSrc: "#beethoven",
       audioSrc: "beatmaps/moonlight_sonata.ogg",
     },
     beatmaps: [
@@ -50,7 +50,7 @@ const songs = [
       name: "Clair de Lune",
       artist: "Claude Debussy",
       creator: "Oliver Fei",
-      imageSrc: "images/debussy.jpg",
+      imageSrc: "#debussy",
       audioSrc: "beatmaps/clair_de_lune.ogg",
     },
     beatmaps: [
@@ -71,7 +71,7 @@ const songs = [
       name: "Gymnopedie no 1",
       artist: "Eric Satie",
       creator: "Oliver Fei",
-      imageSrc: "images/satie.jpg",
+      imageSrc: "#satie",
       audioSrc: "beatmaps/gymnopedie_1.ogg",
     },
     beatmaps: [
@@ -92,7 +92,7 @@ const songs = [
       name: "Rondo Alla Turca",
       artist: "Wolfgang Amadeus Mozart",
       creator: "Oliver Fei",
-      imageSrc: "images/mozart.jpeg",
+      imageSrc: "#mozart",
       audioSrc: "beatmaps/rondo_alla_turca.ogg",
     },
     beatmaps: [
@@ -118,7 +118,7 @@ const songs = [
       name: "The Entertainer",
       artist: "Scott Joplin",
       creator: "Oliver Fei",
-      imageSrc: "images/joplin.jpg",
+      imageSrc: "#joplin",
       audioSrc: "beatmaps/the_entertainer.ogg",
     },
     beatmaps: [
@@ -144,11 +144,13 @@ const songs = [
         creator: data.beatmapInfo.creator,
         imageSrc: data.beatmapInfo.imageSrc,
         audioSrc: data.beatmapInfo.audioSrc,
-        type: "7",
+        type: data.beatmapInfo.type ? data.beatmapInfo.type : "7",
         language: "",
         genre: "",
         tags: [],
-        srcFormat: "json",
+        srcFormat: data.beatmapInfo.srcFormat
+          ? data.beatmapInfo.srcFormat
+          : "json",
       },
       beatmaps: [],
       isDefault: true,
@@ -167,6 +169,457 @@ const songs = [
     }
     return beatmapSet;
   });
+
+const taikoSongs = [
+  {
+    info: {
+      artist: "Namco",
+      creator: "OnosakiHito",
+      imageSrc: "#basic",
+      song: "TBT Basic Pattern Training",
+      srcFormat: "osuv14",
+      tags: ["Taiko", "TBT"],
+      type: "1",
+    },
+    beatmaps: [
+      {
+        info: {
+          name: "1step [Basic]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "2step [Basic]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "3step [Basic]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "4step [Basic]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "5step [Basic]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "6step [Basic]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "7step [Basic]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "8step [Basic]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "9step [Basic]",
+          difficulty: "3",
+        },
+      },
+    ],
+  },
+  {
+    info: {
+      artist: "Namco",
+      creator: "OnosakiHito",
+      imageSrc: "#intermediate",
+      song: "TBT Intermediate Pattern Training",
+      srcFormat: "osuv14",
+      tags: ["Taiko", "TBT"],
+      type: "1",
+    },
+    beatmaps: [
+      {
+        info: {
+          name: "1step [Intermediate]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "9step [Intermediate]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "6step [Intermediate]",
+          difficulty: "4",
+        },
+      },
+      {
+        info: {
+          name: "2step [Intermediate]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "3step [Intermediate]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "4step [Intermediate]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "5step [Intermediate]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "7step [Intermediate]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "8step [Intermediate]",
+          difficulty: "5",
+        },
+      },
+    ],
+  },
+  {
+    info: {
+      artist: "Namco",
+      creator: "OnosakiHito",
+      imageSrc: "#advance",
+      song: "TBT Advance Pattern Training",
+      srcFormat: "osuv14",
+      tags: ["Taiko", "TBT"],
+      type: "1",
+    },
+    beatmaps: [
+      {
+        info: {
+          name: "9step [Advance]",
+          difficulty: "3",
+        },
+      },
+      {
+        info: {
+          name: "1step [Advance]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "2step [Advance]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "3step [Advance]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "4step [Advance]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "5step [Advance]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "6step [Advance]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "7-2step [Advance]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "7step [Advance]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "8step [Advance]",
+          difficulty: "5",
+        },
+      },
+    ],
+  },
+  {
+    info: {
+      artist: "Namco",
+      creator: "OnosakiHito",
+      imageSrc: "#extra",
+      song: "TBT Extra Pattern Training",
+      srcFormat: "osuv14",
+      tags: ["Taiko", "TBT"],
+      type: "1",
+    },
+    beatmaps: [
+      {
+        info: {
+          name: "1step [Extra]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "2step [Extra]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "3step [Extra]",
+          difficulty: "5",
+        },
+      },
+      {
+        info: {
+          name: "4step [Extra]",
+          difficulty: "5",
+        },
+      },
+    ],
+  },
+];
+
+for (const song of taikoSongs) {
+  song.info.audioSrc =
+    "https://beatmaps.cadenzavr.com/file/cadenza-beatmaps/SONG_WTOU150.mp3";
+  for (const beatmap of song.beatmaps) {
+    beatmap.set = song;
+    beatmap.info.src = encodeURIComponent(
+      `/beatmaps/taiko/${song.info.artist} - ${song.info.song} (${song.info.creator}) [${beatmap.info.name}].osu`
+    );
+    beatmap.id = beatmap.info.src;
+  }
+  song.isDefault = true;
+  songs.push(song);
+}
+
+const tonoSongs = [
+  {
+    id: null,
+    info: {
+      song: "Air, from Suite No.3 in D",
+      artist: "BachJS",
+      creator: "",
+      imageSrc: "",
+      audioSrc: "/beatmaps/tono/air-tromb.mid",
+      type: "8",
+      language: "",
+      genre: "",
+      tags: [],
+      srcFormat: "midi",
+      src: "/beatmaps/tono/air-tromb.mid",
+    },
+    beatmaps: [
+      { id: "1", info: { name: "alto", type: "8" }, notes: null, set: null },
+      {
+        id: "2",
+        info: { name: "tenorOne", type: "8" },
+        notes: null,
+        set: null,
+      },
+      {
+        id: "3",
+        info: { name: "tenorTwo", type: "8" },
+        notes: null,
+        set: null,
+      },
+      { id: "4", info: { name: "bass", type: "8" }, notes: null, set: null },
+    ],
+  },
+  {
+    id: null,
+    info: {
+      song: "The Blue Danube Waltz (main theme)",
+      artist: "StraussJJ",
+      creator: "",
+      imageSrc: "",
+      audioSrc: "/beatmaps/tono/blue_danube.mid",
+      type: "8",
+      language: "",
+      genre: "",
+      tags: [],
+      srcFormat: "midi",
+      src: "/beatmaps/tono/blue_danube.mid",
+    },
+    beatmaps: [
+      {
+        id: "0",
+        info: { name: "up:upper", type: "8" },
+        notes: null,
+        set: null,
+      },
+      {
+        id: "1",
+        info: { name: "down:lower", type: "10" },
+        notes: null,
+        set: null,
+      },
+    ],
+  },
+  {
+    id: null,
+    info: {
+      song: "Canon per 3 Violini e Basso",
+      artist: "PachelbelJ",
+      creator: "",
+      imageSrc: "",
+      audioSrc: "/beatmaps/tono/canon_per_3_violini_e_basso.mid",
+      type: "8",
+      language: "",
+      genre: "",
+      tags: [],
+      srcFormat: "midi",
+      src: "/beatmaps/tono/canon_per_3_violini_e_basso.mid",
+    },
+    beatmaps: [
+      {
+        id: "0",
+        info: { name: "violinI:", type: "8" },
+        notes: null,
+        set: null,
+      },
+      {
+        id: "1",
+        info: { name: "violinII:", type: "8" },
+        notes: null,
+        set: null,
+      },
+      {
+        id: "2",
+        info: { name: "violinIII:", type: "8" },
+        notes: null,
+        set: null,
+      },
+      {
+        id: "3",
+        info: { name: "violoncello:", type: "8" },
+        notes: null,
+        set: null,
+      },
+    ],
+  },
+  {
+    id: null,
+    info: {
+      song: "The First Noel (hymntune)",
+      artist: "Traditional",
+      creator: "",
+      imageSrc: "",
+      audioSrc: "/beatmaps/tono/first_noel.mid",
+      type: "8",
+      language: "",
+      genre: "",
+      tags: [],
+      srcFormat: "midi",
+      src: "/beatmaps/tono/first_noel.mid",
+    },
+    beatmaps: [
+      {
+        id: "1",
+        info: { name: "trombone1", type: "8" },
+        notes: null,
+        set: null,
+      },
+      { id: "2", info: { name: "lower", type: "10" }, notes: null, set: null },
+      {
+        id: "1",
+        info: { name: "trombone2", type: "8" },
+        notes: null,
+        set: null,
+      },
+    ],
+  },
+];
+const tonoKaraokeSongs = [
+  {
+    id: null,
+    info: {
+      song: "Greensleeves",
+      artist: "Traditional",
+      creator: "",
+      imageSrc: "",
+      audioSrc: "/beatmaps/tono/karaoke/greensleeves_guitar.mid",
+      type: "9",
+      language: "",
+      genre: "",
+      tags: [],
+      srcFormat: "midi",
+      src: "/beatmaps/tono/karaoke/greensleeves_guitar.mid",
+    },
+    beatmaps: [
+      { id: "0", info: { name: "melody", type: "8" }, notes: null, set: null },
+      {
+        id: "1",
+        info: { name: "acoustic guitar (nylon) 0", type: "10" },
+        notes: null,
+        set: null,
+      },
+      {
+        id: "0",
+        info: { name: "acoustic grand piano 0", type: "8" },
+        notes: null,
+        set: null,
+      },
+    ],
+  },
+];
+
+tonoSongs.forEach((song) => {
+  song.info.imageSrc = "/images/mutopia.jpg";
+  song.beatmaps.forEach((beatmap) => {
+    beatmap.set = song;
+    beatmap.info.src = song.info.src;
+  });
+  song.isDefault = true;
+  songs.push(song);
+});
+tonoKaraokeSongs.forEach((song) => {
+  song.info.imageSrc = "/images/mutopia.jpg";
+  song.beatmaps.forEach((beatmap) => {
+    beatmap.set = song;
+    beatmap.info.src = song.info.src;
+  });
+  song.isDefault = true;
+  songs.push(song);
+});
 
 AFRAME.registerComponent("menu", {
   init: function () {
@@ -189,14 +642,25 @@ AFRAME.registerComponent("menu", {
   },
 
   onDocumentLoaded: async function () {
+    // Selected song info display elements
+    this.selectedSongTitle = document.getElementById("title-text");
+    this.selectedSongArtist = document.getElementById("artist-text");
+    this.selectedSongMapper = document.getElementById("mapper-text");
+
+    const mapUrls = new URLSearchParams(window.location.search).getAll(
+      "beatmap"
+    );
+    if (mapUrls.length > 0) {
+      this.el.dispatchEvent(new Event("downloadStart"));
+    }
     this.gameModeSelect = document.getElementById("game-mode-select");
     this.gameModeSelect.addEventListener("change", (event) => {
       const gameMode = event.detail.value;
       this.selectedGameMode = gameMode;
+      this.updateSongs();
       this.el.dispatchEvent(
         new CustomEvent("game-mode-change", { detail: gameMode })
       );
-      this.updateSongs();
     });
 
     this.songSelect = document.getElementById("song-select");
@@ -208,6 +672,9 @@ AFRAME.registerComponent("menu", {
           this.songSelect.components["windowed-selector"].currentIndex
         ];
       const currentDifficulty = event.detail.value;
+      this.el.dispatchEvent(
+        new CustomEvent("difficulty-change", { detail: currentDifficulty })
+      );
       if (
         currentSong.beatmaps[currentDifficulty] &&
         currentSong.beatmaps[currentDifficulty].info.creator
@@ -250,15 +717,6 @@ AFRAME.registerComponent("menu", {
       this.shiftSongItemsRight()
     );
 
-    // Selected song info display elements
-    this.selectedSongTitle = document.getElementById("title-text");
-    this.selectedSongArtist = document.getElementById("artist-text");
-    this.selectedSongMapper = document.getElementById("mapper-text");
-
-    this.songSelect.components["windowed-selector"].setSources(
-      this.songs.map((song) => song.info.imageSrc)
-    );
-
     await this.beatmapRepo.getBeatmapSets().then((beatmapSets) => {
       for (let item of beatmapSets) {
         const image = new Image();
@@ -271,18 +729,14 @@ AFRAME.registerComponent("menu", {
       }
     });
 
-    const mapUrls = new URLSearchParams(window.location.search).getAll(
-      "beatmap"
-    );
-
-    mapUrls.forEach((url) => {
-      this.loadBeatmapFromUrl(decodeURI(url));
+    mapUrls.forEach(async (url) => {
+      await this.loadBeatmapFromUrl(decodeURI(url));
     });
 
-    this.selectCurrentSong();
+    this.updateSongs();
   },
 
-  loadBeatmapFromArrayBuffer: function (buffer, saveBeatmap=false) {
+  loadBeatmapFromArrayBuffer: function (buffer, saveBeatmap = false) {
     return this.beatmapLoader.loadBeatmap(buffer).then((song) => {
       this.addNewSong(song);
       if (saveBeatmap) {
@@ -294,7 +748,7 @@ AFRAME.registerComponent("menu", {
     });
   },
 
-  loadBeatmapFromUrl: function (url, saveBeatmap=false) {
+  loadBeatmapFromUrl: function (url, saveBeatmap = false) {
     return this.beatmapLoader
       .loadBeatmapFromUrl(url, this.dispatchProgressEvent)
       .then((song) => {
@@ -384,9 +838,14 @@ AFRAME.registerComponent("menu", {
     this.selectCurrentSong();
   },
 
-  selectCurrentSong: async function () {
+  selectCurrentSong: async function (songChanged = true) {
+    if (!songChanged) return;
     const currentSong =
       this.songs[this.songSelect.components["windowed-selector"].currentIndex];
+
+    this.el.dispatchEvent(
+      new CustomEvent("song-change", { detail: currentSong })
+    );
 
     this.saveButton.object3D.visible =
       !currentSong.isDefault && !currentSong.isSaved;
@@ -404,6 +863,8 @@ AFRAME.registerComponent("menu", {
       }
       this.playTimeout = setTimeout(async () => {
         let audioSrc = currentSong.info.audioSrc;
+        this.audio.pause();
+        this.el.sceneEl.systems["audio"].audioManager.midiPlayer.pause();
         if (!isNaN(audioSrc)) {
           if (this.currentAudioObjectUrl) {
             URL.revokeObjectURL(this.currentAudioObjectUrl);
@@ -412,25 +873,36 @@ AFRAME.registerComponent("menu", {
           this.currentAudioObjectUrl = URL.createObjectURL(song.data);
           audioSrc = this.currentAudioObjectUrl;
         }
-        this.audio.src = audioSrc;
-        this.audio.currentTime = 3;
-        try {
-          this.audio.play();
-        } catch (e) {
-          console.error(e);
+        if (currentSong.info.srcFormat === "midi") {
+          const midiPlayer =
+            this.el.sceneEl.systems["audio"].audioManager.midiPlayer;
+          await midiPlayer.loadArrayBuffer(
+            await fetch(audioSrc).then((response) => response.arrayBuffer())
+          );
+          await midiPlayer.play();
+        } else {
+          this.audio.src = audioSrc;
+          this.audio.currentTime = 3;
+          try {
+            this.audio.play();
+          } catch (e) {
+            console.error(e);
+          }
         }
       }, 200);
     }
   },
 
   shiftSongItemsLeft: function () {
-    this.songSelect.components["windowed-selector"].shiftLeft();
-    this.selectCurrentSong();
+    this.selectCurrentSong(
+      this.songSelect.components["windowed-selector"].shiftLeft()
+    );
   },
 
   shiftSongItemsRight: function () {
-    this.songSelect.components["windowed-selector"].shiftRight();
-    this.selectCurrentSong();
+    this.selectCurrentSong(
+      this.songSelect.components["windowed-selector"].shiftRight()
+    );
   },
 
   updateDifficulty: function () {

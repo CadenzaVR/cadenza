@@ -21,9 +21,9 @@ AFRAME.registerComponent("spinner", {
     showOutline: { type: "boolean", default: true },
     displayedValues: { type: "string", default: "" },
     buttonColor: { type: "color", default: "#fff" },
-    buttonOpacity: { type: "number", default: 0.2 },
+    buttonOpacity: { type: "number", default: 0.5 },
     buttonHighlightColor: { type: "color", default: "#fff" },
-    buttonHighlightOpacity: { type: "number", default: 0.5 },
+    buttonHighlightOpacity: { type: "number", default: 0.85 },
     buttonTransparent: { type: "boolean", default: false },
   },
 

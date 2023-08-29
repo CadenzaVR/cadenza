@@ -20,20 +20,35 @@
     "url": "https://github.com/CadenzaVR/cadenza/issues"
   },
   "homepage": "https://cadenzavr.com",
+  "engines": {
+    "node": ">=16"
+  },
   "dependencies": {
+    "@supabase/auth-ui-react": "^0.3.5",
+    "@supabase/auth-ui-shared": "^0.1.3",
+    "@supabase/supabase-js": "^2.10.0",
+    "@tonejs/midi": "github:CadenzaVR/Midi",
     "aframe-haptics-component": "^1.6.3",
     "axios": "^0.26.0",
     "dexie": "^3.0.3",
     "hash-wasm": "^4.9.0",
     "jsmediatags": "3.9.7",
     "jszip": "^3.6.0",
+    "memfs": "^4.11.1",
     "micromodal": "^0.4.6",
     "osu-parser-web": "git+https://github.com/oliverfei/osu-parser-web.git",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "smplr": "^0.12.1",
     "three": "^0.147.0"
   },
   "devDependencies": {
     "@types/aframe": "^1.2.0",
+    "@types/audioworklet": "^0.0.52",
+    "@types/gtag.js": "^0.0.12",
     "@types/micromodal": "^0.3.3",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
     "@types/three": "^0.146.0",
     "@types/webpack-env": "^1.16.3",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
@@ -41,6 +56,7 @@
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "fast-xml-parser": "^4.3.2",
     "html-loader": "^4.2.0",
     "html-webpack-plugin": "^5.5.0",
     "prettier": "^2.7.1",

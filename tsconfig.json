@@ -4,8 +4,9 @@
       "noImplicitAny": true,
       "module": "es6",
       "target": "es6",
-      "jsx": "react",
+      "jsx": "react-jsx",
       "allowJs": true,
-      "moduleResolution": "node"
+      "moduleResolution": "node",
+      "allowSyntheticDefaultImports": true
     }
   }

@@ -9,7 +9,6 @@ AFRAME.registerComponent("keyboard", {
     this.inputKeyMap = new Map();
     this.keys = [];
     this.keyCollisions = [];
-    this.keyTexts = [];
     this.noteRails = [];
     this.noteEmitters = [];
 
@@ -35,10 +34,6 @@ AFRAME.registerComponent("keyboard", {
       const noteRail = this._createRail(noteRailX);
       this.noteRails.push(noteRail);
       this.el.appendChild(noteRail);
-      // initialize key text
-      const keyText = this._createKeyText(noteRailX);
-      this.keyTexts.push(keyText);
-      this.el.appendChild(keyText);
 
       // initialize note emitters
       const noteEmitter = this.__createNoteEmitter(noteRailX);
@@ -76,22 +71,6 @@ AFRAME.registerComponent("keyboard", {
     // Initialize beatline
     this.el.appendChild(this._createBeatline());
 
-    //Initialize horizontal separator
-    // const horizontalSeparator = document.createElement("a-entity");
-    // horizontalSeparator.setAttribute("geometry", {
-    //   primitive: "box",
-    //   depth: 0.005,
-    //   height: 0.015,
-    //   width: 1.2,
-    // });
-
-    // horizontalSeparator.setAttribute("material", {
-    //   color: "white",
-    //   shader: "flat",
-    // });
-
-    // horizontalSeparator.object3D.position.set(0, 0.9, -0.1);
-    // this.el.appendChild(horizontalSeparator);
     setTimeout(() => {
       let keyboardHeight = this.el.sceneEl.systems[
         "setting"
@@ -182,7 +161,7 @@ AFRAME.registerComponent("keyboard", {
       }
       this.audio.playHitSound(this.hitSoundId);
       keyCollisions.add(e.detail.id);
-      const colliderCenter = e.detail.collisionShapes[0][1].center; // Assume collision shape is Sphere
+      const colliderCenter = e.detail.collisionShapes[0].boundingSphere.center; // Assume collision shape is Sphere
       this.triggerRipple(colliderCenter.x, colliderCenter.z + 0.1);
     });
 
@@ -196,17 +175,6 @@ AFRAME.registerComponent("keyboard", {
       keyCollisions.delete(e.detail.id);
     });
     return key;
-  },
-
-  _createKeyText: function (xPosition: number) {
-    const keyText = document.createElement("a-text");
-    keyText.setAttribute("width", 0.6);
-    keyText.setAttribute("align", "center");
-    keyText.setAttribute("font", "/fonts/SpaceMono-Regular-msdf.json");
-    keyText.setAttribute("negate", false);
-    keyText.object3D.position.set(xPosition, 0.95, -0.37);
-    keyText.object3D.rotation.setFromVector3(new Vector3(-0.5, 0, 0));
-    return keyText;
   },
 
   __createNoteEmitter: function (xPosition: number) {
@@ -314,7 +282,6 @@ AFRAME.registerComponent("keyboard", {
   adjustHeight: function (value: number) {
     this.el.object3D.position.y = value / 100;
     for (const keyEl of this.keys) {
-      keyEl.components["collider"].updateBoundingBox();
       for (const component of Object.entries(keyEl.components)) {
         if (component[0] === "shape" || component[0].startsWith("shape__")) {
           (<any>component[1]).updatePosition();

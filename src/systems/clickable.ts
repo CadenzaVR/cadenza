@@ -20,8 +20,11 @@ AFRAME.registerSystem("clickable", {
 
       raycaster.setFromCamera(mouse, this.el.camera);
       for (const clickable of this.clickableObjects) {
+        const mesh = clickable[0].getObject3D("mesh");
         if (
-          raycaster.intersectObject(clickable[0].getObject3D("mesh")).length > 0
+          mesh.visible &&
+          mesh.parent.visible &&
+          raycaster.intersectObject(mesh).length > 0
         ) {
           clickable[0].dispatchEvent(CLICK_EVENT);
           break;
