@@ -399,21 +399,21 @@ AFRAME.registerComponent("menu", {
     );
     this.updateDifficulty();
     if (this.el.object3D.visible) {
-      let audioSrc = currentSong.info.audioSrc;
-      if (!isNaN(audioSrc)) {
-        if (this.currentAudioObjectUrl) {
-          URL.revokeObjectURL(this.currentAudioObjectUrl);
-        }
-        const song = await this.beatmapRepo.getSong(audioSrc);
-        this.currentAudioObjectUrl = URL.createObjectURL(song.data);
-        audioSrc = this.currentAudioObjectUrl;
-      }
-      this.audio.src = audioSrc;
-      this.audio.currentTime = 3;
       if (this.playTimeout) {
         clearTimeout(this.playTimeout);
       }
-      this.playTimeout = setTimeout(() => {
+      this.playTimeout = setTimeout(async () => {
+        let audioSrc = currentSong.info.audioSrc;
+        if (!isNaN(audioSrc)) {
+          if (this.currentAudioObjectUrl) {
+            URL.revokeObjectURL(this.currentAudioObjectUrl);
+          }
+          const song = await this.beatmapRepo.getSong(audioSrc);
+          this.currentAudioObjectUrl = URL.createObjectURL(song.data);
+          audioSrc = this.currentAudioObjectUrl;
+        }
+        this.audio.src = audioSrc;
+        this.audio.currentTime = 3;
         try {
           this.audio.play();
         } catch (e) {
