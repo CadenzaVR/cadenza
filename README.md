@@ -18,6 +18,9 @@ Made with [A-Frame](https://aframe.io/) and [Three.js](https://threejs.org/)
 npm install
 npm run dev
 ```
+
+See the [Architecture](Architecture.md) doc for more info
+
 ### Tips
 - Use the [A-Frame inspector](https://aframe.io/docs/1.5.0/introduction/visual-inspector-and-dev-tools.html#a-frame-inspector) `CTRL+ALT+I` (or `CTRL+OPTION+I` on mac) to visually experiment with scene modifications
-- Use the [WebXR Emulator chrome extension](https://chromewebstore.google.com/detail/webxr-api-emulator/mjddjgeghkdijejnciaefnkjmkafnnje) for testing VR interactions without a VR headset
+- Use the [WebXR Emulator browser extension](https://github.com/meta-quest/immersive-web-emulator) for testing XR interactions in browser without an XR headset
