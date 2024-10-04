@@ -19,7 +19,7 @@ npm install
 npm run dev
 ```
 
-See the [Architecture](Architecture.md) doc for more info
+See the [Architecture](ARCHITECTURE.md) doc for more info
 
 ### Tips
 - Use the [A-Frame inspector](https://aframe.io/docs/1.5.0/introduction/visual-inspector-and-dev-tools.html#a-frame-inspector) `CTRL+ALT+I` (or `CTRL+OPTION+I` on mac) to visually experiment with scene modifications
