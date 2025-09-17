@@ -422,9 +422,10 @@ for (const song of taikoSongs) {
     "https://beatmaps.cadenzavr.com/file/cadenza-beatmaps/SONG_WTOU150.mp3";
   for (const beatmap of song.beatmaps) {
     beatmap.set = song;
-    beatmap.info.src = encodeURIComponent(
-      `/beatmaps/taiko/${song.info.artist} - ${song.info.song} (${song.info.creator}) [${beatmap.info.name}].osu`
-    );
+    beatmap.info.src =
+      "beatmaps/taiko/" +
+      `${song.info.artist} - ${song.info.song} (${song.info.creator}) [${beatmap.info.name}]` +
+      ".osu";
     beatmap.id = beatmap.info.src;
   }
   song.isDefault = true;
