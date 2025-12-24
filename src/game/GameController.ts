@@ -114,6 +114,7 @@ export default class GameController {
   async returnToMainMenu() {
     this.state.reset();
     this.graphicsManager.onReturnToMenu();
+    this.audioManager.onReturnToMenu();
     this.state.setStatus(GameStatus.MENU);
   }
 

@@ -21,5 +21,6 @@ export default interface GameAudioManager {
    * @returns the scheduled start time based on the audioContext clock
    */
   onGameRestart(): Promise<number>;
+  onReturnToMenu(): void;
   update(gamestate: GameState): void;
 }

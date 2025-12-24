@@ -140,6 +140,8 @@ export default class MidiPlayer {
   currentTrackTime: number;
   previousStartTime: number;
   eventListeners: Map<string, Array<() => void>>;
+  mutedTracks: Set<number>;
+
   constructor(context: AudioContext) {
     this.midiInstruments = new Map();
     this.context = context;
@@ -147,6 +149,7 @@ export default class MidiPlayer {
     this.currentTrackTime = 0;
     this.previousStartTime = 0;
     this.eventListeners = new Map();
+    this.mutedTracks = new Set();
   }
 
   addEventListener(event: string, handler: () => void) {
@@ -154,6 +157,14 @@ export default class MidiPlayer {
       this.eventListeners.set(event, []);
     }
     this.eventListeners.get(event).push(handler);
+  }
+
+  muteTrack(trackIndex: number) {
+    this.mutedTracks.add(trackIndex);
+  }
+
+  unmuteTrack(trackIndex: number) {
+    this.mutedTracks.delete(trackIndex);
   }
 
   async loadArrayBuffer(arrayBuffer: ArrayBuffer) {
@@ -165,6 +176,7 @@ export default class MidiPlayer {
     this.stop();
     this.currentTrackTime = 0;
     this.midi = midi;
+    this.mutedTracks.clear();
     for (const track of midi.tracks) {
       if (
         track.instrument != null &&
@@ -194,15 +206,19 @@ export default class MidiPlayer {
       setTimeout(resolve, 500);
     });
     this.previousStartTime = this.context.currentTime + 0.5;
-    for (const track of this.midi.tracks) {
+    for (let i = 0; i < this.midi.tracks.length; i++) {
+      const track = this.midi.tracks[i];
+      if (this.mutedTracks.has(i)) {
+        continue;
+      }
       const instrument = this.midiInstruments.get(track.instrument.name);
       if (!instrument) {
         console.log(track.instrument.name + " not found");
         console.log(track.instrument);
         continue;
       }
-      for (let i = 0; i < track.notes.length; i++) {
-        const note = track.notes[i];
+      for (let j = 0; j < track.notes.length; j++) {
+        const note = track.notes[j];
         const noteEnd = note.time + note.duration;
         if (noteEnd < this.currentTrackTime) {
           continue;
@@ -212,7 +228,7 @@ export default class MidiPlayer {
           time: this.previousStartTime + note.time - this.currentTrackTime,
           duration: Math.min(note.duration, noteEnd - this.currentTrackTime),
         } as any;
-        if (i === track.notes.length - 1) {
+        if (j === track.notes.length - 1) {
           noteToPlay.onEnded = () => {
             for (const eventListener of this.eventListeners.get("ended")) {
               eventListener();

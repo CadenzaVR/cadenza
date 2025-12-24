@@ -19,11 +19,14 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
 
   midiPlayer: MidiPlayer;
   isMidiActive: boolean;
+  muteActiveMidiTrack: boolean;
+  activeTrackIndex: number | null;
 
   constructor() {
     this.hitSoundsEnabled = true;
     this.audioBuffers = [null]; // first elem is null so sound ids start at 1
     this.listeners = new Map();
+    this.activeTrackIndex = null;
   }
 
   addEventListener(event: string, handler: () => void): void {
@@ -50,6 +53,16 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
       this.hitSoundsEnabled = value;
       this.startContext();
     });
+
+    this.muteActiveMidiTrack =
+      settingsManager.getSettingValue("muteActiveMidiTrack");
+    settingsManager.addObserver("muteActiveMidiTrack", (value) => {
+      this.muteActiveMidiTrack = value;
+      if (!value) {
+        this.midiPlayer.mutedTracks.clear();
+      }
+    });
+
     this.audioElement = new Audio();
     this.audioElement.volume = 0.5;
     this.audioElement.addEventListener("ended", () => {
@@ -83,6 +96,7 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
     const midiFile = await fetch(beatmap.set.info.audioSrc).then((res) =>
       res.arrayBuffer()
     );
+      this.activeTrackIndex = parseInt(beatmap.id);
     await this.midiPlayer.loadArrayBuffer(midiFile);
   }
 
@@ -118,6 +132,9 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
   async onGameStart(): Promise<number> {
     await this.startContext();
     if (this.isMidiActive) {
+      if (this.muteActiveMidiTrack && this.activeTrackIndex !== null) {
+        this.midiPlayer.mutedTracks.add(this.activeTrackIndex);
+      }
       return await this.midiPlayer.play();
     } else {
       await this.audioElement.play();
@@ -135,6 +152,9 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
 
   async onGameResume(): Promise<number> {
     if (this.isMidiActive) {
+      if (this.muteActiveMidiTrack && this.activeTrackIndex !== null) {
+        this.midiPlayer.mutedTracks.add(this.activeTrackIndex);
+      }
       return await this.midiPlayer.resume();
     }
     await this.audioElement.play();
@@ -146,11 +166,20 @@ export default class AudioManager implements AudioDataSource, GameAudioManager {
     this.audioElement.currentTime = 0;
     if (this.isMidiActive) {
       this.midiPlayer.reset();
+      if (this.muteActiveMidiTrack && this.activeTrackIndex !== null) {
+        this.midiPlayer.mutedTracks.add(this.activeTrackIndex);
+      }
       await this.midiPlayer.play();
     } else {
       await this.audioElement.play();
     }
     return this.audioContext.currentTime;
+  }
+
+  onReturnToMenu(): void {
+    if (this.isMidiActive) {
+      this.midiPlayer.mutedTracks.clear();
+    }
   }
 
   update(gamestate: GameState): void {
