@@ -201,34 +201,33 @@ export default class TonoGameState implements GameState {
       // handle notes at front of each queue
       let note = this.noteQueue[this.noteQueue.length - 1];
 
-      if (note) {
+      while (note) {
         this.updateTimeDelta(note);
         if (note.timeDelta > ErrorThresholds.BAD) {
           this.pushHitEvent(note, Judgement.MISS);
+          note.isActive = false;
           this.noteQueue.pop();
           note = this.noteQueue[this.noteQueue.length - 1];
-          if (note) {
+        } else {
+          break;
+        }
+      }
+
+      if (note) {
+        let tone;
+        const toneActive = inputs.eventMap.get(TONE_VOLUME_INPUT);
+        if (toneActive) {
+          tone = inputs.stateMap.get(TONE_PITCH_INPUT).inputs[0].value;
+        }
+        if (tone) {
+          note.absTimeDelta = Math.abs(note.timeDelta);
+          if (!note.isActive && note.absTimeDelta <= JUDGEMENT_THRESHOLD) {
+            this.pushHitEvent(note, this.judgeHit(note, tone));
+            note.isActive = true;
             this.updateTimeDelta(note);
           }
         }
-      }
-
-      let tone;
-      const toneActive = inputs.eventMap.get(TONE_VOLUME_INPUT);
-      if (toneActive) {
-        tone = inputs.stateMap.get(TONE_PITCH_INPUT).inputs[0].value;
-      }
-      if (tone && note) {
-        note.absTimeDelta = Math.abs(note.timeDelta);
-        if (!note.isActive && note.absTimeDelta <= JUDGEMENT_THRESHOLD) {
-          this.pushHitEvent(note, this.judgeHit(note, tone));
-          note.isActive = true;
-        }
-      }
-
-      if (note && note.isActive) {
-        this.updateTimeDelta(note);
-        if (note.timeDelta >= 0 || toneActive === 0) {
+        if (note.isActive && (note.timeDelta >= 0 || toneActive === 0)) {
           this.pushHitEvent(note, Judgement.PASS);
           note.isActive = false;
           this.noteQueue.pop();
