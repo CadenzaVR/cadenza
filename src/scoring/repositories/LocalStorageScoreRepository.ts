@@ -4,23 +4,21 @@ import ScoreRepository from "./ScoreRepository";
 
 export default class LocalStorageScoreRepository implements ScoreRepository {
   async saveHighscore(score: Score): Promise<void> {
+    const beatmapKey = score.gameMode === 2 ? score.beatmap.hash : (score.beatmap.id ? score.beatmap.id : score.beatmap.hash);
     localStorage.setItem(
-      score.gameMode +
-        "score" +
-        (score.beatmap.id ? score.beatmap.id : score.beatmap.hash),
+      score.gameMode + "score" + beatmapKey,
       score.highScore + ""
     );
     localStorage.setItem(
-      score.gameMode +
-        "combo" +
-        (score.beatmap.id ? score.beatmap.id : score.beatmap.hash),
+      score.gameMode + "combo" + beatmapKey,
       score.maxCombo + ""
     );
   }
 
   async getHighscore(beatmap: Beatmap, gameMode: number): Promise<Score> {
+    const beatmapKey = gameMode === 2 ? beatmap.hash : (beatmap.id ? beatmap.id : beatmap.hash);
     const score = localStorage.getItem(
-      gameMode + "score" + (beatmap.id ? beatmap.id : beatmap.hash)
+      gameMode + "score" + beatmapKey
     );
     let highScore = 0;
     if (score) {
@@ -28,7 +26,7 @@ export default class LocalStorageScoreRepository implements ScoreRepository {
     }
 
     const combo = localStorage.getItem(
-      gameMode + "combo" + (beatmap.id ? beatmap.id : beatmap.hash)
+      gameMode + "combo" + beatmapKey
     );
     let maxCombo = 0;
     if (combo) {

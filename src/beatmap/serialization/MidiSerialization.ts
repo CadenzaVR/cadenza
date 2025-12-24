@@ -19,7 +19,7 @@ export async function deserializeMidiBeatmap(
   const arrayBuffer = await blob.arrayBuffer();
   const midi = new Midi(arrayBuffer);
   const tracks = midi.tracks;
-  const track = tracks.find((t) => t.channel === parseInt(beatmap.id));
+  const track = tracks[parseInt(beatmap.id)];
   const notes = track.notes;
   const noteCount = notes.length;
   for (let i = 0; i < noteCount; i++) {
@@ -57,7 +57,8 @@ export async function deserializeMidiBeatmapSet(
   } as BeatmapSet;
 
   const instrumentCounts = new Map<string, number>();
-  for (const track of midi.tracks) {
+  for (let i = 0; i < midi.tracks.length; i++) {
+    const track = midi.tracks[i];
     let isSoloTrack = true;
     let prevEndTime = -1;
     for (const note of track.notes) {
@@ -75,7 +76,7 @@ export async function deserializeMidiBeatmapSet(
     instrumentCounts.set(instrument, instrumentCount + 1);
 
     const beatmap = {
-      id: track.channel + "",
+      id: i.toString(),
       info: {
         name:
           track.name && track.name !== ""

@@ -412,22 +412,24 @@ AFRAME.registerSystem("scene-controller", {
     const selectedMap = this.menu.components[
       "menu"
     ].getSelectedMap() as Beatmap;
-    const localHighscore =
-      await this.el.systems.scores.scoreManager.scoreRepository.getHighscore(
-        selectedMap,
-        this.gameMode
-      );
-    const accuracyRankStr = localHighscore.highScoreAccuracy
-      ? ` (${localHighscore.highScoreAccuracy.toFixed(2)}% - ${
-          localHighscore.highScoreRank
-        })`
-      : "";
-    document
-      .querySelector("#highscore-text")
-      .setAttribute(
-        "value",
-        `Highscore: ${localHighscore.highScore + accuracyRankStr}`
-      );
+    if (selectedMap) {
+      const localHighscore =
+        await this.el.systems.scores.scoreManager.scoreRepository.getHighscore(
+          selectedMap,
+          this.gameMode
+        );
+      const accuracyRankStr = localHighscore.highScoreAccuracy
+        ? ` (${localHighscore.highScoreAccuracy.toFixed(2)}% - ${
+            localHighscore.highScoreRank
+          })`
+        : "";
+      document
+        .querySelector("#highscore-text")
+        .setAttribute(
+          "value",
+          `Highscore: ${localHighscore.highScore + accuracyRankStr}`
+        );
+    }
   },
 
   schedulePreload: function (ms = 2000) {

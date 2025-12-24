@@ -433,38 +433,41 @@ for (const song of taikoSongs) {
 }
 
 const tonoSongs = [
-  {
-    id: null,
-    info: {
-      song: "Air, from Suite No.3 in D",
-      artist: "BachJS",
-      creator: "",
-      imageSrc: "",
-      audioSrc: "/beatmaps/tono/air-tromb.mid",
-      type: "8",
-      language: "",
-      genre: "",
-      tags: [],
-      srcFormat: "midi",
-      src: "/beatmaps/tono/air-tromb.mid",
-    },
-    beatmaps: [
-      { id: "1", info: { name: "alto", type: "8" }, notes: null, set: null },
-      {
-        id: "2",
-        info: { name: "tenorOne", type: "8" },
-        notes: null,
-        set: null,
-      },
-      {
-        id: "3",
-        info: { name: "tenorTwo", type: "8" },
-        notes: null,
-        set: null,
-      },
-      { id: "4", info: { name: "bass", type: "8" }, notes: null, set: null },
-    ],
-  },
+  // {
+  //   id: null,
+  //   info: {
+  //     song: "Air, from Suite No.3 in D",
+  //     artist: "BachJS",
+  //     creator: "",
+  //     imageSrc: "",
+  //     audioSrc: "/beatmaps/tono/air-tromb.mid",
+  //     type: "8",
+  //     language: "",
+  //     genre: "",
+  //     tags: [],
+  //     srcFormat: "midi",
+  //     src: "/beatmaps/tono/air-tromb.mid",
+  //   },
+  //   beatmaps: [
+  //     { id: "1", info: { name: "alto", type: "8" }, notes: null, set: null },
+  //     {
+  //       id: "2",
+  //       info: { name: "tenorOne", type: "8" },
+  //       notes: null,
+  //       set: null,
+  //     },
+  //     {
+  //       id: "3",
+  //       info: { name: "tenorTwo", type: "8" },
+  //       notes: null,
+  //       set: null,
+  //     },
+  //     { id: "4", info: { name: "bass", type: "8" }, notes: null, set: null },
+  //   ],
+  // },
+  //"Sonataduodecima",
+  //"soldiers-joy",
+  //"fleebird",
   {
     id: null,
     info: {
@@ -487,12 +490,12 @@ const tonoSongs = [
         notes: null,
         set: null,
       },
-      {
-        id: "1",
-        info: { name: "down:lower", type: "10" },
-        notes: null,
-        set: null,
-      },
+      // {
+      //   id: "1",
+      //   info: { name: "down:lower", type: "10" },
+      //   notes: null,
+      //   set: null,
+      // },
     ],
   },
   {
@@ -554,14 +557,14 @@ const tonoSongs = [
     },
     beatmaps: [
       {
-        id: "1",
+        id: "0",
         info: { name: "trombone1", type: "8" },
         notes: null,
         set: null,
       },
-      { id: "2", info: { name: "lower", type: "10" }, notes: null, set: null },
+      //{ id: "1", info: { name: "lower", type: "10" }, notes: null, set: null },
       {
-        id: "1",
+        id: "2",
         info: { name: "trombone2", type: "8" },
         notes: null,
         set: null,
@@ -587,18 +590,12 @@ const tonoKaraokeSongs = [
     },
     beatmaps: [
       { id: "0", info: { name: "melody", type: "8" }, notes: null, set: null },
-      {
-        id: "1",
-        info: { name: "acoustic guitar (nylon) 0", type: "10" },
-        notes: null,
-        set: null,
-      },
-      {
-        id: "0",
-        info: { name: "acoustic grand piano 0", type: "8" },
-        notes: null,
-        set: null,
-      },
+      // {
+      //   id: "1",
+      //   info: { name: "acoustic guitar (nylon) 0", type: "10" },
+      //   notes: null,
+      //   set: null,
+      // },
     ],
   },
 ];
