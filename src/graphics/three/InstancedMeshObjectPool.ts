@@ -22,6 +22,7 @@ export default class InstancedMeshObjectPool {
     defaultPosition: Vector3
   ) {
     this.mesh = new InstancedMesh(geometry, material, count);
+    this.mesh.frustumCulled = false;
     this.mesh.instanceMatrix.setUsage(DynamicDrawUsage);
     this.defaultPosition = defaultPosition;
     this.pool = [];

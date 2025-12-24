@@ -33,7 +33,7 @@ export default class InstancedTonoNoteManager extends InstancedSimpleNoteManager
       new InstancedMeshObjectPool(
         trapezoidGeometry(
           BASE_NOTE_WIDTH + 0.01,
-          BASE_NOTE_WIDTH,
+          BASE_NOTE_WIDTH - 0.01,
           BASE_NOTE_HEIGHT
         ),
         createClampedVisibiltyMaterial({

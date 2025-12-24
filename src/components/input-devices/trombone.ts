@@ -7,7 +7,7 @@ const MAX_SLIDE_VALUE = 0.16;
 const MIN_SLIDE_VALUE = 0;
 const SLIDE_OFFSET = 0.05;
 
-const TROMBONE_RANGE_MAX = 57; // A4
+const TROMBONE_RANGE_MAX = 69; // A4
 const TROMBONE_RANGE_MIN = 45; // A2
 const TROMBONE_RANGE = TROMBONE_RANGE_MAX - TROMBONE_RANGE_MIN;
 let x;
@@ -165,17 +165,19 @@ AFRAME.registerComponent("trombone", {
         Math.asin(this.directionVector.y / length) -
         Math.asin(-this.cameraDirection.y);
 
-      if (this.parentObject.rotation.x > 0) {
-        this.input.value += 12;
-      }
+      // Octave shifting commented out - x axis now covers full range
+      // if (this.parentObject.rotation.x > 0) {
+      //   this.input.value += 12;
+      // }
     } else {
       this.parentObject.rotation.x = this.mouseY;
       this.slide.position.x = this.mouseX;
       this.input.value =
         TROMBONE_RANGE_MAX - (TROMBONE_RANGE * this.mouseX) / 4.8;
-      if (this.mouseY > 0.25) {
-        this.input.value += 12;
-      }
+      // Octave shifting commented out - x axis now covers full range
+      // if (this.mouseY > 0.25) {
+      //   this.input.value += 12;
+      // }
     }
     if (this.audioSource) {
       const newNoteIndex = Math.round(this.input.value - TROMBONE_RANGE_MIN);

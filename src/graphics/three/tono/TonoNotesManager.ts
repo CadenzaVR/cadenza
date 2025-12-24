@@ -50,13 +50,22 @@ export default class TonoNotesManager extends BaseNotesManager {
       BASE_Y + (this.railLength / 2) * Math.sin(this.railAngle);
     this.noteContainer.position.z =
       BASE_Z - (this.railLength / 2) * Math.cos(this.railAngle);
+
+    const rotatedContainer = new Group();
+    this.noteContainer.add(rotatedContainer);
+    rotatedContainer.position.x = 0;
+    rotatedContainer.position.y = 0;
+    rotatedContainer.position.z = 0;
+
     for (const noteManager of this.noteManagerArr) {
-      (noteManager as InstancedTonoNoteManager).init(this.noteContainer);
+      (noteManager as InstancedTonoNoteManager).init(rotatedContainer);
     }
+    rotatedContainer.position.y = -1;
+    rotatedContainer.position.z = -2;
+    rotatedContainer.rotation.z = Math.PI/2;
   }
 
   public updateHeight(height: number) {
-    this.noteContainer.position.y =
-      BASE_Y + (this.railLength / 2) * Math.sin(this.railAngle) + height / 100;
+    return;
   }
 }
