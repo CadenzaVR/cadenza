@@ -45,4 +45,7 @@ export default class InstancedSimpleNoteManager
   async load(beatmap: Beatmap): Promise<void> {
     //TODO performance optimizations
   }
+  activateNote(note: Note): void {
+    return;
+  }
 }

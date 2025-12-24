@@ -30,6 +30,10 @@ export default class BaseNotesManager implements NoteManager {
     this.noteManagers.get(note.type).deactivateNote(note);
   }
 
+  public activateNote(note: Note): void {
+    this.noteManagers.get(note.type).activateNote(note);
+  }
+
   public update(deltaTime: number): void {
     for (noteManager of this.noteManagerArr) {
       noteManager.update(deltaTime);

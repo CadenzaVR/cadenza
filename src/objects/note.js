@@ -16,7 +16,14 @@ export function createClampedVisibiltyMaterial(params = {}) {
     //wireframe: true,
     vertexShader: `
       varying vec4 localPosition;
+      ${params.useInstanceColor ? `
+      attribute vec3 instanceColor;
+      varying vec3 vInstanceColor;
+      ` : ""}
       void main() {
+        ${params.useInstanceColor ? `
+        vInstanceColor = instanceColor;
+        ` : ""}
         localPosition = ${
           params.isInstanced ? "instanceMatrix * " : "modelViewMatrix * "
         }vec4(position, 1.0);
@@ -34,11 +41,18 @@ export function createClampedVisibiltyMaterial(params = {}) {
       ${params.maxY ? "uniform float maxY;" : ""}
       uniform vec4 color;
       varying vec4 localPosition;
+      ${params.useInstanceColor ? `
+      varying vec3 vInstanceColor;
+      ` : ""}
       void main() {
         if (localPosition.z > maxZ || localPosition.z < minZ) {
           discard;
         }
+        ${params.useInstanceColor ? `
+        gl_FragColor = vec4(color.rgb * vInstanceColor, color.a);
+        ` : `
         gl_FragColor = color;
+        `}
       }
       `,
   });

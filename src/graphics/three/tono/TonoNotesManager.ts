@@ -42,6 +42,10 @@ export default class TonoNotesManager extends BaseNotesManager {
     this.noteManagerArr[0].deactivateNote(note);
   }
 
+  public activateNote(note: Note): void {
+    this.noteManagerArr[0].activateNote(note);
+  }
+
   public init(parent: Object3D) {
     this.noteContainer = new Group();
     parent.add(this.noteContainer);

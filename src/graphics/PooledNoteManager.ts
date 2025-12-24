@@ -29,6 +29,8 @@ export default abstract class PooledNoteManager<T> implements NoteManager {
 
   abstract load(beatmap: Beatmap): Promise<void>;
 
+  abstract activateNote(note: Note): void;
+
   spawnNote(note: Note, spawnOffsetTime: number): void {
     instance = this.getInstanceFromPool();
     this.spawnInstance(note, instance, spawnOffsetTime);

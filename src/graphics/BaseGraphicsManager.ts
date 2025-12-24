@@ -22,6 +22,8 @@ export default class BaseGraphicsManager implements GraphicsManager {
         const note = hitEvent.note;
         if (!note.isActive) {
           this.notesManager.deactivateNote(note);
+        } else {
+          this.notesManager.activateNote(note);
         }
       }
       this.notesManager.update(deltaTime);

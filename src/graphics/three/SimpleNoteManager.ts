@@ -11,6 +11,7 @@ export default class SimpleNoteManager
   extends ArrayPooledNoteManager<Object3D>
   implements Initializable
 {
+  
   protected moveSpeed: number;
   protected moveDirection: Vector3;
   protected spawnPoint: Vector3;
@@ -60,5 +61,9 @@ export default class SimpleNoteManager
 
   async load(beatmap: Beatmap): Promise<void> {
     //TODO performance optimizations
+  }
+
+  activateNote(note: Note): void {
+    return;
   }
 }
